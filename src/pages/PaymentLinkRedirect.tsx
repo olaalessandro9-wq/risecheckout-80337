@@ -23,7 +23,7 @@ const PaymentLinkRedirect = () => {
   const [isInactive, setIsInactive] = useState(false);
 
   useEffect(() => {
-    console.log("[PaymentLinkRedirect] v2.6 - slug:", slug);
+    console.log("[PaymentLinkRedirect] v2.7 - slug:", slug);
     const processPaymentLink = async () => {
       if (!slug) {
         setError("Link inválido");
@@ -106,7 +106,7 @@ const PaymentLinkRedirect = () => {
 
         // 5. Redirecionar para /pay/:slug (usando o slug do payment_link)
         // O checkout público agora busca pelo slug do payment_link, não do checkout
-        navigate(`/pay/${linkData.slug}`, { replace: true });
+        navigate(`/pay/${linkData.slug}?build=v2_7`, { replace: true });
       } catch (err) {
         console.error("Erro ao processar link:", err);
         setError("Erro ao processar link de pagamento");

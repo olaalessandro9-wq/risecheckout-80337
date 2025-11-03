@@ -65,7 +65,7 @@ const PublicCheckout = () => {
 
   useEffect(() => {
     if (slug) {
-      console.log("[PublicCheckout] v2.6 montado - slug:", slug);
+      console.log("[PublicCheckout] v2.7 montado - slug:", slug);
       loadCheckout();
       trackVisit();
     }
