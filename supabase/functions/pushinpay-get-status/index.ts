@@ -20,6 +20,9 @@ serve(async (req) => {
     const { orderId } = await req.json();
 
     const { token, environment, pixId } = await loadTokenEnvAndPixId(orderId);
+    
+    console.log("[pushinpay-get-status] Checking status:", { orderId, environment, pixId });
+    
     const baseURL =
       environment === "sandbox"
         ? "https://api-sandbox.pushinpay.com.br/api"

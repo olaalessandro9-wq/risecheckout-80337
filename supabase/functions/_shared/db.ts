@@ -9,10 +9,10 @@ const supabase = createClient(
 // Exemplo: resolva o dono da order, credenciais e taxa
 export async function loadGatewaySettingsByOrder(orderId: string) {
   // 1) Descobre sellerId pelo orderId
-  // Nota: Ajuste "orders" e "user_id" conforme sua estrutura
+  // Nota: Ajuste "orders" e "vendor_id" conforme sua estrutura
   const { data: order, error: e1 } = await supabase
     .from("orders")
-    .select("user_id, amount_cents")
+    .select("vendor_id, amount_cents")
     .eq("id", orderId)
     .single();
   if (e1 || !order) throw new Error("Order not found");
@@ -20,7 +20,7 @@ export async function loadGatewaySettingsByOrder(orderId: string) {
   const { data: settings, error: e2 } = await supabase
     .from("payment_gateway_settings")
     .select("token_encrypted, environment")
-    .eq("user_id", order.user_id)
+    .eq("user_id", order.vendor_id)
     .single();
   if (e2 || !settings) throw new Error("Gateway settings not found");
 
@@ -55,7 +55,7 @@ export async function loadTokenEnvAndPixId(orderId: string) {
 
   const { data: order, error: e2 } = await supabase
     .from("orders")
-    .select("user_id")
+    .select("vendor_id")
     .eq("id", orderId)
     .single();
   if (e2 || !order) throw new Error("Order not found");
@@ -63,7 +63,7 @@ export async function loadTokenEnvAndPixId(orderId: string) {
   const { data: settings, error: e3 } = await supabase
     .from("payment_gateway_settings")
     .select("token_encrypted, environment")
-    .eq("user_id", order.user_id)
+    .eq("user_id", order.vendor_id)
     .single();
   if (e3 || !settings) throw new Error("Gateway settings not found");
 

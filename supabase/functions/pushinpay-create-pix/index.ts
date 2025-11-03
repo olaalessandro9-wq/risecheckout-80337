@@ -41,22 +41,29 @@ serve(async (req) => {
     // 1) Buscar o pedido e identificar o vendedor
     const { data: order, error: orderErr } = await supabase
       .from("orders")
-      .select("id, user_id")
+      .select("id, vendor_id")
       .eq("id", orderId)
       .single();
 
     if (orderErr || !order) {
+      console.error("[pushinpay-create-pix] Order not found:", { orderId, error: orderErr });
       return withCorsError(req, "Pedido não encontrado", 404);
     }
+
+    console.log("[pushinpay-create-pix] Order found:", { orderId, vendorId: order.vendor_id });
 
     // 2) Buscar configurações do gateway do vendedor
     const { data: settings, error: settingsErr } = await supabase
       .from("payment_gateway_settings")
       .select("*")
-      .eq("user_id", order.user_id)
+      .eq("user_id", order.vendor_id)
       .single();
 
     if (settingsErr || !settings) {
+      console.error("[pushinpay-create-pix] Gateway settings not found:", { 
+        vendorId: order.vendor_id, 
+        error: settingsErr 
+      });
       return withCorsError(
         req,
         "Configuração de gateway não encontrada. Configure em Financeiro.",
@@ -75,6 +82,13 @@ serve(async (req) => {
     // 4) Determinar URL base
     const environment = settings.environment as "sandbox" | "production";
     const baseURL = environment === "production" ? BASE_PROD : BASE_SANDBOX;
+
+    console.log("[pushinpay-create-pix] Creating PIX charge:", { 
+      orderId, 
+      vendorId: order.vendor_id, 
+      environment, 
+      valueInCents 
+    });
 
     // 5) Calcular split usando taxa fixa do backend
     const platformValue = Math.round(valueInCents * PLATFORM_FEE_PERCENT / 100);
