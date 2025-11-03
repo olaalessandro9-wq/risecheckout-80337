@@ -168,6 +168,15 @@ serve(async (req) => {
       qrCodeBase64Preview: pixData.qr_code_base64?.substring(0, 50) || 'EMPTY'
     });
 
+    // Normalizar base64 para compatibilidade com UIs antigas que usam <img src="data:">
+    let qrBase64Raw: string = (pixData.qr_code_base64 || '').toString().trim();
+    // Remover quebras de linha/espaços
+    qrBase64Raw = qrBase64Raw.replace(/\s+/g, '');
+    // Se já veio com prefixo data:, manter; caso contrário, prefixar corretamente
+    const qrBase64DataUrl = qrBase64Raw
+      ? (qrBase64Raw.startsWith('data:image/') ? qrBase64Raw : `data:image/png;base64,${qrBase64Raw}`)
+      : '';
+
     // 8) Salvar mapeamento order_id -> pix_id
     const { error: mapErr } = await supabase
       .from("payments_map")
@@ -185,7 +194,10 @@ serve(async (req) => {
         id: pixData.id,
         pix_id: pixData.id,
         qr_code: pixData.qr_code,
-        qr_code_base64: pixData.qr_code_base64,
+        // Para compatibilidade, devolvemos o campo esperado contendo uma Data URL válida
+        qr_code_base64: qrBase64DataUrl,
+        // Campo extra apenas para diagnóstico facultativo
+        qr_code_base64_raw: qrBase64Raw?.slice(0, 64) ? `len:${qrBase64Raw.length}` : undefined,
         status: pixData.status,
         value: valueInCents,
       }
