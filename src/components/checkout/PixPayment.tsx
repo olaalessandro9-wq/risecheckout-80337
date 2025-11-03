@@ -21,9 +21,9 @@ export const PixPayment = ({ orderId, valueInCents, onSuccess, onError }: PixPay
   const [copied, setCopied] = useState(false);
   const [expiresAt, setExpiresAt] = useState<number>(0);
   const [isExpired, setIsExpired] = useState(false);
-  const [pollingInterval, setPollingInterval] = useState(7000);
+  const [pollingInterval, setPollingInterval] = useState<NodeJS.Timeout | null>(null);
   const [failedAttempts, setFailedAttempts] = useState(0);
-  const [timeRemaining, setTimeRemaining] = useState<string>("");
+  const [timeRemaining, setTimeRemaining] = useState<number>(0);
 
   // Criar cobrança PIX
   const createPixCharge = useCallback(async () => {
@@ -66,6 +66,11 @@ export const PixPayment = ({ orderId, valueInCents, onSuccess, onError }: PixPay
       // Definir expiração em 15 minutos
       const expirationTime = Date.now() + 15 * 60 * 1000;
       setExpiresAt(expirationTime);
+      
+      // Inicializar countdown imediatamente
+      const remaining = Math.floor((expirationTime - Date.now()) / 1000);
+      setTimeRemaining(remaining);
+      console.log("[PixPayment] v2.3 - QR criado, expira em 15:00");
 
       setLoading(false);
       toast.success("QR Code gerado com sucesso!");
@@ -85,13 +90,14 @@ export const PixPayment = ({ orderId, valueInCents, onSuccess, onError }: PixPay
 
   // Polling do status do pagamento com backoff
   useEffect(() => {
-    if (!pixId || paymentStatus !== "waiting" || isExpired) {
+    if (!pixId || paymentStatus !== "waiting" || isExpired || pollingInterval) {
       return;
     }
 
-    console.log("[PixPayment] Iniciando polling com intervalo:", pollingInterval);
+    let currentInterval = 7000; // Começar com 7s
+    console.log("[PixPayment] Iniciando polling com intervalo:", currentInterval);
 
-    const pollInterval = setInterval(async () => {
+    const poll = async () => {
       try {
         const { data, error } = await supabase.functions.invoke("pushinpay-get-status", {
           body: { orderId },
@@ -99,7 +105,13 @@ export const PixPayment = ({ orderId, valueInCents, onSuccess, onError }: PixPay
 
         if (error) {
           console.error("[PixPayment] Erro ao verificar status:", error);
-          setFailedAttempts(prev => prev + 1);
+          setFailedAttempts(prev => {
+            const newAttempts = prev + 1;
+            if (newAttempts >= 6) currentInterval = 60000; // 1 min
+            else if (newAttempts >= 3) currentInterval = 15000; // 15s
+            else if (newAttempts >= 1) currentInterval = 10000; // 10s
+            return newAttempts;
+          });
           return;
         }
 
@@ -115,61 +127,60 @@ export const PixPayment = ({ orderId, valueInCents, onSuccess, onError }: PixPay
         if (data?.status?.status === "paid") {
           console.log("[PixPayment] ✅ Pagamento confirmado!");
           setPaymentStatus("paid");
+          if (pollingInterval) {
+            clearInterval(pollingInterval);
+            setPollingInterval(null);
+          }
           toast.success("Pagamento confirmado!");
           onSuccess?.();
         } else if (data?.status?.status === "expired" || data?.status?.status === "canceled") {
           console.log("[PixPayment] ⏰ Pagamento expirado/cancelado");
           setPaymentStatus("expired");
           setIsExpired(true);
+          if (pollingInterval) {
+            clearInterval(pollingInterval);
+            setPollingInterval(null);
+          }
         }
       } catch (err) {
         console.error("[PixPayment] Erro no polling:", err);
         setFailedAttempts(prev => prev + 1);
       }
-    }, pollingInterval);
+    };
+
+    const interval = setInterval(poll, currentInterval);
+    setPollingInterval(interval);
 
     return () => {
-      clearInterval(pollInterval);
+      if (interval) clearInterval(interval);
     };
   }, [pixId, paymentStatus, isExpired, orderId, onSuccess, pollingInterval]);
 
-  // Estratégia de backoff: aumentar intervalo após falhas
-  useEffect(() => {
-    if (failedAttempts >= 6) {
-      console.warn("[PixPayment] Muitas falhas, pausando polling");
-      setPollingInterval(60000); // 1 minuto
-    } else if (failedAttempts >= 3) {
-      setPollingInterval(15000); // 15s
-    } else if (failedAttempts >= 1) {
-      setPollingInterval(10000); // 10s
-    } else {
-      setPollingInterval(7000); // 7s
-    }
-  }, [failedAttempts]);
 
   // Verificar expiração local e atualizar countdown
   useEffect(() => {
-    if (!expiresAt || paymentStatus !== "waiting") return;
+    if (!expiresAt) return;
 
     const checkExpiration = setInterval(() => {
-      const now = Date.now();
-      const remaining = expiresAt - now;
-
+      const remaining = Math.floor((expiresAt - Date.now()) / 1000);
+      
       if (remaining <= 0) {
         console.log("[PixPayment] ⏰ Expirado localmente após 15min");
+        setTimeRemaining(0);
         setPaymentStatus("expired");
         setIsExpired(true);
-        setTimeRemaining("00:00");
+        if (pollingInterval) {
+          clearInterval(pollingInterval);
+          setPollingInterval(null);
+        }
         toast.error("QR Code expirado após 15 minutos");
       } else {
-        const minutes = Math.floor(remaining / 60000);
-        const seconds = Math.floor((remaining % 60000) / 1000);
-        setTimeRemaining(`${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`);
+        setTimeRemaining(remaining);
       }
     }, 1000);
 
     return () => clearInterval(checkExpiration);
-  }, [expiresAt, paymentStatus]);
+  }, [expiresAt, pollingInterval]);
 
   // Copiar código PIX
   const copyToClipboard = async () => {
@@ -201,7 +212,7 @@ export const PixPayment = ({ orderId, valueInCents, onSuccess, onError }: PixPay
           <>
             <Timer className="w-5 h-5 text-blue-600 dark:text-blue-400 animate-pulse" />
             <span className="text-sm font-medium">
-              Aguardando pagamento {timeRemaining && `— expira em ${timeRemaining}`}
+              Aguardando pagamento — expira em {Math.floor(timeRemaining / 60).toString().padStart(2, '0')}:{(timeRemaining % 60).toString().padStart(2, '0')}
             </span>
           </>
         )}

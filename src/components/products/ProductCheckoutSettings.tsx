@@ -38,7 +38,7 @@ export function ProductCheckoutSettings({ productId }: { productId: string }) {
         .from("products")
         .select("required_fields, default_payment_method")
         .eq("id", productId)
-        .maybeSingle<ProductRow>();
+        .maybeSingle();
 
       if (error) {
         console.error(error);
