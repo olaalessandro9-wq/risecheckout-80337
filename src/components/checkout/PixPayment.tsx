@@ -1,11 +1,10 @@
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Copy, CheckCircle2, Clock, XCircle, RefreshCw } from "lucide-react";
+import { Copy, CheckCircle2, Clock, XCircle, RefreshCw, Timer } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { PushinPayLegal } from "../pix/PushinPayLegal";
 import { QRCanvas } from "../pix/QRCanvas";
-import { CountdownTimer } from "../CountdownTimer";
 
 interface PixPaymentProps {
   orderId: string;
@@ -22,6 +21,9 @@ export const PixPayment = ({ orderId, valueInCents, onSuccess, onError }: PixPay
   const [copied, setCopied] = useState(false);
   const [expiresAt, setExpiresAt] = useState<number>(0);
   const [isExpired, setIsExpired] = useState(false);
+  const [pollingInterval, setPollingInterval] = useState(7000);
+  const [failedAttempts, setFailedAttempts] = useState(0);
+  const [timeRemaining, setTimeRemaining] = useState<string>("");
 
   // Criar cobrança PIX
   const createPixCharge = useCallback(async () => {
@@ -81,13 +83,13 @@ export const PixPayment = ({ orderId, valueInCents, onSuccess, onError }: PixPay
     createPixCharge();
   }, [createPixCharge]);
 
-  // Polling do status do pagamento
+  // Polling do status do pagamento com backoff
   useEffect(() => {
     if (!pixId || paymentStatus !== "waiting" || isExpired) {
       return;
     }
 
-    console.log("[PixPayment] Iniciando polling para pixId:", pixId);
+    console.log("[PixPayment] Iniciando polling com intervalo:", pollingInterval);
 
     const pollInterval = setInterval(async () => {
       try {
@@ -97,42 +99,72 @@ export const PixPayment = ({ orderId, valueInCents, onSuccess, onError }: PixPay
 
         if (error) {
           console.error("[PixPayment] Erro ao verificar status:", error);
+          setFailedAttempts(prev => prev + 1);
           return;
         }
+
+        if (data?.ok === false) {
+          console.warn("[PixPayment] Status desconhecido, aplicando backoff");
+          setFailedAttempts(prev => prev + 1);
+          return;
+        }
+
+        // Resetar tentativas em caso de sucesso
+        setFailedAttempts(0);
 
         if (data?.status?.status === "paid") {
           console.log("[PixPayment] ✅ Pagamento confirmado!");
           setPaymentStatus("paid");
-          clearInterval(pollInterval);
           toast.success("Pagamento confirmado!");
           onSuccess?.();
         } else if (data?.status?.status === "expired" || data?.status?.status === "canceled") {
           console.log("[PixPayment] ⏰ Pagamento expirado/cancelado");
           setPaymentStatus("expired");
           setIsExpired(true);
-          clearInterval(pollInterval);
         }
       } catch (err) {
         console.error("[PixPayment] Erro no polling:", err);
+        setFailedAttempts(prev => prev + 1);
       }
-    }, 7000);
+    }, pollingInterval);
 
     return () => {
       clearInterval(pollInterval);
     };
-  }, [pixId, paymentStatus, isExpired, orderId, onSuccess]);
+  }, [pixId, paymentStatus, isExpired, orderId, onSuccess, pollingInterval]);
 
-  // Verificar expiração local via countdown
+  // Estratégia de backoff: aumentar intervalo após falhas
+  useEffect(() => {
+    if (failedAttempts >= 6) {
+      console.warn("[PixPayment] Muitas falhas, pausando polling");
+      setPollingInterval(60000); // 1 minuto
+    } else if (failedAttempts >= 3) {
+      setPollingInterval(15000); // 15s
+    } else if (failedAttempts >= 1) {
+      setPollingInterval(10000); // 10s
+    } else {
+      setPollingInterval(7000); // 7s
+    }
+  }, [failedAttempts]);
+
+  // Verificar expiração local e atualizar countdown
   useEffect(() => {
     if (!expiresAt || paymentStatus !== "waiting") return;
 
     const checkExpiration = setInterval(() => {
-      if (Date.now() >= expiresAt) {
+      const now = Date.now();
+      const remaining = expiresAt - now;
+
+      if (remaining <= 0) {
         console.log("[PixPayment] ⏰ Expirado localmente após 15min");
         setPaymentStatus("expired");
         setIsExpired(true);
+        setTimeRemaining("00:00");
         toast.error("QR Code expirado após 15 minutos");
-        clearInterval(checkExpiration);
+      } else {
+        const minutes = Math.floor(remaining / 60000);
+        const seconds = Math.floor((remaining % 60000) / 1000);
+        setTimeRemaining(`${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`);
       }
     }, 1000);
 
@@ -161,31 +193,16 @@ export const PixPayment = ({ orderId, valueInCents, onSuccess, onError }: PixPay
     );
   }
 
-  const timeLeftSeconds = expiresAt ? Math.max(0, Math.floor((expiresAt - Date.now()) / 1000)) : 0;
-  const initialMinutes = Math.floor(timeLeftSeconds / 60);
-  const initialSeconds = timeLeftSeconds % 60;
-
   return (
     <div className="w-full space-y-6">
-      {/* Countdown Timer */}
-      {paymentStatus === "waiting" && expiresAt > 0 && !isExpired && (
-        <CountdownTimer
-          initialMinutes={initialMinutes}
-          initialSeconds={initialSeconds}
-          backgroundColor="hsl(var(--primary))"
-          textColor="hsl(var(--primary-foreground))"
-          activeText="Expira em"
-          finishedText="Expirado"
-          fixedTop={false}
-        />
-      )}
-
-      {/* Status do Pagamento */}
+      {/* Status do Pagamento com Countdown Inline */}
       <div className="flex items-center justify-center gap-2 p-4 rounded-lg bg-muted">
         {paymentStatus === "waiting" && !isExpired && (
           <>
-            <Clock className="w-5 h-5 text-yellow-600 dark:text-yellow-400 animate-pulse" />
-            <span className="text-sm font-medium">Aguardando pagamento...</span>
+            <Timer className="w-5 h-5 text-blue-600 dark:text-blue-400 animate-pulse" />
+            <span className="text-sm font-medium">
+              Aguardando pagamento {timeRemaining && `— expira em ${timeRemaining}`}
+            </span>
           </>
         )}
         {paymentStatus === "paid" && (

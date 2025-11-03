@@ -34,28 +34,96 @@ serve(async (req) => {
         ? "https://api-sandbox.pushinpay.com.br/api"
         : "https://api.pushinpay.com.br/api";
 
-    // 🔧 ENDPOINT CORRETO: GET /pix/{id} (não /pix/consult/{id})
-    const endpoint = `${baseURL}/pix/${pixId}`;
-    console.log("[pushinpay-get-status] Calling:", endpoint);
-    
-    const res = await fetch(endpoint, {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-    });
+    let data: any = null;
+    let lastError = "";
 
-    console.log("[pushinpay-get-status] Response status:", res.status);
+    // Tentativa 1: GET /pix/{id}
+    try {
+      const endpoint1 = `${baseURL}/pix/${pixId}`;
+      console.log("[pushinpay-get-status] Tentativa 1:", endpoint1);
+      
+      const res1 = await fetch(endpoint1, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: "application/json",
+        },
+      });
 
-    if (!res.ok) {
-      const errText = await res.text();
-      console.error("[pushinpay-get-status] API error:", errText);
-      return withCorsError(req, `Failed to get PIX status: ${errText}`, res.status);
+      if (res1.ok) {
+        data = await res1.json();
+        console.log("[pushinpay-get-status] ✅ Sucesso com GET /pix/{id}");
+      } else {
+        lastError = await res1.text();
+        console.warn("[pushinpay-get-status] Falha GET /pix/{id}:", res1.status, lastError);
+      }
+    } catch (err) {
+      console.warn("[pushinpay-get-status] Erro GET /pix/{id}:", err);
     }
 
-    const data = await res.json();
+    // Tentativa 2: GET /pix/consult/{id}
+    if (!data) {
+      try {
+        const endpoint2 = `${baseURL}/pix/consult/${pixId}`;
+        console.log("[pushinpay-get-status] Tentativa 2:", endpoint2);
+        
+        const res2 = await fetch(endpoint2, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: "application/json",
+          },
+        });
+
+        if (res2.ok) {
+          data = await res2.json();
+          console.log("[pushinpay-get-status] ✅ Sucesso com GET /pix/consult/{id}");
+        } else {
+          lastError = await res2.text();
+          console.warn("[pushinpay-get-status] Falha GET /pix/consult/{id}:", res2.status, lastError);
+        }
+      } catch (err) {
+        console.warn("[pushinpay-get-status] Erro GET /pix/consult/{id}:", err);
+      }
+    }
+
+    // Tentativa 3: POST /pix/consult
+    if (!data) {
+      try {
+        const endpoint3 = `${baseURL}/pix/consult`;
+        console.log("[pushinpay-get-status] Tentativa 3:", endpoint3);
+        
+        const res3 = await fetch(endpoint3, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ id: pixId }),
+        });
+
+        if (res3.ok) {
+          data = await res3.json();
+          console.log("[pushinpay-get-status] ✅ Sucesso com POST /pix/consult");
+        } else {
+          lastError = await res3.text();
+          console.error("[pushinpay-get-status] Falha POST /pix/consult:", res3.status, lastError);
+        }
+      } catch (err) {
+        console.error("[pushinpay-get-status] Erro POST /pix/consult:", err);
+      }
+    }
+
+    // Se nenhum endpoint funcionou
+    if (!data) {
+      console.error("[pushinpay-get-status] ❌ Todos os endpoints falharam. Último erro:", lastError);
+      return withCorsJson(req, {
+        ok: false,
+        status: { status: "unknown" },
+        error: lastError
+      });
+    }
     console.log("[pushinpay-get-status] Response data:", { 
       id: data.id, 
       status: data.status,
