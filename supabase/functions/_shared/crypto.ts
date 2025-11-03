@@ -9,10 +9,12 @@ if (!ENCRYPTION_KEY) {
   throw new Error("ENCRYPTION_KEY não configurada nas variáveis de ambiente");
 }
 
-// Converte a chave para Uint8Array (deve ter 32 bytes para AES-256)
+// Converte a chave base64 para Uint8Array (deve ter 32 bytes para AES-256)
 function getKeyMaterial(): Uint8Array {
-  const encoder = new TextEncoder();
-  const keyData = encoder.encode(ENCRYPTION_KEY);
+  if (!ENCRYPTION_KEY) {
+    throw new Error("ENCRYPTION_KEY não configurada");
+  }
+  const keyData = Uint8Array.from(atob(ENCRYPTION_KEY), (c) => c.charCodeAt(0));
   
   // Garante que a chave tenha exatamente 32 bytes
   const key = new Uint8Array(32);
@@ -38,7 +40,7 @@ export async function encrypt(plaintext: string): Promise<string> {
     const keyMaterial = getKeyMaterial();
     const key = await crypto.subtle.importKey(
       "raw",
-      keyMaterial,
+      keyMaterial as BufferSource,
       { name: "AES-GCM" },
       false,
       ["encrypt"]
@@ -80,7 +82,7 @@ export async function decrypt(ciphertext: string): Promise<string> {
     const keyMaterial = getKeyMaterial();
     const key = await crypto.subtle.importKey(
       "raw",
-      keyMaterial,
+      keyMaterial as BufferSource,
       { name: "AES-GCM" },
       false,
       ["decrypt"]

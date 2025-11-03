@@ -54,9 +54,10 @@ serve(async (req) => {
     return withCorsJson(req, { encrypted });
   } catch (e) {
     console.error("Encrypt error:", e);
+    const errorMsg = e instanceof Error ? e.message : JSON.stringify(e);
     return withCorsError(
       req,
-      `Encrypt error: ${e?.message ?? e}`,
+      `Encrypt error: ${errorMsg}`,
       500
     );
   }

@@ -44,6 +44,7 @@ serve(async (req) => {
     return withCorsJson(req, { ok: true, status });
   } catch (e) {
     console.error("Status error:", e);
-    return withCorsError(req, `Status error: ${e?.message ?? e}`, 400);
+    const errorMsg = e instanceof Error ? e.message : JSON.stringify(e);
+    return withCorsError(req, `Status error: ${errorMsg}`, 400);
   }
 });

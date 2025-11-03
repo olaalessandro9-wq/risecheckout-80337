@@ -9,6 +9,30 @@
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.46.1';
 
+type OutboundWebhook = {
+  id: string;
+  url: string;
+  secret: string;
+  vendor_id: string;
+  active: boolean;
+  events: string[];
+};
+
+type WebhookDelivery = {
+  id: string;
+  webhook_id: string;
+  order_id: string;
+  event_type: string;
+  payload: WebhookPayload;
+  status: string;
+  attempts: number;
+  last_attempt_at: string;
+  next_retry_at: string | null;
+  response_status?: number;
+  response_body?: string;
+  outbound_webhooks?: OutboundWebhook;
+};
+
 export type WebhookPayload = {
   event: string;
   orderId: string;
@@ -118,9 +142,9 @@ export async function dispatchWebhook(
   console.log(`[Webhook] Dispatching to ${webhooks.length} webhook(s)`);
 
   // 2) Enviar para cada webhook
-  for (const webhook of webhooks) {
+  for (const webhook of (webhooks as OutboundWebhook[])) {
     try {
-      const result = await sendWebhook(webhook.url, payload, webhook.secret);
+      const result = await sendWebhook(webhook.url as string, payload, webhook.secret as string);
 
       // 3) Registrar tentativa
       const delivery = {
@@ -151,6 +175,7 @@ export async function dispatchWebhook(
 
     } catch (error) {
       console.error(`[Webhook] Failed to send to ${webhook.url}:`, error);
+      const errorMsg = error instanceof Error ? error.message : JSON.stringify(error);
 
       // Registrar falha
       const retryDelay = getNextRetryDelay(0);
@@ -164,7 +189,7 @@ export async function dispatchWebhook(
         last_attempt_at: new Date().toISOString(),
         next_retry_at: retryDelay ? new Date(Date.now() + retryDelay).toISOString() : null,
         response_status: 0,
-        response_body: error.message,
+        response_body: errorMsg,
       });
     }
   }
@@ -174,7 +199,7 @@ export async function dispatchWebhook(
  * Reprocessa webhooks pendentes de retry
  */
 export async function retryPendingWebhooks(
-  supabase: ReturnType<typeof createClient>
+  supabase: any
 ): Promise<void> {
   // Buscar deliveries pendentes de retry
   const { data: deliveries, error } = await supabase
@@ -194,12 +219,13 @@ export async function retryPendingWebhooks(
   console.log(`[Webhook Retry] Processing ${deliveries.length} pending deliveries`);
 
   for (const delivery of deliveries) {
-    const webhook = (delivery as any).outbound_webhooks;
+    const deliveryTyped = delivery as WebhookDelivery;
+    const webhook = (delivery as any).outbound_webhooks as OutboundWebhook;
 
     try {
-      const result = await sendWebhook(webhook.url, delivery.payload, webhook.secret);
+      const result = await sendWebhook(webhook.url as string, deliveryTyped.payload as WebhookPayload, webhook.secret as string);
 
-      const newAttempts = delivery.attempts + 1;
+      const newAttempts = (deliveryTyped.attempts ?? 0) + 1;
       const newStatus = result.status >= 200 && result.status < 300 ? 'delivered' : 'failed';
 
       let nextRetryAt = null;
@@ -220,14 +246,16 @@ export async function retryPendingWebhooks(
           response_status: result.status,
           response_body: result.body.substring(0, 1000),
         })
-        .eq('id', delivery.id);
+        .eq('id', deliveryTyped.id as any);
 
       console.log(`[Webhook Retry] ${webhook.url}: ${result.status} (attempt ${newAttempts})`);
 
     } catch (error) {
       console.error(`[Webhook Retry] Failed: ${webhook.url}:`, error);
+      const errorMsg = error instanceof Error ? error.message : JSON.stringify(error);
+      const deliveryTyped = delivery as WebhookDelivery;
 
-      const newAttempts = delivery.attempts + 1;
+      const newAttempts = (deliveryTyped.attempts ?? 0) + 1;
       const retryDelay = getNextRetryDelay(newAttempts);
 
       await supabase
@@ -238,9 +266,9 @@ export async function retryPendingWebhooks(
           next_retry_at: retryDelay ? new Date(Date.now() + retryDelay).toISOString() : null,
           status: retryDelay ? 'pending_retry' : 'failed',
           response_status: 0,
-          response_body: error.message,
+          response_body: errorMsg,
         })
-        .eq('id', delivery.id);
+        .eq('id', deliveryTyped.id as any);
     }
   }
 }

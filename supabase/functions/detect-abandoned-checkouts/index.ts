@@ -109,7 +109,8 @@ Deno.serve(async (req: Request) => {
 
       } catch (error) {
         console.error(`[Abandono] Erro ao processar order_id=${orderId}:`, error);
-        results.push({ orderId, status: 'error', error: error.message });
+        const errorMsg = error instanceof Error ? error.message : JSON.stringify(error);
+        results.push({ orderId, status: 'error', error: errorMsg });
       }
     }
 
@@ -126,8 +127,9 @@ Deno.serve(async (req: Request) => {
 
   } catch (error) {
     console.error('[Abandono] Erro geral:', error);
+    const errorMsg = error instanceof Error ? error.message : JSON.stringify(error);
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: errorMsg }),
       { status: 500, headers: { 'Content-Type': 'application/json' } }
     );
   }
