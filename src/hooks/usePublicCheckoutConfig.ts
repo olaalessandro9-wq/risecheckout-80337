@@ -158,6 +158,8 @@ export async function loadPublicCheckoutData(slug: string) {
       bottom_components
     `)
     .eq('slug', slug)
+    .order('created_at', { ascending: false })
+    .limit(1)
     .maybeSingle();
 
   if (checkoutError) {

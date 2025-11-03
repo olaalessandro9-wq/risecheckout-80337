@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Loader2, Copy, CheckCircle2, XCircle, Clock } from "lucide-react";
 import { createPixCharge, getPixStatus } from "@/services/pushinpay";
 import QRCode from "qrcode";
+import { normalizeDataUrl } from "@/lib/utils/normalizeDataUrl";
 
 interface PixPaymentProps {
   orderId: string;
@@ -48,51 +49,37 @@ export default function PixPayment({
         setPixId(response.pix.pix_id);
         setStatus(response.pix.status as any);
         
-        // 🔧 ESTRATÉGIA DUPLA: Tentar usar da API, mas sempre gerar local como fallback
+        // 🔧 ESTRATÉGIA: Gerar QR Code local (mais confiável)
         let qrCodeFinal = "";
         
-        // 1) Tentar usar QR Code da API
-        if (response.pix.qr_code_base64 && response.pix.qr_code_base64.length > 100) {
-          console.log("✅ API retornou QR Code base64 válido");
-          // Verificar se já tem prefixo
-          if (response.pix.qr_code_base64.startsWith('data:image/png;base64,')) {
-            qrCodeFinal = response.pix.qr_code_base64;
-            console.log("✅ QR Code da API já tem prefixo correto");
-          } else {
-            qrCodeFinal = `data:image/png;base64,${response.pix.qr_code_base64}`;
-            console.log("✅ Adicionado prefixo ao QR Code da API");
-          }
-        }
-        
-        // 2) SEMPRE gerar local também (fallback garantido)
         try {
           const generatedQR = await QRCode.toDataURL(response.pix.qr_code, {
             width: 256,
             margin: 2,
-            color: {
-              dark: '#000000',
-              light: '#FFFFFF'
-            }
+            errorCorrectionLevel: "M",
           });
           
-          // Sempre preferir o QR local (garante URL válida)
-          console.log("✅ QR Code local gerado; priorizando este como imagem principal");
+          console.log("✅ QR Code local gerado com sucesso");
           qrCodeFinal = generatedQR;
         } catch (qrError) {
           console.error("❌ Erro ao gerar QR Code localmente:", qrError);
-          if (!qrCodeFinal) {
-            // Se não gerou local e não temos da API, exibir erro
+          
+          // Fallback: tentar usar o base64 da API
+          if (response.pix.qr_code_base64) {
+            console.log("⚠️ Usando QR da API como fallback");
+            qrCodeFinal = response.pix.qr_code_base64;
+          } else {
             onError("Erro ao gerar QR Code. Tente copiar o código PIX manualmente.");
             setLoading(false);
             return;
           }
         }
         
-        // Higienizar possíveis quebras de linha/ espaços
-        qrCodeFinal = qrCodeFinal.replace(/\s+/g, '');
+        // Normalizar o QR Code (remove duplicações e garante prefixo correto)
+        qrCodeFinal = normalizeDataUrl(qrCodeFinal);
         
-        console.log("🎯 QR Code final definido (length):", qrCodeFinal.length);
-        console.log("🎯 QR Code final (preview):", qrCodeFinal.substring(0, 50));
+        console.log("🎯 QR Code final normalizado (length):", qrCodeFinal.length);
+        console.log("🎯 QR Code final (preview):", qrCodeFinal.substring(0, 60));
         setQrCodeBase64(qrCodeFinal);
         
         setLoading(false);
