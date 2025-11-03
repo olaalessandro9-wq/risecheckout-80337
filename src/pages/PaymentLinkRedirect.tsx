@@ -23,6 +23,7 @@ const PaymentLinkRedirect = () => {
   const [isInactive, setIsInactive] = useState(false);
 
   useEffect(() => {
+    console.log("[PaymentLinkRedirect] v2.6 - slug:", slug);
     const processPaymentLink = async () => {
       if (!slug) {
         setError("Link inválido");
