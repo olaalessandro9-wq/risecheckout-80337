@@ -7,7 +7,7 @@
  * - Registro de tentativas
  */
 
-import { createClient } from 'jsr:@supabase/supabase-js@2';
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.46.1';
 
 export type WebhookPayload = {
   event: string;

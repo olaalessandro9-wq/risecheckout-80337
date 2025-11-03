@@ -1,1 +1,13 @@
 project_id = "wivbtmtgpsxupfjwwovf"
+
+[functions.encrypt-token]
+verify_jwt = false
+
+[functions.pushinpay-create-pix]
+verify_jwt = false
+
+[functions.pushinpay-get-status]
+verify_jwt = false
+
+[functions.pushinpay-webhook]
+verify_jwt = true
