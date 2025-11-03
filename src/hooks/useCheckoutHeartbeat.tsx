@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { supabase } from '@/integrations/supabase/client';
 
 /**
  * Hook para enviar heartbeat de checkout
@@ -20,23 +21,11 @@ export function useCheckoutHeartbeat(sessionId: string | null, enabled: boolean 
       return;
     }
 
-    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-    if (!supabaseUrl) {
-      console.warn('[Heartbeat] VITE_SUPABASE_URL não configurado');
-      return;
-    }
-
-    const heartbeatUrl = `${supabaseUrl}/functions/v1/checkout-heartbeat`;
-
     // Função para enviar heartbeat
     const sendHeartbeat = async () => {
       try {
-        await fetch(heartbeatUrl, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ sessionId }),
+        await supabase.functions.invoke('checkout-heartbeat', {
+          body: { sessionId }
         });
         
         console.log('[Heartbeat] Sent:', sessionId);
