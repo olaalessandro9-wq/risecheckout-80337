@@ -129,7 +129,7 @@ const PublicCheckout = () => {
         .from("checkouts")
         .select("id")
         .eq("slug", slug)
-        .single();
+        .maybeSingle();
 
       if (!checkoutData) return;
 

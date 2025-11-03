@@ -45,30 +45,46 @@ export async function savePaymentMapping(orderId: string, pixId: string) {
 }
 
 export async function loadTokenEnvAndPixId(orderId: string) {
-  // Descobre seller e pixId
+  console.log("[loadTokenEnvAndPixId] Starting for orderId:", orderId);
+  
+  // 1) Buscar pixId
   const { data: map, error: e1 } = await supabase
     .from("payments_map")
     .select("pix_id")
     .eq("order_id", orderId)
     .single();
-  if (e1 || !map) throw new Error("PIX not found for order");
+    
+  console.log("[loadTokenEnvAndPixId] payments_map result:", { map, error: e1 });
+  if (e1 || !map) throw new Error(`PIX not found for order ${orderId}: ${e1?.message}`);
 
+  // 2) Buscar vendor_id
   const { data: order, error: e2 } = await supabase
     .from("orders")
     .select("vendor_id")
     .eq("id", orderId)
     .single();
-  if (e2 || !order) throw new Error("Order not found");
+    
+  console.log("[loadTokenEnvAndPixId] orders result:", { order, error: e2 });
+  if (e2 || !order) throw new Error(`Order not found ${orderId}: ${e2?.message}`);
 
+  // 3) Buscar settings
   const { data: settings, error: e3 } = await supabase
     .from("payment_gateway_settings")
     .select("token_encrypted, environment")
     .eq("user_id", order.vendor_id)
     .single();
-  if (e3 || !settings) throw new Error("Gateway settings not found");
+    
+  console.log("[loadTokenEnvAndPixId] settings result:", { 
+    hasSettings: !!settings, 
+    vendorId: order.vendor_id,
+    error: e3 
+  });
+  if (e3 || !settings) throw new Error(`Gateway settings not found for vendor ${order.vendor_id}: ${e3?.message}`);
 
-  // Descriptografar token
+  // 4) Descriptografar token
+  console.log("[loadTokenEnvAndPixId] Decrypting token...");
   const token = await decrypt(settings.token_encrypted);
+  console.log("[loadTokenEnvAndPixId] Token decrypted successfully");
 
   return {
     token,

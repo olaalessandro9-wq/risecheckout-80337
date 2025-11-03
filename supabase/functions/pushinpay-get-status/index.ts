@@ -19,9 +19,15 @@ serve(async (req) => {
   try {
     const { orderId } = await req.json();
 
+    if (!orderId) {
+      return withCorsError(req, "orderId is required", 400);
+    }
+
+    console.log("[pushinpay-get-status] Checking status for orderId:", orderId);
+    
     const { token, environment, pixId } = await loadTokenEnvAndPixId(orderId);
     
-    console.log("[pushinpay-get-status] Checking status:", { orderId, environment, pixId });
+    console.log("[pushinpay-get-status] Loaded data:", { environment, pixId });
     
     const baseURL =
       environment === "sandbox"
@@ -46,8 +52,8 @@ serve(async (req) => {
 
     return withCorsJson(req, { ok: true, status });
   } catch (e) {
-    console.error("Status error:", e);
+    console.error("[pushinpay-get-status] Error:", e);
     const errorMsg = e instanceof Error ? e.message : JSON.stringify(e);
-    return withCorsError(req, `Status error: ${errorMsg}`, 400);
+    return withCorsError(req, `Status error: ${errorMsg}`, 500);
   }
 });
