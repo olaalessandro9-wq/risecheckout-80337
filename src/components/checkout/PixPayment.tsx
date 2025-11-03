@@ -51,6 +51,7 @@ export default function PixPayment({
         // 🔧 FALLBACK: Gerar QR Code localmente se não vier da API
         if (response.pix.qr_code_base64 && response.pix.qr_code_base64.length > 0) {
           console.log("✅ Usando QR Code base64 da API PushinPay");
+          // ✅ Usar direto, já vem com o prefixo data:image/png;base64,
           setQrCodeBase64(response.pix.qr_code_base64);
         } else {
           console.log("⚠️ QR Code base64 vazio, gerando localmente...");
@@ -63,9 +64,8 @@ export default function PixPayment({
                 light: '#FFFFFF'
               }
             });
-            // Remove o prefixo "data:image/png;base64," que já vem do QRCode.toDataURL
-            const base64Only = generatedQR.replace(/^data:image\/png;base64,/, '');
-            setQrCodeBase64(base64Only);
+            // ✅ QRCode.toDataURL já retorna com prefixo, usar direto
+            setQrCodeBase64(generatedQR);
             console.log("✅ QR Code gerado localmente com sucesso");
           } catch (qrError) {
             console.error("❌ Erro ao gerar QR Code localmente:", qrError);
@@ -170,7 +170,7 @@ export default function PixPayment({
           <div className="bg-white p-4 rounded-lg border-2 border-border">
             {qrCodeBase64.length > 0 ? (
               <img
-                src={`data:image/png;base64,${qrCodeBase64}`}
+                src={qrCodeBase64}
                 alt="QR Code PIX"
                 className="w-64 h-64"
                 onError={(e) => {
