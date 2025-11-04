@@ -50,7 +50,8 @@ export async function loadPublicCheckoutData(slug: string) {
         button_text_color,
         components,
         top_components,
-        bottom_components
+        bottom_components,
+        status
       `)
       .eq('id', checkoutId)
       .maybeSingle();
@@ -61,6 +62,11 @@ export async function loadPublicCheckoutData(slug: string) {
 
     if (!checkoutData) {
       throw new Error('Checkout não encontrado');
+    }
+
+    // Validar se checkout está deletado
+    if (checkoutData.status === 'deleted') {
+      throw new Error('Este checkout não está mais disponível');
     }
 
     // Buscar dados da oferta
@@ -98,6 +104,11 @@ export async function loadPublicCheckoutData(slug: string) {
 
     if (!productData) {
       throw new Error('Produto não encontrado');
+    }
+
+    // Validar status do produto
+    if (productData.status === 'deleted' || productData.status === 'blocked') {
+      throw new Error('Este produto não está mais disponível');
     }
 
     // TODO: Campo required_fields será implementado no futuro
@@ -155,7 +166,8 @@ export async function loadPublicCheckoutData(slug: string) {
       button_text_color,
       components,
       top_components,
-      bottom_components
+      bottom_components,
+      status
     `)
     .eq('slug', slug)
     .order('created_at', { ascending: false })
@@ -168,6 +180,11 @@ export async function loadPublicCheckoutData(slug: string) {
 
   if (!checkoutData) {
     throw new Error('Link de pagamento não encontrado');
+  }
+
+  // Validar se checkout está deletado
+  if (checkoutData.status === 'deleted') {
+    throw new Error('Este checkout não está mais disponível');
   }
 
   // Buscar dados do produto
@@ -190,6 +207,11 @@ export async function loadPublicCheckoutData(slug: string) {
 
   if (!productData) {
     throw new Error('Produto não encontrado');
+  }
+
+  // Validar status do produto
+  if (productData.status === 'deleted' || productData.status === 'blocked') {
+    throw new Error('Este produto não está mais disponível');
   }
 
   // TODO: Campo required_fields será implementado no futuro

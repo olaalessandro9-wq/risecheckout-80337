@@ -288,6 +288,7 @@ export type Database = {
           selected_payment_color: string | null
           seller_name: string | null
           slug: string | null
+          status: string | null
           text_color: string | null
           top_components: Json | null
           updated_at: string | null
@@ -312,6 +313,7 @@ export type Database = {
           selected_payment_color?: string | null
           seller_name?: string | null
           slug?: string | null
+          status?: string | null
           text_color?: string | null
           top_components?: Json | null
           updated_at?: string | null
@@ -336,6 +338,7 @@ export type Database = {
           selected_payment_color?: string | null
           seller_name?: string | null
           slug?: string | null
+          status?: string | null
           text_color?: string | null
           top_components?: Json | null
           updated_at?: string | null

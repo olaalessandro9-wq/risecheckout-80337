@@ -241,6 +241,7 @@ const ProductEditInner = () => {
           )
         `)
         .eq("product_id", productId)
+        .neq("status", "deleted")
         .order("created_at", { ascending: false });
       
       if (error) throw error;

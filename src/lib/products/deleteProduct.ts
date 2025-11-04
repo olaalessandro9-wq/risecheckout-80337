@@ -32,19 +32,59 @@ export async function deleteProductCascade(supabase: any, rawProductId: string |
   // 2) Decidir estratégia: soft delete ou hard delete
   if (count && count > 0) {
     // SOFT DELETE: Produto tem pedidos vinculados
-    console.log(`[deleteProductCascade] Product ${productId} has ${count} order(s). Performing SOFT DELETE.`);
+    console.log(`[deleteProductCascade] Product ${productId} has ${count} order(s). Performing SOFT DELETE with cleanup.`);
     
-    const { error } = await supabase
+    // 2.1. Soft delete do produto
+    const { error: productError } = await supabase
       .from('products')
       .update({ status: 'deleted' })
       .eq('id', productId);
     
-    if (error) {
-      console.error('[deleteProductCascade] Soft delete failed:', error);
-      throw new Error(`Falha ao desativar produto: ${error.message}`);
+    if (productError) {
+      console.error('[deleteProductCascade] Product soft delete failed:', productError);
+      throw new Error(`Falha ao desativar produto: ${productError.message}`);
     }
+
+    // 2.2. Soft delete de TODOS os checkouts do produto (preserva visitas)
+    const { error: checkoutsError } = await supabase
+      .from('checkouts')
+      .update({ status: 'deleted' })
+      .eq('product_id', productId);
     
-    console.log('[deleteProductCascade] ✅ Soft delete successful. Product hidden from UI but preserved for order history.');
+    if (checkoutsError) {
+      console.error('[deleteProductCascade] Checkouts soft delete failed:', checkoutsError);
+      throw new Error(`Erro ao desativar checkouts: ${checkoutsError.message}`);
+    }
+    console.log('[deleteProductCascade] ✅ Checkouts marked as deleted (visits preserved)');
+
+    // 2.3. Buscar todas as offers do produto
+    const { data: offers, error: offersError } = await supabase
+      .from('offers')
+      .select('id')
+      .eq('product_id', productId);
+
+    if (offersError) {
+      console.error('[deleteProductCascade] Error fetching offers:', offersError);
+      throw new Error(`Erro ao buscar ofertas: ${offersError.message}`);
+    }
+
+    // 2.4. Desativar payment_links (não deletar, apenas marcar como inactive)
+    if (offers && offers.length > 0) {
+      const offerIds = offers.map(o => o.id);
+      
+      const { error: linksError } = await supabase
+        .from('payment_links')
+        .update({ status: 'inactive' })
+        .in('offer_id', offerIds);
+      
+      if (linksError) {
+        console.error('[deleteProductCascade] Payment links deactivation failed:', linksError);
+        throw new Error(`Erro ao desativar payment links: ${linksError.message}`);
+      }
+      console.log(`[deleteProductCascade] ✅ Deactivated ${offers.length} payment link(s)`);
+    }
+
+    console.log('[deleteProductCascade] ✅ Soft delete successful. Product, checkouts, and links deactivated. Orders and visits preserved.');
     
   } else {
     // HARD DELETE: Produto NÃO tem pedidos vinculados
