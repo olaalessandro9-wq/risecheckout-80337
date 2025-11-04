@@ -120,7 +120,7 @@ export function Sidebar() {
                       rel="noopener noreferrer"
                       className={rowClass(undefined, isCollapsed)}
                     >
-                      <Icon className={isCollapsed ? "h-5 w-5" : "h-4 w-4"} />
+                      <Icon className={isCollapsed ? "h-5 w-5 shrink-0" : "h-4 w-4"} />
                       {!isCollapsed && <span>{it.label}</span>}
                     </a>
                   ) : (
@@ -128,7 +128,7 @@ export function Sidebar() {
                       to={it.to!} 
                       className={({ isActive }) => rowClass(isActive, isCollapsed)}
                     >
-                      <Icon className={isCollapsed ? "h-5 w-5" : "h-4 w-4"} />
+                      <Icon className={isCollapsed ? "h-5 w-5 shrink-0" : "h-4 w-4"} />
                       {!isCollapsed && <span>{it.label}</span>}
                     </NavLink>
                   );
@@ -165,7 +165,7 @@ export function Sidebar() {
 function rowClass(active?: boolean, collapsed?: boolean) {
   return clsx(
     "group flex items-center rounded-md text-sm transition",
-    collapsed ? "justify-center px-4 py-3 w-full" : "gap-3 px-2 py-2",
+    collapsed ? "justify-center px-4 py-3" : "gap-3 px-2 py-2",
     active
       ? "bg-muted text-foreground font-medium"
       : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
