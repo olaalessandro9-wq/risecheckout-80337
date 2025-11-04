@@ -186,8 +186,16 @@ export function DateRangeFilter({
           <DropdownMenuItem 
             onClick={() => {
               console.log("🔓 Opening calendar");
-              setLeftDate(undefined);
-              setRightDate(undefined);
+              // Se tem datas salvas, restaura elas; senão limpa
+              if (savedDateRange?.from && savedDateRange?.to) {
+                setLeftDate(savedDateRange.from);
+                setRightDate(savedDateRange.to);
+                setLeftMonth(startOfMonth(savedDateRange.from));
+                setRightMonth(startOfMonth(savedDateRange.to));
+              } else {
+                setLeftDate(undefined);
+                setRightDate(undefined);
+              }
               setIsCalendarOpen(true);
               setIsDropdownOpen(false);
             }}
