@@ -101,16 +101,16 @@ export function Sidebar() {
       <TooltipProvider delayDuration={300}>
         <nav className={clsx(
           "scrollbar-none flex-1 overflow-y-auto py-4 transition-all",
-          isCollapsed ? "px-1" : "px-2"
+          isCollapsed ? "px-2" : "px-2"
         )}>
           {NAV_SECTIONS.map((section) => (
-            <div key={section.title} className="mb-5">
+            <div key={section.title} className={clsx(isCollapsed ? "mb-4" : "mb-5")}>
               {!isCollapsed && (
                 <div className="px-2 pb-2 text-[11px] font-medium uppercase tracking-wide text-muted-foreground/80">
                   {section.title}
                 </div>
               )}
-              <ul className="space-y-1">
+              <ul className={clsx(isCollapsed ? "space-y-1.5" : "space-y-1")}>
                 {section.items.map((it) => {
                   const Icon = it.icon;
                   const content = it.external ? (
@@ -165,7 +165,7 @@ export function Sidebar() {
 function rowClass(active?: boolean, collapsed?: boolean) {
   return clsx(
     "group flex items-center rounded-md text-sm transition",
-    collapsed ? "justify-center px-3 py-2.5" : "gap-3 px-2 py-2",
+    collapsed ? "justify-center px-4 py-3 w-full" : "gap-3 px-2 py-2",
     active
       ? "bg-muted text-foreground font-medium"
       : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
