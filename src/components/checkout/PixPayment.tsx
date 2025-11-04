@@ -93,16 +93,29 @@ export const PixPayment = ({ orderId, valueInCents, onSuccess, onError }: PixPay
     console.log("[PixPayment] v2.7 montado");
   }, []);
 
-  // Polling do status do pagamento com backoff
+  // Polling do status do pagamento (a cada 5s, conforme recomendação PushinPay)
   useEffect(() => {
-    if (!pixId || paymentStatus !== "waiting" || isExpired || pollingInterval) {
+    if (!pixId || paymentStatus !== "waiting" || isExpired) {
       return;
     }
 
-    let currentInterval = 7000; // Começar com 7s
-    console.log("[PixPayment] Iniciando polling com intervalo:", currentInterval);
+    console.log("[PixPayment] Iniciando polling a cada 5s (documentação PushinPay)");
+    let attemptCount = 0;
+    const maxAttempts = 30; // 30 tentativas × 5s = 2.5 minutos
 
     const poll = async () => {
+      attemptCount++;
+      console.log(`[PixPayment] Polling tentativa ${attemptCount}/${maxAttempts}`);
+
+      if (attemptCount > maxAttempts) {
+        console.warn("[PixPayment] Limite de tentativas atingido, parando polling");
+        if (pollingInterval) {
+          clearInterval(pollingInterval);
+          setPollingInterval(null);
+        }
+        return;
+      }
+
       try {
         const { data, error } = await supabase.functions.invoke("pushinpay-get-status", {
           body: { orderId },
@@ -110,24 +123,20 @@ export const PixPayment = ({ orderId, valueInCents, onSuccess, onError }: PixPay
 
         if (error) {
           console.error("[PixPayment] Erro ao verificar status:", error);
-          setFailedAttempts(prev => {
-            const newAttempts = prev + 1;
-            if (newAttempts >= 6) currentInterval = 60000; // 1 min
-            else if (newAttempts >= 3) currentInterval = 15000; // 15s
-            else if (newAttempts >= 1) currentInterval = 10000; // 10s
-            return newAttempts;
-          });
+          setFailedAttempts(prev => prev + 1);
           return;
         }
 
         if (data?.ok === false) {
-          console.warn("[PixPayment] Status desconhecido, aplicando backoff");
+          console.warn("[PixPayment] Status desconhecido retornado");
           setFailedAttempts(prev => prev + 1);
           return;
         }
 
         // Resetar tentativas em caso de sucesso
         setFailedAttempts(0);
+
+        console.log("[PixPayment] Status recebido:", data?.status?.status);
 
         if (data?.status?.status === "paid") {
           console.log("[PixPayment] ✅ Pagamento confirmado!");
@@ -153,7 +162,8 @@ export const PixPayment = ({ orderId, valueInCents, onSuccess, onError }: PixPay
       }
     };
 
-    const interval = setInterval(poll, currentInterval);
+    // Polling a cada 5 segundos (conforme documentação PushinPay)
+    const interval = setInterval(poll, 5000);
     setPollingInterval(interval);
 
     return () => {

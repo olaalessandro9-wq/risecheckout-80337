@@ -98,6 +98,12 @@ export async function updateOrderStatusFromGateway(
   payload: any
 ) {
   const normalized = payload?.status ?? payload?.data?.status ?? "created";
+  console.log("[updateOrderStatusFromGateway] Status recebido do gateway:", {
+    orderId,
+    rawStatus: normalized,
+    payload: JSON.stringify(payload).substring(0, 200)
+  });
+
   const statusMap: Record<string, string> = {
     created: "PENDING",
     paid: "PAID",
@@ -105,12 +111,26 @@ export async function updateOrderStatusFromGateway(
     canceled: "CANCELED",
   };
   const newStatus = statusMap[normalized] ?? "PENDING";
+  
+  console.log("[updateOrderStatusFromGateway] Mapeamento de status:", {
+    gatewayStatus: normalized,
+    dbStatus: newStatus
+  });
 
   const { error } = await supabase
     .from("orders")
     .update({ status: newStatus })
     .eq("id", orderId);
-  if (error) throw error;
+
+  if (error) {
+    console.error("[updateOrderStatusFromGateway] Erro ao atualizar status:", error);
+    throw error;
+  }
+
+  console.log("[updateOrderStatusFromGateway] ✅ Status atualizado com sucesso:", {
+    orderId,
+    newStatus
+  });
 }
 
 export async function findOrderByPixId(pixId: string) {

@@ -36,64 +36,78 @@ serve(async (req) => {
 
     let data: any = null;
     let lastError = "";
+    let endpoint = "";
 
-    // Tentativa 1: GET /pix/{id}
+    // Tentativa 1: GET /transactions/{id} (OFICIAL - Documentação PushinPay)
     try {
-      const endpoint1 = `${baseURL}/pix/${pixId}`;
-      console.log("[pushinpay-get-status] Tentativa 1:", endpoint1);
+      endpoint = `${baseURL}/transactions/${pixId}`;
+      console.log("[pushinpay-get-status] Tentativa 1 (OFICIAL):", endpoint);
       
-      const res1 = await fetch(endpoint1, {
+      const res1 = await fetch(endpoint, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
           Accept: "application/json",
+          "Content-Type": "application/json",
         },
       });
 
       if (res1.ok) {
-        data = await res1.json();
-        console.log("[pushinpay-get-status] ✅ Sucesso com GET /pix/{id}");
+        const responseData = await res1.json();
+        // Documentação: 404 retorna array vazio []
+        if (Array.isArray(responseData) && responseData.length === 0) {
+          console.warn("[pushinpay-get-status] 404 - PIX não encontrado (array vazio)");
+          lastError = "PIX não encontrado";
+        } else {
+          data = responseData;
+          console.log("[pushinpay-get-status] ✅ Sucesso com GET /transactions/{id}", {
+            status: data.status,
+            id: data.id
+          });
+        }
       } else {
         lastError = await res1.text();
-        console.warn("[pushinpay-get-status] Falha GET /pix/{id}:", res1.status, lastError);
+        console.warn("[pushinpay-get-status] Falha GET /transactions/{id}:", res1.status, lastError);
       }
     } catch (err) {
-      console.warn("[pushinpay-get-status] Erro GET /pix/{id}:", err);
+      console.warn("[pushinpay-get-status] Erro GET /transactions/{id}:", err);
+      lastError = String(err);
     }
 
-    // Tentativa 2: GET /pix/consult/{id}
+    // Tentativa 2: GET /pix/{id} (Fallback)
     if (!data) {
       try {
-        const endpoint2 = `${baseURL}/pix/consult/${pixId}`;
-        console.log("[pushinpay-get-status] Tentativa 2:", endpoint2);
+        endpoint = `${baseURL}/pix/${pixId}`;
+        console.log("[pushinpay-get-status] Tentativa 2 (Fallback):", endpoint);
         
-        const res2 = await fetch(endpoint2, {
+        const res2 = await fetch(endpoint, {
           method: "GET",
           headers: {
             Authorization: `Bearer ${token}`,
             Accept: "application/json",
+            "Content-Type": "application/json",
           },
         });
 
         if (res2.ok) {
           data = await res2.json();
-          console.log("[pushinpay-get-status] ✅ Sucesso com GET /pix/consult/{id}");
+          console.log("[pushinpay-get-status] ✅ Sucesso com GET /pix/{id}");
         } else {
           lastError = await res2.text();
-          console.warn("[pushinpay-get-status] Falha GET /pix/consult/{id}:", res2.status, lastError);
+          console.warn("[pushinpay-get-status] Falha GET /pix/{id}:", res2.status, lastError);
         }
       } catch (err) {
-        console.warn("[pushinpay-get-status] Erro GET /pix/consult/{id}:", err);
+        console.warn("[pushinpay-get-status] Erro GET /pix/{id}:", err);
       }
     }
 
-    // Tentativa 3: POST /pix/consult
+    // Tentativa 3: POST /pix/consult (Fallback)
     if (!data) {
       try {
-        const endpoint3 = `${baseURL}/pix/consult`;
-        console.log("[pushinpay-get-status] Tentativa 3:", endpoint3);
+        endpoint = `${baseURL}/pix/consult`;
+        console.log("[pushinpay-get-status] Tentativa 3 (Fallback):", endpoint);
         
-        const res3 = await fetch(endpoint3, {
+        const res3 = await fetch(endpoint, {
           method: "POST",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -124,14 +138,17 @@ serve(async (req) => {
         error: lastError
       });
     }
-    console.log("[pushinpay-get-status] Response data:", { 
+
+    console.log("[pushinpay-get-status] Response data recebida:", { 
       id: data.id, 
       status: data.status,
       hasPixDetails: !!data.pix_details 
     });
 
     // Atualizar status no banco
+    console.log("[pushinpay-get-status] Atualizando status no banco...");
     await updateOrderStatusFromGateway(orderId, data);
+    console.log("[pushinpay-get-status] Status atualizado com sucesso");
 
     // Resposta simplificada
     return withCorsJson(req, {
