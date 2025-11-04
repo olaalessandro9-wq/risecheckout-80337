@@ -1,5 +1,8 @@
 project_id = "wivbtmtgpsxupfjwwovf"
 
+[functions.create-order]
+verify_jwt = false
+
 [functions.encrypt-token]
 verify_jwt = false
 

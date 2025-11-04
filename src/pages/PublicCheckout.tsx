@@ -199,29 +199,32 @@ const PublicCheckout = () => {
       const serviceFee = 99; // R$ 0,99 em centavos
       const totalCents = productPrice + serviceFee;
 
-      // 3. Criar pedido no banco
-      const { data: newOrder, error: orderError } = await supabase
-        .from("orders")
-        .insert({
-          vendor_id: productData.user_id,
-          product_id: checkout!.product.id,
-          customer_email: formData.email,
-          customer_name: formData.name,
-          amount_cents: totalCents,
-          currency: "BRL",
-          payment_method: selectedPayment,
-          gateway: "pushinpay",
-          status: "PENDING",
-        })
-        .select()
-        .single();
+      // 3. Criar pedido via Edge Function (seguro - bypassa RLS)
+      const { data: orderResponse, error: orderError } = await supabase.functions.invoke(
+        "create-order",
+        {
+          body: {
+            vendor_id: productData.user_id,
+            product_id: checkout!.product.id,
+            customer_email: formData.email,
+            customer_name: formData.name,
+            amount_cents: totalCents,
+            currency: "BRL",
+            payment_method: selectedPayment,
+            gateway: "pushinpay",
+            status: "PENDING",
+          },
+        }
+      );
 
-      if (orderError || !newOrder) {
-        throw new Error("Erro ao criar pedido: " + (orderError?.message || ""));
+      if (orderError || !orderResponse?.ok || !orderResponse?.order_id) {
+        throw new Error(
+          "Erro ao criar pedido: " + (orderError?.message || orderResponse?.error || "Erro desconhecido")
+        );
       }
 
       // 4. Exibir componente PixPayment
-      setOrderId(newOrder.id);
+      setOrderId(orderResponse.order_id);
       setShowPixPayment(true);
       toast.success("Gerando PIX...");
 
