@@ -41,13 +41,7 @@ export function DateRangeFilter({
   );
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Mantém dropdown aberto quando calendário estiver aberto
-  useEffect(() => {
-    if (isCalendarOpen) {
-      console.log('📅 Calendar opened, forcing dropdown open');
-      setIsDropdownOpen(true);
-    }
-  }, [isCalendarOpen]);
+  // Não precisa mais forçar dropdown aberto, arquitetura separada
 
   // Limpa timeout quando componente desmonta
   useEffect(() => {
@@ -120,105 +114,100 @@ export function DateRangeFilter({
   };
 
   return (
-    <DropdownMenu 
-      open={isDropdownOpen} 
-      onOpenChange={(open) => {
-        console.log('🔽 Dropdown onOpenChange:', open, 'calendar:', isCalendarOpen);
-        // Permite abrir sempre, mas só fecha se calendário estiver fechado
-        if (open) {
-          setIsDropdownOpen(true);
-        } else if (!isCalendarOpen) {
-          setIsDropdownOpen(false);
-        }
-      }}
-    >
-      <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="sm" className="gap-2 min-w-[200px] justify-between">
-          <span className="flex items-center gap-2">
-            <Calendar className="w-4 h-4" />
-            {getPresetLabel()}
-          </span>
-          <ChevronDown className="w-4 h-4 opacity-50" />
-        </Button>
-      </DropdownMenuTrigger>
+    <>
+      <DropdownMenu 
+        open={isDropdownOpen} 
+        onOpenChange={(open) => {
+          console.log('🔽 Dropdown onOpenChange:', open);
+          setIsDropdownOpen(open);
+        }}
+      >
+        <DropdownMenuTrigger asChild>
+          <Button variant="outline" size="sm" className="gap-2 min-w-[200px] justify-between">
+            <span className="flex items-center gap-2">
+              <Calendar className="w-4 h-4" />
+              {getPresetLabel()}
+            </span>
+            <ChevronDown className="w-4 h-4 opacity-50" />
+          </Button>
+        </DropdownMenuTrigger>
 
-      <DropdownMenuContent align="end" className="w-[200px]">
-        {presets.map((preset) => (
-          <DropdownMenuItem
-            key={preset.value}
-            onClick={() => handlePresetClick(preset.value)}
-            className={selectedPreset === preset.value ? "bg-accent" : ""}
+        <DropdownMenuContent align="end" className="w-[200px]">
+          {presets.map((preset) => (
+            <DropdownMenuItem
+              key={preset.value}
+              onClick={() => handlePresetClick(preset.value)}
+              className={selectedPreset === preset.value ? "bg-accent" : ""}
+            >
+              {preset.label}
+            </DropdownMenuItem>
+          ))}
+
+          <DropdownMenuSeparator />
+
+          <DropdownMenuItem 
+            onClick={() => {
+              console.log('🔓 Opening calendar');
+              setTempDateRange(savedDateRange);
+              setIsCalendarOpen(true);
+              setIsDropdownOpen(false);
+            }}
           >
-            {preset.label}
+            <Calendar className="w-4 h-4 mr-2" />
+            Período personalizado
           </DropdownMenuItem>
-        ))}
+        </DropdownMenuContent>
+      </DropdownMenu>
 
-        <DropdownMenuSeparator />
-
-        <DropdownMenuItem 
-          onSelect={(e) => e.preventDefault()}
-          onClick={() => {
-            setTempDateRange(savedDateRange); // Carrega seleção atual
-            setIsCalendarOpen(true);
+      <Popover 
+        open={isCalendarOpen} 
+        onOpenChange={handleCalendarOpenChange}
+        modal={false}
+      >
+        <PopoverContent 
+          className="w-auto p-0 z-50" 
+          align="end"
+          onInteractOutside={(e) => {
+            const target = e.target as HTMLElement;
+            if (target.closest('button')) {
+              e.preventDefault();
+            }
           }}
         >
-          <Popover 
-            open={isCalendarOpen} 
-            onOpenChange={handleCalendarOpenChange}
-            modal={true}
-          >
-            <PopoverTrigger asChild>
-              <div className="w-full flex items-center gap-2 cursor-pointer">
-                <Calendar className="w-4 h-4" />
-                Período personalizado
-              </div>
-            </PopoverTrigger>
-            <PopoverContent 
-              className="w-auto p-0" 
-              align="end" 
-              side="right"
-              onOpenAutoFocus={(e) => e.preventDefault()}
-              onInteractOutside={(e) => {
-                // Só previne se clicar dentro do próprio calendário
-                const target = e.target as HTMLElement;
-                const isClickInsideCalendar = target.closest('.rdp') || target.closest('[role="dialog"]');
-                
-                if (isClickInsideCalendar) {
-                  e.preventDefault();
-                }
+          <CalendarComponent
+            mode="range"
+            selected={tempDateRange}
+            onSelect={handleDateSelect}
+            numberOfMonths={2}
+            locale={ptBR}
+            fixedWeeks
+            className={cn("p-3 pointer-events-auto")}
+          />
+          
+          <div className="flex items-center justify-end gap-2 p-3 border-t">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleCancel();
               }}
             >
-              <CalendarComponent
-                mode="range"
-                selected={tempDateRange}
-                onSelect={handleDateSelect}
-                numberOfMonths={2}
-                locale={ptBR}
-                fixedWeeks
-                className={cn("p-3 pointer-events-auto")}
-              />
-              
-              {/* Botões de confirmação */}
-              <div className="flex items-center justify-end gap-2 p-3 border-t">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleCancel}
-                >
-                  Cancelar
-                </Button>
-                <Button
-                  size="sm"
-                  onClick={handleApply}
-                  disabled={!tempDateRange?.from || !tempDateRange?.to}
-                >
-                  Aplicar
-                </Button>
-              </div>
-            </PopoverContent>
-          </Popover>
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+              Cancelar
+            </Button>
+            <Button
+              size="sm"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleApply();
+              }}
+              disabled={!tempDateRange?.from || !tempDateRange?.to}
+            >
+              Aplicar
+            </Button>
+          </div>
+        </PopoverContent>
+      </Popover>
+    </>
   );
 }
