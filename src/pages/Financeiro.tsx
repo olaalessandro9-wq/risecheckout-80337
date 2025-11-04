@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { Loader2, Check, AlertCircle } from "lucide-react";
+import { Loader2, Check, AlertCircle, ChevronDown, Eye, EyeOff } from "lucide-react";
+import { Collapsible, CollapsibleTrigger, CollapsibleContent } from "@/components/ui/collapsible";
 import {
   savePushinPaySettings,
   getPushinPaySettings,
@@ -14,6 +15,7 @@ export default function Financeiro() {
   const [loading, setLoading] = useState(false);
   const [loadingData, setLoadingData] = useState(true);
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
+  const [isUpdateSectionOpen, setIsUpdateSectionOpen] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -94,12 +96,44 @@ export default function Financeiro() {
       <div className="rounded-lg border border-border bg-card p-6 space-y-4">
         <div className="flex items-center gap-2">
           <h2 className="text-lg font-medium">Integração PIX - PushinPay</h2>
+          {hasExistingToken && (
+            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
+              <Check className="h-3 w-3" />
+              CONECTADO
+            </span>
+          )}
         </div>
 
         <p className="text-sm text-muted-foreground">
           Conecte sua conta PushinPay informando o <strong>API Token</strong>.
           Você pode solicitar acesso ao <em>Sandbox</em> direto no suporte deles.
         </p>
+
+        {hasExistingToken && (
+          <div className="rounded-lg border-2 border-green-500 bg-green-50 dark:bg-green-900/20 p-4">
+            <div className="flex items-start gap-3">
+              <div className="flex-shrink-0 mt-0.5">
+                <Check className="h-5 w-5 text-green-600 dark:text-green-400" />
+              </div>
+              <div className="flex-1">
+                <h4 className="text-sm font-semibold text-green-900 dark:text-green-100 mb-1">
+                  ✅ Integração PushinPay Ativa
+                </h4>
+                <p className="text-xs text-green-800 dark:text-green-200 mb-3">
+                  Seu checkout está conectado e processando pagamentos PIX via PushinPay.
+                </p>
+                <div className="flex flex-wrap items-center gap-4 text-xs">
+                  <span className="text-green-700 dark:text-green-300">
+                    <strong>Ambiente:</strong> {environment === 'sandbox' ? 'Sandbox (Testes)' : 'Produção'}
+                  </span>
+                  <span className="text-green-700 dark:text-green-300">
+                    <strong>Token:</strong> Configurado
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Alertas Contextuais */}
         {environment === 'production' && (
@@ -132,43 +166,90 @@ export default function Financeiro() {
           </div>
         )}
 
-        <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium mb-2">API Token</label>
-            <div className="relative">
-              <input
-                type={showToken ? "text" : "password"}
-                value={apiToken}
-                onChange={(e) => setApiToken(e.target.value)}
-                className="w-full rounded-md border border-input bg-background px-3 py-2 pr-20 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-                placeholder={hasExistingToken ? "Token configurado (deixe vazio para manter)" : "Bearer token da PushinPay"}
-              />
-              <button
-                type="button"
-                onClick={() => setShowToken(!showToken)}
-                className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground hover:text-foreground"
-              >
-                {showToken ? "Ocultar" : "Mostrar"}
-              </button>
-            </div>
-            {hasExistingToken && (
-              <p className="text-xs text-muted-foreground mt-1">
-                Token já configurado. Deixe em branco para manter o atual ou informe um novo para atualizar.
-              </p>
-            )}
-          </div>
+        {hasExistingToken ? (
+          <Collapsible open={isUpdateSectionOpen} onOpenChange={setIsUpdateSectionOpen} className="space-y-2">
+            <CollapsibleTrigger className="flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors w-full">
+              <ChevronDown className={`h-4 w-4 transition-transform ${isUpdateSectionOpen ? 'rotate-180' : ''}`} />
+              <span>🔧 Atualizar token ou ambiente</span>
+              <span className="text-xs opacity-60">(clique para expandir)</span>
+            </CollapsibleTrigger>
+            <CollapsibleContent className="space-y-4 pt-4 pl-6 border-l-2 border-muted">
+              <div>
+                <label className="block text-sm font-medium mb-2">API Token</label>
+                <div className="relative">
+                  <input
+                    type={showToken ? "text" : "password"}
+                    value={apiToken}
+                    onChange={(e) => setApiToken(e.target.value)}
+                    className="w-full rounded-md border border-input bg-background px-3 py-2 pr-20 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                    placeholder="••••••••••••••••"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowToken(!showToken)}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-muted-foreground hover:text-foreground"
+                  >
+                    {showToken ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
+                <div className="flex items-start gap-2 mt-2 p-2 rounded-md bg-blue-50 dark:bg-blue-900/20">
+                  <AlertCircle className="h-4 w-4 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
+                  <p className="text-xs text-blue-800 dark:text-blue-200">
+                    Token já está configurado e funcionando. Deixe em branco para manter o atual ou informe um novo para atualizar.
+                  </p>
+                </div>
+              </div>
 
-          <div>
-            <label className="block text-sm font-medium mb-2">Ambiente</label>
-            <select
-              value={environment}
-              onChange={(e) => setEnvironment(e.target.value as PushinPayEnvironment)}
-              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-            >
-              <option value="sandbox">Sandbox (testes)</option>
-              <option value="production">Produção</option>
-            </select>
+              <div>
+                <label className="block text-sm font-medium mb-2">Ambiente</label>
+                <select
+                  value={environment}
+                  onChange={(e) => setEnvironment(e.target.value as PushinPayEnvironment)}
+                  className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                >
+                  <option value="sandbox">Sandbox (testes)</option>
+                  <option value="production">Produção</option>
+                </select>
+              </div>
+            </CollapsibleContent>
+          </Collapsible>
+        ) : (
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium mb-2">API Token</label>
+              <div className="relative">
+                <input
+                  type={showToken ? "text" : "password"}
+                  value={apiToken}
+                  onChange={(e) => setApiToken(e.target.value)}
+                  className="w-full rounded-md border border-input bg-background px-3 py-2 pr-20 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                  placeholder="Bearer token da PushinPay"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowToken(!showToken)}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-muted-foreground hover:text-foreground"
+                >
+                  {showToken ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2">Ambiente</label>
+              <select
+                value={environment}
+                onChange={(e) => setEnvironment(e.target.value as PushinPayEnvironment)}
+                className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+              >
+                <option value="sandbox">Sandbox (testes)</option>
+                <option value="production">Produção</option>
+              </select>
+            </div>
           </div>
+        )}
+
+        <div className="space-y-4">
 
           {message && (
             <div
