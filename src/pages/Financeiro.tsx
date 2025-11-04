@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
-import { Loader2, Check, AlertCircle, Copy } from "lucide-react";
+import { Loader2, Check, AlertCircle } from "lucide-react";
 import {
   savePushinPaySettings,
   getPushinPaySettings,
-  testPushinPayConnection,
   type PushinPayEnvironment,
 } from "@/services/pushinpay";
 
@@ -15,14 +14,6 @@ export default function Financeiro() {
   const [loading, setLoading] = useState(false);
   const [loadingData, setLoadingData] = useState(true);
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
-  const [testingConnection, setTestingConnection] = useState(false);
-  const [connectionStatus, setConnectionStatus] = useState<{
-    tested: boolean;
-    ok: boolean;
-    message: string;
-    details?: any;
-  } | null>(null);
-  const [lastUpdated, setLastUpdated] = useState<string | null>(null);
 
   useEffect(() => {
     (async () => {
@@ -36,7 +27,6 @@ export default function Financeiro() {
             setApiToken(settings.pushinpay_token ?? "");
           }
           setEnvironment(settings.environment ?? "sandbox");
-          setLastUpdated(new Date().toISOString());
         }
       } catch (error) {
         console.error("Erro ao carregar dados:", error);
@@ -46,34 +36,6 @@ export default function Financeiro() {
     })();
   }, []);
 
-  async function handleTestConnection() {
-    setTestingConnection(true);
-    setConnectionStatus(null);
-
-    try {
-      const result = await testPushinPayConnection();
-      setConnectionStatus({
-        tested: true,
-        ok: result.ok,
-        message: result.message,
-        details: result.details
-      });
-    } catch (error: any) {
-      setConnectionStatus({
-        tested: true,
-        ok: false,
-        message: `Erro ao testar: ${error.message}`
-      });
-    } finally {
-      setTestingConnection(false);
-    }
-  }
-
-  function copyToClipboard(text: string, label: string) {
-    navigator.clipboard.writeText(text);
-    setMessage({ type: "success", text: `${label} copiado!` });
-    setTimeout(() => setMessage(null), 2000);
-  }
 
   async function onSave() {
     // Se já existe token e o campo está vazio, não exigir novo token
@@ -101,8 +63,6 @@ export default function Financeiro() {
         setMessage({ type: "success", text: "Integração PushinPay salva com sucesso!" });
         setHasExistingToken(true);
         setApiToken("");
-        setLastUpdated(new Date().toISOString());
-        setConnectionStatus(null);
       } else {
         setMessage({ type: "error", text: `Erro ao salvar: ${result.error}` });
       }
@@ -140,62 +100,6 @@ export default function Financeiro() {
           Conecte sua conta PushinPay informando o <strong>API Token</strong>.
           Você pode solicitar acesso ao <em>Sandbox</em> direto no suporte deles.
         </p>
-
-        {/* Status da Integração */}
-        {hasExistingToken && (
-          <div className="rounded-lg border border-border bg-muted/50 p-4 space-y-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <div className={`h-3 w-3 rounded-full ${
-                  connectionStatus?.ok ? 'bg-green-500' : 
-                  connectionStatus?.tested && !connectionStatus.ok ? 'bg-red-500' : 
-                  'bg-yellow-500'
-                }`} />
-                <span className="text-sm font-medium">
-                  {connectionStatus?.ok ? 'Conectado' : 
-                   connectionStatus?.tested ? 'Erro de conexão' : 
-                   'Status desconhecido'}
-                </span>
-              </div>
-              <button
-                onClick={handleTestConnection}
-                disabled={testingConnection}
-                className="text-xs text-primary hover:underline flex items-center gap-1"
-              >
-                {testingConnection ? (
-                  <>
-                    <Loader2 className="h-3 w-3 animate-spin" />
-                    Testando...
-                  </>
-                ) : (
-                  'Testar conexão'
-                )}
-              </button>
-            </div>
-
-            {connectionStatus && (
-              <div className={`text-xs p-2 rounded ${
-                connectionStatus.ok 
-                  ? 'bg-green-50 text-green-900 dark:bg-green-900/20 dark:text-green-100'
-                  : 'bg-red-50 text-red-900 dark:bg-red-900/20 dark:text-red-100'
-              }`}>
-                {connectionStatus.message}
-                {connectionStatus.details && (
-                  <div className="mt-1 text-[10px] opacity-80">
-                    Account ID: {connectionStatus.details.accountId}
-                  </div>
-                )}
-              </div>
-            )}
-
-            <div className="text-xs text-muted-foreground space-y-1">
-              <div>Ambiente: <strong>{environment === 'sandbox' ? 'Sandbox' : 'Produção'}</strong></div>
-              {lastUpdated && (
-                <div>Última atualização: {new Date(lastUpdated).toLocaleString('pt-BR')}</div>
-              )}
-            </div>
-          </div>
-        )}
 
         {/* Alertas Contextuais */}
         {environment === 'production' && (
@@ -291,55 +195,6 @@ export default function Financeiro() {
             {loading && <Loader2 className="h-4 w-4 animate-spin" />}
             {loading ? "Salvando..." : "Salvar integração"}
           </button>
-        </div>
-
-        {/* Configuração do Webhook */}
-        <div className="rounded-lg border border-border bg-card p-4 space-y-3 mt-6">
-          <h3 className="text-sm font-medium flex items-center gap-2">
-            <AlertCircle className="h-4 w-4" />
-            Configuração do Webhook (PushinPay)
-          </h3>
-          
-          <p className="text-xs text-muted-foreground">
-            Configure estes valores no painel da PushinPay (seção Webhooks):
-          </p>
-
-          <div className="space-y-2">
-            <div className="flex items-center gap-2">
-              <label className="text-xs font-medium w-20">URL:</label>
-              <code className="flex-1 text-xs bg-muted px-2 py-1 rounded overflow-x-auto">
-                https://wivbtmtgpsxupfjwwovf.supabase.co/functions/v1/pushinpay-webhook
-              </code>
-              <button
-                onClick={() => copyToClipboard(
-                  "https://wivbtmtgpsxupfjwwovf.supabase.co/functions/v1/pushinpay-webhook",
-                  "URL"
-                )}
-                className="text-xs px-2 py-1 bg-primary text-primary-foreground rounded hover:bg-primary/90 flex items-center gap-1"
-              >
-                <Copy className="h-3 w-3" />
-                Copiar
-              </button>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <label className="text-xs font-medium w-20">Token:</label>
-              <code className="flex-1 text-xs bg-muted px-2 py-1 rounded">
-                rise_secure_token_123
-              </code>
-              <button
-                onClick={() => copyToClipboard("rise_secure_token_123", "Token")}
-                className="text-xs px-2 py-1 bg-primary text-primary-foreground rounded hover:bg-primary/90 flex items-center gap-1"
-              >
-                <Copy className="h-3 w-3" />
-                Copiar
-              </button>
-            </div>
-
-            <div className="text-xs text-muted-foreground mt-2">
-              <strong>Eventos:</strong> pix.created, pix.paid, pix.expired, pix.canceled
-            </div>
-          </div>
         </div>
 
         <div className="mt-6 pt-6 border-t border-border">
