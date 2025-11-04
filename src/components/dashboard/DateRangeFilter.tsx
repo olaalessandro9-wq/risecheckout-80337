@@ -1,8 +1,15 @@
 import { useState } from "react";
-import { Calendar } from "lucide-react";
+import { Calendar, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -23,6 +30,7 @@ export function DateRangeFilter({
   customEndDate,
   onCustomDateChange,
 }: DateRangeFilterProps) {
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [dateRange, setDateRange] = useState<{ from: Date; to: Date } | undefined>(
     customStartDate && customEndDate ? { from: customStartDate, to: customEndDate } : undefined
@@ -36,52 +44,75 @@ export function DateRangeFilter({
     { value: "max" as const, label: "Máximo" },
   ];
 
+  const getPresetLabel = () => {
+    if (selectedPreset === "custom" && dateRange?.from && dateRange?.to) {
+      return `${format(dateRange.from, "dd/MM", { locale: ptBR })} - ${format(dateRange.to, "dd/MM", { locale: ptBR })}`;
+    }
+    const preset = presets.find((p) => p.value === selectedPreset);
+    return preset?.label || "Selecione o período";
+  };
+
+  const handlePresetClick = (preset: DateRangePreset) => {
+    onPresetChange(preset);
+    setIsDropdownOpen(false);
+  };
+
   const handleDateSelect = (range: { from: Date; to?: Date } | undefined) => {
     if (range?.from && range?.to) {
       setDateRange({ from: range.from, to: range.to });
       onCustomDateChange(range.from, range.to);
       onPresetChange("custom");
       setIsCalendarOpen(false);
+      setIsDropdownOpen(false);
     }
   };
 
   return (
-    <div className="flex items-center gap-2 flex-wrap">
-      {presets.map((preset) => (
-        <Button
-          key={preset.value}
-          variant={selectedPreset === preset.value ? "default" : "outline"}
-          size="sm"
-          onClick={() => onPresetChange(preset.value)}
-        >
-          {preset.label}
-        </Button>
-      ))}
-      
-      <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
-        <PopoverTrigger asChild>
-          <Button
-            variant={selectedPreset === "custom" ? "default" : "outline"}
-            size="sm"
-            className="gap-2"
-          >
+    <DropdownMenu open={isDropdownOpen} onOpenChange={setIsDropdownOpen}>
+      <DropdownMenuTrigger asChild>
+        <Button variant="outline" size="sm" className="gap-2 min-w-[200px] justify-between">
+          <span className="flex items-center gap-2">
             <Calendar className="w-4 h-4" />
-            {selectedPreset === "custom" && dateRange.from && dateRange.to
-              ? `${format(dateRange.from, "dd/MM", { locale: ptBR })} - ${format(dateRange.to, "dd/MM", { locale: ptBR })}`
-              : "Período personalizado"}
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent className="w-auto p-0" align="end">
-          <CalendarComponent
-            mode="range"
-            selected={dateRange}
-            onSelect={handleDateSelect}
-            numberOfMonths={2}
-            locale={ptBR}
-            className={cn("p-3 pointer-events-auto")}
-          />
-        </PopoverContent>
-      </Popover>
-    </div>
+            {getPresetLabel()}
+          </span>
+          <ChevronDown className="w-4 h-4 opacity-50" />
+        </Button>
+      </DropdownMenuTrigger>
+
+      <DropdownMenuContent align="end" className="w-[200px]">
+        {presets.map((preset) => (
+          <DropdownMenuItem
+            key={preset.value}
+            onClick={() => handlePresetClick(preset.value)}
+            className={selectedPreset === preset.value ? "bg-accent" : ""}
+          >
+            {preset.label}
+          </DropdownMenuItem>
+        ))}
+
+        <DropdownMenuSeparator />
+
+        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+          <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
+            <PopoverTrigger asChild>
+              <div className="w-full flex items-center gap-2 cursor-pointer">
+                <Calendar className="w-4 h-4" />
+                Período personalizado
+              </div>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="end" side="right">
+              <CalendarComponent
+                mode="range"
+                selected={dateRange}
+                onSelect={handleDateSelect}
+                numberOfMonths={2}
+                locale={ptBR}
+                className={cn("p-3 pointer-events-auto")}
+              />
+            </PopoverContent>
+          </Popover>
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
