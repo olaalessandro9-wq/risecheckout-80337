@@ -32,7 +32,7 @@ export function UserFooter({ isCollapsed }: UserFooterProps) {
         onClick={signOut}
         className={clsx(
           "flex w-full items-center rounded-md bg-destructive/90 text-sm font-medium text-destructive-foreground hover:bg-destructive transition",
-          isCollapsed ? "justify-center px-2 py-3" : "justify-center gap-2 px-3 py-2"
+          isCollapsed ? "justify-center px-3 py-2.5" : "justify-center gap-2 px-3 py-2"
         )}
         title={isCollapsed ? "Sair" : undefined}
       >

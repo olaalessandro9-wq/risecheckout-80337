@@ -165,7 +165,7 @@ export function Sidebar() {
 function rowClass(active?: boolean, collapsed?: boolean) {
   return clsx(
     "group flex items-center rounded-md text-sm transition",
-    collapsed ? "justify-center px-2 py-3" : "gap-3 px-2 py-2",
+    collapsed ? "justify-center px-3 py-2.5" : "gap-3 px-2 py-2",
     active
       ? "bg-muted text-foreground font-medium"
       : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
