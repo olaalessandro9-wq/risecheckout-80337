@@ -67,17 +67,22 @@ export function Sidebar() {
     <aside
       className={clsx(
         "flex h-screen shrink-0 flex-col border-r border-border/60 bg-background text-foreground transition-all duration-300",
-        isCollapsed ? "w-16" : "w-[248px]"
+        isCollapsed ? "w-20" : "w-[248px]"
       )}
     >
       {/* Brand / Logo */}
       <div
-        className="flex items-center justify-between px-4 border-b border-border/60"
+        className={clsx(
+          "flex items-center border-b border-border/60",
+          isCollapsed ? "justify-center px-2" : "justify-between px-4"
+        )}
         style={{ height: BRAND_H }}
       >
-        <div className="text-lg font-semibold tracking-tight overflow-hidden">
-          {isCollapsed ? "RC" : "RiseCheckout"}
-        </div>
+        {!isCollapsed && (
+          <div className="text-lg font-semibold tracking-tight overflow-hidden">
+            RiseCheckout
+          </div>
+        )}
         
         <button
           onClick={toggleSidebar}
@@ -85,7 +90,7 @@ export function Sidebar() {
           title={isCollapsed ? "Expandir sidebar" : "Colapsar sidebar"}
         >
           {isCollapsed ? (
-            <ChevronRight className="h-4 w-4" />
+            <ChevronRight className="h-5 w-5" />
           ) : (
             <ChevronLeft className="h-4 w-4" />
           )}
@@ -115,7 +120,7 @@ export function Sidebar() {
                       rel="noopener noreferrer"
                       className={rowClass(undefined, isCollapsed)}
                     >
-                      <Icon className="h-4 w-4" />
+                      <Icon className={isCollapsed ? "h-5 w-5" : "h-4 w-4"} />
                       {!isCollapsed && <span>{it.label}</span>}
                     </a>
                   ) : (
@@ -123,7 +128,7 @@ export function Sidebar() {
                       to={it.to!} 
                       className={({ isActive }) => rowClass(isActive, isCollapsed)}
                     >
-                      <Icon className="h-4 w-4" />
+                      <Icon className={isCollapsed ? "h-5 w-5" : "h-4 w-4"} />
                       {!isCollapsed && <span>{it.label}</span>}
                     </NavLink>
                   );
@@ -159,8 +164,8 @@ export function Sidebar() {
 
 function rowClass(active?: boolean, collapsed?: boolean) {
   return clsx(
-    "group flex items-center rounded-md px-2 py-2 text-sm transition",
-    collapsed ? "justify-center" : "gap-3",
+    "group flex items-center rounded-md text-sm transition",
+    collapsed ? "justify-center px-2 py-3" : "gap-3 px-2 py-2",
     active
       ? "bg-muted text-foreground font-medium"
       : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"

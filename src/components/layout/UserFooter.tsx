@@ -31,12 +31,12 @@ export function UserFooter({ isCollapsed }: UserFooterProps) {
         type="button"
         onClick={signOut}
         className={clsx(
-          "flex w-full items-center rounded-md bg-destructive/90 px-3 py-2 text-sm font-medium text-destructive-foreground hover:bg-destructive transition",
-          isCollapsed ? "justify-center" : "justify-center gap-2"
+          "flex w-full items-center rounded-md bg-destructive/90 text-sm font-medium text-destructive-foreground hover:bg-destructive transition",
+          isCollapsed ? "justify-center px-2 py-3" : "justify-center gap-2 px-3 py-2"
         )}
         title={isCollapsed ? "Sair" : undefined}
       >
-        <LogOut className="h-4 w-4" />
+        <LogOut className={isCollapsed ? "h-5 w-5" : "h-4 w-4"} />
         {!isCollapsed && "Sair"}
       </button>
     </div>
