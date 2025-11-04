@@ -114,7 +114,7 @@ export function DateRangeFilter({
 
   const handleCancel = () => {
     console.log('🚫 handleCancel called');
-    setTempDateRange(savedDateRange); // Restaura seleção anterior
+    setTempDateRange(undefined); // Limpa seleção ao cancelar
     setIsCalendarOpen(false); // Fecha apenas o calendário, mantém dropdown aberto
   };
 
@@ -153,7 +153,7 @@ export function DateRangeFilter({
           <DropdownMenuItem 
             onClick={() => {
               console.log('🔓 Opening calendar');
-              setTempDateRange(savedDateRange);
+              setTempDateRange(undefined); // Calendário limpo, sem pré-seleção
               setIsCalendarOpen(true);
               setIsDropdownOpen(false);
             }}
