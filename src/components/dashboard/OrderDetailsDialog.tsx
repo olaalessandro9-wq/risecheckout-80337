@@ -67,21 +67,12 @@ export function OrderDetailsDialog({ open, onOpenChange, orderData }: OrderDetai
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[520px] p-0 overflow-hidden max-h-[90vh] flex flex-col">
-        {/* Header com gradiente baseado no status */}
-        <div className={`relative bg-gradient-to-br ${statusConfig.gradient} p-4 pb-5`}>
+        {/* Header simplificado e profissional */}
+        <div className="relative bg-muted/30 p-4 pb-5">
           <DialogHeader>
-            <DialogTitle className="flex items-center justify-between text-lg">
-              <div className="flex items-center gap-2">
-                <div className={`p-1.5 rounded-lg ${statusConfig.color} border`}>
-                  <StatusIcon className={`w-4 h-4 ${statusConfig.iconColor}`} />
-                </div>
-                <span>Detalhes da Compra</span>
-              </div>
-              <Badge 
-                className={`${statusConfig.color} border px-2 py-0.5 text-xs font-semibold`}
-              >
-                {orderData.status}
-              </Badge>
+            <DialogTitle className="flex items-center gap-2 text-lg">
+              <CreditCard className="w-4 h-4 text-muted-foreground" />
+              <span>Detalhes da Compra</span>
             </DialogTitle>
           </DialogHeader>
 
@@ -171,15 +162,15 @@ export function OrderDetailsDialog({ open, onOpenChange, orderData }: OrderDetai
               <span>Informações de Pagamento</span>
             </div>
             <div className="space-y-2">
-              {/* Valor em destaque */}
-              <div className={`p-3 rounded-lg border-2 ${statusConfig.color} border`}>
+              {/* Valor Total - cor padrão profissional */}
+              <div className="p-3 rounded-lg border-2 border-border bg-background">
                 <div className="flex items-center justify-between">
                   <span className="text-xs text-muted-foreground">Valor Total</span>
-                  <span className={`text-xl font-bold ${statusConfig.iconColor}`}>{orderData.amount}</span>
+                  <span className="text-xl font-bold text-foreground">{orderData.amount}</span>
                 </div>
               </div>
 
-              {/* Status */}
+              {/* Status do Pagamento - único elemento com cores dinâmicas */}
               <div className="flex items-center justify-between p-2 rounded-md bg-muted/30">
                 <span className="text-xs text-muted-foreground">Status do Pagamento</span>
                 <Badge 
