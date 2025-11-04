@@ -35,6 +35,10 @@ export function DateRangeFilter({
   const [dateRange, setDateRange] = useState<{ from: Date; to: Date } | undefined>(
     customStartDate && customEndDate ? { from: customStartDate, to: customEndDate } : undefined
   );
+  const [tempDateRange, setTempDateRange] = useState<{ from: Date; to?: Date } | undefined>();
+  const [savedDateRange, setSavedDateRange] = useState<{ from: Date; to: Date } | undefined>(
+    customStartDate && customEndDate ? { from: customStartDate, to: customEndDate } : undefined
+  );
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Mantém dropdown aberto quando calendário estiver aberto
@@ -93,28 +97,32 @@ export function DateRangeFilter({
   };
 
   const handleDateSelect = (range: { from: Date; to?: Date } | undefined) => {
-    console.log('🔍 handleDateSelect:', range);
-    
-    // Atualiza visual mesmo com seleção parcial
-    if (range?.from) {
-      setDateRange(range.to ? { from: range.from, to: range.to } : undefined);
-    }
-    
-    // Só fecha quando range completo
-    if (range?.from && range?.to) {
-      console.log('✅ Range completo, fechando calendário');
-      onCustomDateChange(range.from, range.to);
+    // Apenas atualiza visual temporário, não aplica ainda
+    setTempDateRange(range);
+  };
+
+  const handleApply = () => {
+    if (tempDateRange?.from && tempDateRange?.to) {
+      const completeRange = { from: tempDateRange.from, to: tempDateRange.to };
+      onCustomDateChange(completeRange.from, completeRange.to);
       onPresetChange("custom");
-      
-      // Limpa timeout pendente antes de fechar
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-        timeoutRef.current = null;
-      }
-      
+      setSavedDateRange(completeRange);
+      setDateRange(completeRange);
       setIsCalendarOpen(false);
       setIsDropdownOpen(false);
     }
+  };
+
+  const handleCancel = () => {
+    setTempDateRange(savedDateRange); // Restaura seleção anterior
+    setIsCalendarOpen(false);
+    
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+    
+    setTimeout(() => setIsDropdownOpen(false), 100);
   };
 
   return (
@@ -152,7 +160,10 @@ export function DateRangeFilter({
 
         <DropdownMenuItem 
           onSelect={(e) => e.preventDefault()}
-          onClick={() => setIsCalendarOpen(true)}
+          onClick={() => {
+            setTempDateRange(savedDateRange); // Carrega seleção atual
+            setIsCalendarOpen(true);
+          }}
         >
           <Popover 
             open={isCalendarOpen} 
@@ -182,13 +193,31 @@ export function DateRangeFilter({
             >
               <CalendarComponent
                 mode="range"
-                selected={dateRange}
+                selected={tempDateRange}
                 onSelect={handleDateSelect}
                 numberOfMonths={2}
                 locale={ptBR}
                 fixedWeeks
                 className={cn("p-3 pointer-events-auto")}
               />
+              
+              {/* Botões de confirmação */}
+              <div className="flex items-center justify-end gap-2 p-3 border-t">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleCancel}
+                >
+                  Cancelar
+                </Button>
+                <Button
+                  size="sm"
+                  onClick={handleApply}
+                  disabled={!tempDateRange?.from || !tempDateRange?.to}
+                >
+                  Aplicar
+                </Button>
+              </div>
             </PopoverContent>
           </Popover>
         </DropdownMenuItem>
