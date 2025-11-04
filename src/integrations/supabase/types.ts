@@ -53,13 +53,6 @@ export type Database = {
             referencedRelation: "products"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "affiliates_product_id_fkey"
-            columns: ["product_id"]
-            isOneToOne: false
-            referencedRelation: "v_order_bump_products"
-            referencedColumns: ["id"]
-          },
         ]
       }
       app_settings: {
@@ -352,13 +345,6 @@ export type Database = {
             referencedRelation: "products"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "checkouts_product_id_fkey"
-            columns: ["product_id"]
-            isOneToOne: false
-            referencedRelation: "v_order_bump_products"
-            referencedColumns: ["id"]
-          },
         ]
       }
       coupon_products: {
@@ -390,13 +376,6 @@ export type Database = {
             columns: ["product_id"]
             isOneToOne: false
             referencedRelation: "products"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "coupon_products_product_id_fkey"
-            columns: ["product_id"]
-            isOneToOne: false
-            referencedRelation: "v_order_bump_products"
             referencedColumns: ["id"]
           },
         ]
@@ -514,13 +493,6 @@ export type Database = {
             referencedRelation: "products"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "offers_product_id_fkey"
-            columns: ["product_id"]
-            isOneToOne: false
-            referencedRelation: "v_order_bump_products"
-            referencedColumns: ["id"]
-          },
         ]
       }
       order_bumps: {
@@ -588,24 +560,10 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "order_bumps_offer_id_fkey"
-            columns: ["offer_id"]
-            isOneToOne: false
-            referencedRelation: "v_offers_normalized"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "order_bumps_product_id_fkey"
             columns: ["product_id"]
             isOneToOne: false
             referencedRelation: "products"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "order_bumps_product_id_fkey"
-            columns: ["product_id"]
-            isOneToOne: false
-            referencedRelation: "v_order_bump_products"
             referencedColumns: ["id"]
           },
         ]
@@ -703,13 +661,6 @@ export type Database = {
             columns: ["product_id"]
             isOneToOne: false
             referencedRelation: "products"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "orders_product_id_fkey"
-            columns: ["product_id"]
-            isOneToOne: false
-            referencedRelation: "v_order_bump_products"
             referencedColumns: ["id"]
           },
         ]
@@ -811,13 +762,6 @@ export type Database = {
             columns: ["offer_id"]
             isOneToOne: false
             referencedRelation: "offers"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "payment_links_offer_id_fkey"
-            columns: ["offer_id"]
-            isOneToOne: false
-            referencedRelation: "v_offers_normalized"
             referencedColumns: ["id"]
           },
         ]
@@ -1150,56 +1094,7 @@ export type Database = {
       }
     }
     Views: {
-      v_offers_normalized: {
-        Row: {
-          created_at: string | null
-          id: string | null
-          price: number | null
-          product_id: string | null
-          product_name: string | null
-          updated_at: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "offers_product_id_fkey"
-            columns: ["product_id"]
-            isOneToOne: false
-            referencedRelation: "products"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "offers_product_id_fkey"
-            columns: ["product_id"]
-            isOneToOne: false
-            referencedRelation: "v_order_bump_products"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      v_order_bump_products: {
-        Row: {
-          id: string | null
-          image_url: string | null
-          name: string | null
-          price: number | null
-          updated_at: string | null
-        }
-        Insert: {
-          id?: string | null
-          image_url?: string | null
-          name?: string | null
-          price?: never
-          updated_at?: string | null
-        }
-        Update: {
-          id?: string | null
-          image_url?: string | null
-          name?: string | null
-          price?: never
-          updated_at?: string | null
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Functions: {
       attach_offer_to_checkout_smart: {

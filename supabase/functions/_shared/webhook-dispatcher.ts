@@ -8,11 +8,13 @@
  */
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.46.1';
+import { decrypt } from './crypto.ts';
 
 type OutboundWebhook = {
   id: string;
   url: string;
   secret: string;
+  secret_encrypted?: string | null;
   vendor_id: string;
   active: boolean;
   events: string[];
@@ -144,7 +146,12 @@ export async function dispatchWebhook(
   // 2) Enviar para cada webhook
   for (const webhook of (webhooks as OutboundWebhook[])) {
     try {
-      const result = await sendWebhook(webhook.url as string, payload, webhook.secret as string);
+      // Descriptografar secret se estiver criptografado
+      const webhookSecret = webhook.secret_encrypted 
+        ? await decrypt(webhook.secret_encrypted)
+        : webhook.secret;
+
+      const result = await sendWebhook(webhook.url as string, payload, webhookSecret);
 
       // 3) Registrar tentativa
       const delivery = {
@@ -223,7 +230,12 @@ export async function retryPendingWebhooks(
     const webhook = (delivery as any).outbound_webhooks as OutboundWebhook;
 
     try {
-      const result = await sendWebhook(webhook.url as string, deliveryTyped.payload as WebhookPayload, webhook.secret as string);
+      // Descriptografar secret se estiver criptografado
+      const webhookSecret = webhook.secret_encrypted
+        ? await decrypt(webhook.secret_encrypted)
+        : webhook.secret;
+
+      const result = await sendWebhook(webhook.url as string, deliveryTyped.payload as WebhookPayload, webhookSecret);
 
       const newAttempts = (deliveryTyped.attempts ?? 0) + 1;
       const newStatus = result.status >= 200 && result.status < 300 ? 'delivered' : 'failed';

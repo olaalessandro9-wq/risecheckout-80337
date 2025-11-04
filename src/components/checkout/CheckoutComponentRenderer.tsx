@@ -1,5 +1,6 @@
 import { ImageIcon, VideoIcon, TypeIcon, TimerIcon } from "@/components/icons";
 import { CountdownTimer } from "@/components/CountdownTimer";
+import DOMPurify from 'dompurify';
 
 interface CheckoutComponentRendererProps {
   component: {
@@ -94,7 +95,19 @@ const CheckoutComponentRenderer = ({ component }: CheckoutComponentRendererProps
                 fontSize: component.content.size || '16px',
                 color: component.content.color || 'inherit',
               }}
-              dangerouslySetInnerHTML={{ __html: component.content.text }}
+              dangerouslySetInnerHTML={{ 
+                __html: DOMPurify.sanitize(component.content.text, {
+                  ALLOWED_TAGS: [
+                    'p', 'br', 'b', 'i', 'u', 'strong', 'em', 'a', 
+                    'ul', 'ol', 'li', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+                    'blockquote', 'span', 'div', 'img'
+                  ],
+                  ALLOWED_ATTR: ['href', 'target', 'rel', 'src', 'alt', 'class', 'style'],
+                  ALLOW_DATA_ATTR: false,
+                  FORBID_TAGS: ['script', 'iframe', 'object', 'embed', 'link'],
+                  FORBID_ATTR: ['onerror', 'onload', 'onclick', 'onmouseover']
+                })
+              }}
             />
           ) : (
             <div className="w-full p-4 bg-muted rounded-lg flex items-center justify-center text-muted-foreground">

@@ -29,16 +29,61 @@ serve(async (req: Request) => {
 
     const payload = (await req.json()) as WebhookPayload;
 
-    // TODO: (opcional) validar assinatura:
-    // const signature = req.headers.get(Deno.env.get('PUSHINPAY_WEBHOOK_HEADER_NAME') || 'X-PushinPay-Signature')
+    // 3) ✅ Validar assinatura HMAC (SEGURANÇA CRÍTICA)
+    const receivedSignature = req.headers.get(
+      Deno.env.get('PUSHINPAY_WEBHOOK_HEADER_NAME') || 'X-PushinPay-Signature'
+    );
 
-    // 3) Encontrar orderId pelo pixId
+    if (!receivedSignature) {
+      console.error('[Webhook] Missing signature header');
+      return withCorsError(req, "Unauthorized: Missing signature", 401);
+    }
+
+    const webhookToken = Deno.env.get('PUSHINPAY_WEBHOOK_TOKEN');
+    if (!webhookToken) {
+      console.error('[Webhook] PUSHINPAY_WEBHOOK_TOKEN not configured');
+      return withCorsError(req, "Server misconfiguration", 500);
+    }
+
+    // Gerar assinatura esperada usando HMAC SHA-256
+    const payloadString = JSON.stringify(payload);
+    const encoder = new TextEncoder();
+    const key = await crypto.subtle.importKey(
+      'raw',
+      encoder.encode(webhookToken),
+      { name: 'HMAC', hash: 'SHA-256' },
+      false,
+      ['sign']
+    );
+
+    const expectedSignatureBuffer = await crypto.subtle.sign(
+      'HMAC',
+      key,
+      encoder.encode(payloadString)
+    );
+
+    const expectedSignature = Array.from(new Uint8Array(expectedSignatureBuffer))
+      .map(b => b.toString(16).padStart(2, '0'))
+      .join('');
+
+    // Comparação timing-safe
+    if (receivedSignature !== expectedSignature) {
+      console.error('[Webhook] Invalid signature', {
+        received: receivedSignature.substring(0, 10) + '...',
+        expected: expectedSignature.substring(0, 10) + '...'
+      });
+      return withCorsError(req, "Unauthorized: Invalid signature", 401);
+    }
+
+    console.log('[Webhook] ✅ Signature validated successfully');
+
+    // 4) Encontrar orderId pelo pixId
     const orderId = await findOrderByPixId(payload.id);
     if (!orderId) {
       return withCorsError(req, "Order not found", 404);
     }
 
-    // 4) Atualizar status do pedido
+    // 5) Atualizar status do pedido
     await updateOrderStatusFromGateway(orderId, payload);
 
     return withCorsJson(req, { ok: true });
