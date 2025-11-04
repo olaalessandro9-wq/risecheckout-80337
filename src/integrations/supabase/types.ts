@@ -457,6 +457,54 @@ export type Database = {
           },
         ]
       }
+      edge_function_errors: {
+        Row: {
+          error_message: string | null
+          error_stack: string | null
+          function_name: string
+          id: string
+          notes: string | null
+          order_id: string | null
+          request_headers: Json | null
+          request_payload: Json | null
+          resolved: boolean | null
+          resolved_at: string | null
+          resolved_by: string | null
+          timestamp: string
+          user_id: string | null
+        }
+        Insert: {
+          error_message?: string | null
+          error_stack?: string | null
+          function_name: string
+          id?: string
+          notes?: string | null
+          order_id?: string | null
+          request_headers?: Json | null
+          request_payload?: Json | null
+          resolved?: boolean | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          timestamp?: string
+          user_id?: string | null
+        }
+        Update: {
+          error_message?: string | null
+          error_stack?: string | null
+          function_name?: string
+          id?: string
+          notes?: string | null
+          order_id?: string | null
+          request_headers?: Json | null
+          request_payload?: Json | null
+          resolved?: boolean | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          timestamp?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       offers: {
         Row: {
           created_at: string | null
@@ -943,6 +991,36 @@ export type Database = {
         }
         Relationships: []
       }
+      system_health_logs: {
+        Row: {
+          created_at: string | null
+          id: string
+          metadata: Json | null
+          metric_type: string
+          metric_value: number | null
+          severity: string | null
+          timestamp: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          metadata?: Json | null
+          metric_type: string
+          metric_value?: number | null
+          severity?: string | null
+          timestamp?: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          metadata?: Json | null
+          metric_type?: string
+          metric_value?: number | null
+          severity?: string | null
+          timestamp?: string
+        }
+        Relationships: []
+      }
       upsells: {
         Row: {
           active: boolean | null
@@ -1094,7 +1172,46 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      v_system_health_summary: {
+        Row: {
+          avg_value: number | null
+          critical_count: number | null
+          error_count: number | null
+          event_count: number | null
+          hour: string | null
+          max_value: number | null
+          metric_type: string | null
+          min_value: number | null
+        }
+        Relationships: []
+      }
+      v_unresolved_errors: {
+        Row: {
+          error_message: string | null
+          function_name: string | null
+          id: string | null
+          order_id: string | null
+          timestamp: string | null
+          user_id: string | null
+        }
+        Insert: {
+          error_message?: string | null
+          function_name?: string | null
+          id?: string | null
+          order_id?: string | null
+          timestamp?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          error_message?: string | null
+          function_name?: string | null
+          id?: string | null
+          order_id?: string | null
+          timestamp?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       attach_offer_to_checkout_smart: {
@@ -1147,6 +1264,15 @@ export type Database = {
       increment_checkout_visits: {
         Args: { checkout_id: string }
         Returns: undefined
+      }
+      log_system_metric: {
+        Args: {
+          p_metadata?: Json
+          p_metric_type: string
+          p_metric_value?: number
+          p_severity?: string
+        }
+        Returns: string
       }
       slugify: { Args: { txt: string }; Returns: string }
       unaccent: { Args: { "": string }; Returns: string }

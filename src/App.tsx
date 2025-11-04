@@ -21,6 +21,7 @@ import Integracoes from "./pages/Integracoes";
 import Ajuda from "./pages/Ajuda";
 import Financeiro from "./pages/Financeiro";
 import Config from "./pages/Config";
+import AdminHealth from "./pages/AdminHealth";
 
 const queryClient = new QueryClient();
 
@@ -56,6 +57,7 @@ const App = () => (
               <Route path="integracoes" element={<Integracoes />} />
               <Route path="config" element={<Config />} />
               <Route path="ajuda" element={<Ajuda />} />
+              <Route path="admin/health" element={<AdminHealth />} />
             </Route>
           </Routes>
         </TooltipProvider>

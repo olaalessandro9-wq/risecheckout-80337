@@ -1,9 +1,33 @@
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.46.1";
 import {
   findOrderByPixId,
   updateOrderStatusFromGateway,
 } from "../_shared/db.ts";
 import { handleOptions, withCorsError, withCorsJson } from "../_shared/cors.ts";
+
+const supabase = createClient(
+  Deno.env.get("SUPABASE_URL")!,
+  Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
+);
+
+// Helper para logar métrica
+async function logMetric(
+  metricType: string,
+  value?: number,
+  metadata?: Record<string, any>
+) {
+  try {
+    await supabase.rpc("log_system_metric", {
+      p_metric_type: metricType,
+      p_metric_value: value || null,
+      p_metadata: metadata || {},
+      p_severity: "info"
+    });
+  } catch (e) {
+    console.error("Failed to log metric:", e);
+  }
+}
 
 type WebhookPayload = {
   id: string;
@@ -85,6 +109,14 @@ serve(async (req: Request) => {
 
     // 5) Atualizar status do pedido
     await updateOrderStatusFromGateway(orderId, payload);
+
+    // Log de webhook recebido
+    await logMetric("webhook_received", payload.value, {
+      orderId,
+      pixId: payload.id,
+      status: payload.status,
+      eventType: `pix.${payload.status}`
+    });
 
     return withCorsJson(req, { ok: true });
   } catch (err) {

@@ -128,3 +128,41 @@ export async function getPixStatus(orderId: string): Promise<PixStatusResponse> 
   if (error) return { ok: false, error: error.message };
   return data as PixStatusResponse;
 }
+
+/**
+ * Testa a conexão com PushinPay
+ */
+export async function testPushinPayConnection(): Promise<{
+  ok: boolean;
+  environment: PushinPayEnvironment;
+  message: string;
+  details?: {
+    apiVersion?: string;
+    accountId?: string;
+    permissions?: string[];
+  };
+}> {
+  const { data, error } = await supabase.functions.invoke("test-pushinpay-connection");
+  
+  if (error) return { 
+    ok: false, 
+    environment: "sandbox",
+    message: error.message 
+  };
+  
+  return data;
+}
+
+/**
+ * Obtém estatísticas de uso da PushinPay
+ */
+export async function getPushinPayStats(): Promise<{
+  lastTransaction?: string;
+  totalTransactions: number;
+  totalAmount: number;
+  webhookStatus: "configured" | "not_configured" | "unknown";
+} | null> {
+  const { data, error } = await supabase.functions.invoke("pushinpay-stats");
+  if (error || !data) return null;
+  return data;
+}

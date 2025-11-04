@@ -12,22 +12,64 @@ const BASE_PROD = Deno.env.get("PUSHINPAY_BASE_URL_PROD") || "https://api.pushin
 const BASE_SANDBOX = Deno.env.get("PUSHINPAY_BASE_URL_SANDBOX") || "https://api-sandbox.pushinpay.com.br/api";
 const PLATFORM_ACCOUNT = Deno.env.get("PLATFORM_PUSHINPAY_ACCOUNT_ID");
 
-// Taxa da plataforma fixada no backend (controlada apenas pelo administrador)
 const PLATFORM_FEE_PERCENT = parseFloat(Deno.env.get("PLATFORM_FEE_PERCENT") || "7.5");
 
+// Helper para logar erros
+async function logError(
+  functionName: string,
+  errorMessage: string,
+  errorStack: string | undefined,
+  metadata: Record<string, any>
+) {
+  try {
+    await supabase.from("edge_function_errors").insert({
+      function_name: functionName,
+      error_message: errorMessage,
+      error_stack: errorStack,
+      request_payload: metadata.payload || null,
+      user_id: metadata.userId || null,
+      order_id: metadata.orderId || null,
+      timestamp: new Date().toISOString()
+    });
+  } catch (e) {
+    console.error("Failed to log error:", e);
+  }
+}
+
+// Helper para logar métrica
+async function logMetric(
+  metricType: string,
+  value?: number,
+  metadata?: Record<string, any>
+) {
+  try {
+    await supabase.rpc("log_system_metric", {
+      p_metric_type: metricType,
+      p_metric_value: value || null,
+      p_metadata: metadata || {},
+      p_severity: "info"
+    });
+  } catch (e) {
+    console.error("Failed to log metric:", e);
+  }
+}
+
 serve(async (req) => {
-  // 1) Tratar preflight OPTIONS
   if (req.method === "OPTIONS") {
     return handleOptions(req);
   }
 
-  // 2) Validar método
   if (req.method !== "POST") {
     return withCorsError(req, "Method not allowed", 405);
   }
 
+  let orderId: string | undefined;
+  let valueInCents: number | undefined;
+
   try {
-    const { orderId, valueInCents } = await req.json();
+    const body = await req.json();
+    orderId = body.orderId;
+    valueInCents = body.valueInCents;
 
     // Validações de entrada
     if (!orderId) {
@@ -158,7 +200,6 @@ serve(async (req) => {
 
     const pixData = await response.json();
 
-    // 🔍 LOG DE DIAGNÓSTICO
     console.log("[pushinpay-create-pix] PIX data from PushinPay:", {
       id: pixData.id,
       status: pixData.status,
@@ -168,7 +209,13 @@ serve(async (req) => {
       qrCodeBase64Preview: pixData.qr_code_base64?.substring(0, 50) || 'EMPTY'
     });
 
-    // Normalizar base64 para compatibilidade com UIs antigas que usam <img src="data:">
+    // Log de sucesso
+    await logMetric("pix_created", valueInCents, {
+      orderId,
+      vendorId: order.vendor_id,
+      environment
+    });
+
     let qrBase64Raw: string = (pixData.qr_code_base64 || '').toString().trim();
     // Remover quebras de linha/espaços
     qrBase64Raw = qrBase64Raw.replace(/\s+/g, '');
@@ -205,6 +252,15 @@ serve(async (req) => {
 
   } catch (error) {
     console.error("Erro inesperado:", error);
+    
+    // Log de erro
+    await logError(
+      "pushinpay-create-pix",
+      String(error),
+      error instanceof Error ? error.stack : undefined,
+      { orderId, valueInCents }
+    );
+    
     return withCorsError(
       req,
       `Erro inesperado ao processar pagamento: ${String(error)}`,
