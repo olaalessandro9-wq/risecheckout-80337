@@ -122,14 +122,6 @@ export default function Financeiro() {
                 <p className="text-xs text-green-800 dark:text-green-200 mb-3">
                   Seu checkout está conectado e processando pagamentos PIX via PushinPay.
                 </p>
-                <div className="flex flex-wrap items-center gap-4 text-xs">
-                  <span className="text-green-700 dark:text-green-300">
-                    <strong>Ambiente:</strong> {environment === 'sandbox' ? 'Sandbox (Testes)' : 'Produção'}
-                  </span>
-                  <span className="text-green-700 dark:text-green-300">
-                    <strong>Token:</strong> Configurado
-                  </span>
-                </div>
               </div>
             </div>
           </div>
@@ -139,7 +131,7 @@ export default function Financeiro() {
           <Collapsible open={isUpdateSectionOpen} onOpenChange={setIsUpdateSectionOpen} className="space-y-2">
             <CollapsibleTrigger className="flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors w-full">
               <ChevronDown className={`h-4 w-4 transition-transform ${isUpdateSectionOpen ? 'rotate-180' : ''}`} />
-              <span>🔧 Atualizar token ou ambiente</span>
+              <span>🔧 Atualizar token</span>
               <span className="text-xs opacity-60">(clique para expandir)</span>
             </CollapsibleTrigger>
             <CollapsibleContent className="space-y-4 pt-4 pl-6 border-l-2 border-muted">
@@ -168,18 +160,6 @@ export default function Financeiro() {
                   </p>
                 </div>
               </div>
-
-              <div>
-                <label className="block text-sm font-medium mb-2">Ambiente</label>
-                <select
-                  value={environment}
-                  onChange={(e) => setEnvironment(e.target.value as PushinPayEnvironment)}
-                  className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-                >
-                  <option value="sandbox">Sandbox (testes)</option>
-                  <option value="production">Produção</option>
-                </select>
-              </div>
             </CollapsibleContent>
           </Collapsible>
         ) : (
@@ -202,18 +182,6 @@ export default function Financeiro() {
                   {showToken ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
               </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-2">Ambiente</label>
-              <select
-                value={environment}
-                onChange={(e) => setEnvironment(e.target.value as PushinPayEnvironment)}
-                className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-              >
-                <option value="sandbox">Sandbox (testes)</option>
-                <option value="production">Produção</option>
-              </select>
             </div>
           </div>
         )}
