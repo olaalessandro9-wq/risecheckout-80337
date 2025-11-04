@@ -26,47 +26,49 @@ import AdminHealth from "./pages/AdminHealth";
 
 const queryClient = new QueryClient();
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <ThemeProvider>
-      <BusyProvider>
-        <BrowserRouter>
-          <TooltipProvider>
-            <Toaster />
-            <Sonner />
-            <Routes>
-            {/* Public routes without sidebar */}
-            <Route path="/auth" element={<Auth />} />
-            <Route path="/c/:slug" element={<PaymentLinkRedirect />} />
-            <Route path="/pay/:slug" element={<PublicCheckout />} />
-            <Route path="*" element={<NotFound />} />
-            
-            {/* Protected routes with AppShell (sidebar) */}
-            <Route
-              path="/*"
-              element={
-                <ProtectedRoute>
-                  <AppShell />
-                </ProtectedRoute>
-              }
-            >
-              <Route index element={<Index />} />
-              <Route path="produtos" element={<Produtos />} />
-              <Route path="produtos/editar" element={<ProductEdit />} />
-              <Route path="produtos/checkout/personalizar" element={<CheckoutCustomizer />} />
-              <Route path="afiliados" element={<Afiliados />} />
-              <Route path="financeiro" element={<Financeiro />} />
-              <Route path="integracoes" element={<Integracoes />} />
-              <Route path="config" element={<Config />} />
-              <Route path="ajuda" element={<Ajuda />} />
-              <Route path="admin/health" element={<AdminHealth />} />
-            </Route>
-            </Routes>
-          </TooltipProvider>
-        </BrowserRouter>
-      </BusyProvider>
-    </ThemeProvider>
-  </QueryClientProvider>
-);
+function App() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider>
+        <BusyProvider>
+          <BrowserRouter>
+            <TooltipProvider>
+              <Toaster />
+              <Sonner />
+              <Routes>
+              {/* Public routes without sidebar */}
+              <Route path="/auth" element={<Auth />} />
+              <Route path="/c/:slug" element={<PaymentLinkRedirect />} />
+              <Route path="/pay/:slug" element={<PublicCheckout />} />
+              <Route path="*" element={<NotFound />} />
+              
+              {/* Protected routes with AppShell (sidebar) */}
+              <Route
+                path="/*"
+                element={
+                  <ProtectedRoute>
+                    <AppShell />
+                  </ProtectedRoute>
+                }
+              >
+                <Route index element={<Index />} />
+                <Route path="produtos" element={<Produtos />} />
+                <Route path="produtos/editar" element={<ProductEdit />} />
+                <Route path="produtos/checkout/personalizar" element={<CheckoutCustomizer />} />
+                <Route path="afiliados" element={<Afiliados />} />
+                <Route path="financeiro" element={<Financeiro />} />
+                <Route path="integracoes" element={<Integracoes />} />
+                <Route path="config" element={<Config />} />
+                <Route path="ajuda" element={<Ajuda />} />
+                <Route path="admin/health" element={<AdminHealth />} />
+              </Route>
+              </Routes>
+            </TooltipProvider>
+          </BrowserRouter>
+        </BusyProvider>
+      </ThemeProvider>
+    </QueryClientProvider>
+  );
+}
 
 export default App;
