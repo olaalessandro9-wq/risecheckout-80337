@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Calendar, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
@@ -36,6 +36,13 @@ export function DateRangeFilter({
     customStartDate && customEndDate ? { from: customStartDate, to: customEndDate } : undefined
   );
 
+  // Mantém dropdown aberto quando calendário estiver aberto
+  useEffect(() => {
+    if (isCalendarOpen) {
+      setIsDropdownOpen(true);
+    }
+  }, [isCalendarOpen]);
+
   const presets = [
     { value: "today" as const, label: "Hoje" },
     { value: "yesterday" as const, label: "Ontem" },
@@ -57,6 +64,16 @@ export function DateRangeFilter({
     setIsDropdownOpen(false);
   };
 
+  const handleCalendarOpenChange = (open: boolean) => {
+    setIsCalendarOpen(open);
+    if (!open) {
+      // Pequeno delay para não fechar o dropdown imediatamente
+      setTimeout(() => {
+        setIsDropdownOpen(false);
+      }, 100);
+    }
+  };
+
   const handleDateSelect = (range: { from: Date; to?: Date } | undefined) => {
     if (range?.from && range?.to) {
       setDateRange({ from: range.from, to: range.to });
@@ -68,7 +85,15 @@ export function DateRangeFilter({
   };
 
   return (
-    <DropdownMenu open={isDropdownOpen} onOpenChange={setIsDropdownOpen}>
+    <DropdownMenu 
+      open={isDropdownOpen} 
+      onOpenChange={(open) => {
+        // Só permite fechar se o calendário não estiver aberto
+        if (!isCalendarOpen || !open) {
+          setIsDropdownOpen(open);
+        }
+      }}
+    >
       <DropdownMenuTrigger asChild>
         <Button variant="outline" size="sm" className="gap-2 min-w-[200px] justify-between">
           <span className="flex items-center gap-2">
@@ -92,15 +117,27 @@ export function DateRangeFilter({
 
         <DropdownMenuSeparator />
 
-        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-          <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
+        <DropdownMenuItem 
+          onSelect={(e) => e.preventDefault()}
+          onClick={() => setIsCalendarOpen(true)}
+        >
+          <Popover 
+            open={isCalendarOpen} 
+            onOpenChange={handleCalendarOpenChange}
+            modal={false}
+          >
             <PopoverTrigger asChild>
               <div className="w-full flex items-center gap-2 cursor-pointer">
                 <Calendar className="w-4 h-4" />
                 Período personalizado
               </div>
             </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="end" side="right">
+            <PopoverContent 
+              className="w-auto p-0" 
+              align="end" 
+              side="right"
+              onOpenAutoFocus={(e) => e.preventDefault()}
+            >
               <CalendarComponent
                 mode="range"
                 selected={dateRange}
