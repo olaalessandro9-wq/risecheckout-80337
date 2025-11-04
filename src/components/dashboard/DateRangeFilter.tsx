@@ -162,6 +162,7 @@ export function DateRangeFilter({
               align="end" 
               side="right"
               onOpenAutoFocus={(e) => e.preventDefault()}
+              onInteractOutside={(e) => e.preventDefault()}
             >
               <CalendarComponent
                 mode="range"
