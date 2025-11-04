@@ -1172,46 +1172,7 @@ export type Database = {
       }
     }
     Views: {
-      v_system_health_summary: {
-        Row: {
-          avg_value: number | null
-          critical_count: number | null
-          error_count: number | null
-          event_count: number | null
-          hour: string | null
-          max_value: number | null
-          metric_type: string | null
-          min_value: number | null
-        }
-        Relationships: []
-      }
-      v_unresolved_errors: {
-        Row: {
-          error_message: string | null
-          function_name: string | null
-          id: string | null
-          order_id: string | null
-          timestamp: string | null
-          user_id: string | null
-        }
-        Insert: {
-          error_message?: string | null
-          function_name?: string | null
-          id?: string | null
-          order_id?: string | null
-          timestamp?: string | null
-          user_id?: string | null
-        }
-        Update: {
-          error_message?: string | null
-          function_name?: string | null
-          id?: string | null
-          order_id?: string | null
-          timestamp?: string | null
-          user_id?: string | null
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Functions: {
       attach_offer_to_checkout_smart: {
