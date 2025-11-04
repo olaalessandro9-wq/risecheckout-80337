@@ -36,13 +36,21 @@ Deno.serve(async (req) => {
     
     const platformFeePercent = settings?.platform_fee_percent || 0;
 
-    // Métricas principais
+    // Métricas principais com JOIN de produtos
     const { data: orders } = await supabase
       .from('orders')
-      .select('*')
+      .select(`
+        *,
+        products:product_id (
+          id,
+          name,
+          image_url
+        )
+      `)
       .eq('vendor_id', vendorId)
       .gte('created_at', startDate)
-      .lte('created_at', endDate);
+      .lte('created_at', endDate)
+      .order('created_at', { ascending: false });
 
     const { data: sessions } = await supabase
       .from('checkout_sessions')
@@ -97,15 +105,24 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Últimos clientes
+    // Últimos clientes com dados completos
     const recentCustomers = orders?.slice(0, 10).map(order => ({
-      id: order.id.substring(0, 8),
-      offer: order.product_id.substring(0, 8),
+      id: order.id,
+      orderId: order.id,
+      offer: order.products?.name || 'Produto não encontrado',
       client: order.customer_name || 'N/A',
-      phone: 'N/A',
+      phone: order.customer_email || 'N/A',
+      email: order.customer_email || 'N/A',
       createdAt: new Date(order.created_at).toLocaleDateString('pt-BR'),
       value: `R$ ${(order.amount_cents / 100).toFixed(2).replace('.', ',')}`,
-      status: order.status === 'PAID' ? 'Pago' : 'Pendente'
+      status: order.status === 'PAID' ? 'Pago' : 'Pendente',
+      // Dados completos para o dialog
+      productName: order.products?.name || 'Produto não encontrado',
+      productImageUrl: order.products?.image_url || '/placeholder.svg',
+      customerName: order.customer_name || 'N/A',
+      customerEmail: order.customer_email || 'N/A',
+      customerPhone: order.customer_email || 'N/A',
+      fullCreatedAt: order.created_at
     })) || [];
 
     return new Response(

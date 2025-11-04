@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import {
   Table,
@@ -11,15 +12,24 @@ import { Button } from "@/components/ui/button";
 import { Search, RefreshCw, Download, Eye } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { OrderDetailsDialog } from "./OrderDetailsDialog";
 
 interface Customer {
   id: string;
+  orderId: string;
   offer: string;
   client: string;
   phone: string;
+  email: string;
   createdAt: string;
   value: string;
   status: "Pago" | "Pendente";
+  productName: string;
+  productImageUrl: string;
+  customerName: string;
+  customerEmail: string;
+  customerPhone: string;
+  fullCreatedAt: string;
 }
 
 interface RecentCustomersTableProps {
@@ -28,7 +38,31 @@ interface RecentCustomersTableProps {
 }
 
 export function RecentCustomersTable({ customers, isLoading = false }: RecentCustomersTableProps) {
+  const [selectedOrder, setSelectedOrder] = useState<Customer | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  const handleViewDetails = (customer: Customer) => {
+    setSelectedOrder(customer);
+    setIsDialogOpen(true);
+  };
+
   return (
+    <>
+      <OrderDetailsDialog
+        open={isDialogOpen}
+        onOpenChange={setIsDialogOpen}
+        orderData={selectedOrder ? {
+          id: selectedOrder.orderId,
+          customerName: selectedOrder.customerName,
+          customerEmail: selectedOrder.customerEmail,
+          customerPhone: selectedOrder.customerPhone,
+          productName: selectedOrder.productName,
+          productImageUrl: selectedOrder.productImageUrl,
+          amount: selectedOrder.value,
+          status: selectedOrder.status,
+          createdAt: selectedOrder.createdAt,
+        } : null}
+      />
     <Card className="p-6 border-border/50">
       <div className="space-y-4">
         <div className="flex items-center justify-between">
@@ -112,7 +146,12 @@ export function RecentCustomersTable({ customers, isLoading = false }: RecentCus
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    <Button variant="ghost" size="sm" className="gap-2 text-primary hover:text-primary">
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="gap-2 hover:bg-primary/10 transition-colors"
+                      onClick={() => handleViewDetails(customer)}
+                    >
                       <Eye className="w-4 h-4" />
                       Ver Detalhes
                     </Button>
@@ -149,5 +188,6 @@ export function RecentCustomersTable({ customers, isLoading = false }: RecentCus
         )}
       </div>
     </Card>
+    </>
   );
 }

@@ -24,12 +24,21 @@ interface ChartDataPoint {
 
 interface RecentCustomer {
   id: string;
+  orderId: string;
   offer: string;
   client: string;
   phone: string;
+  email: string;
   createdAt: string;
   value: string;
   status: "Pago" | "Pendente";
+  // Dados completos para o dialog
+  productName: string;
+  productImageUrl: string;
+  customerName: string;
+  customerEmail: string;
+  customerPhone: string;
+  fullCreatedAt: string;
 }
 
 interface DashboardData {
