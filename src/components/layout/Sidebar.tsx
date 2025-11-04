@@ -105,14 +105,14 @@ export function Sidebar() {
         style={{ height: BRAND_H }}
       >
         {!isCollapsed && (
-          <div className="text-xl font-semibold tracking-tight overflow-hidden">
+          <div className="text-xl font-bold tracking-tight overflow-hidden text-foreground">
             RiseCheckout
           </div>
         )}
         
         <button
           onClick={toggleSidebar}
-          className="p-1.5 rounded-md hover:bg-muted transition-colors"
+          className="p-2 rounded-md hover:bg-muted/80 transition-all hover:scale-105"
           title={isCollapsed ? "Expandir sidebar" : "Colapsar sidebar"}
         >
           {isCollapsed ? (
@@ -141,11 +141,11 @@ export function Sidebar() {
                 "px-2 font-medium uppercase tracking-widest transition-all duration-300 ease-in-out",
                 isCollapsed 
                   ? "text-center pb-1 text-[10px] text-muted-foreground/60 mb-2.5" 
-                  : "pb-2 text-[11px] text-muted-foreground/80"
+                  : "pb-2 text-[11px] text-foreground/70 font-semibold"
               )}>
                 {section.title}
               </div>
-              <ul className={clsx(isCollapsed ? "space-y-2" : "space-y-1")}>
+              <ul className={clsx(isCollapsed ? "space-y-2" : "space-y-1.5")}>
                 {section.items.map((it) => {
                   const Icon = it.icon;
                   const content = it.external ? (
@@ -155,16 +155,16 @@ export function Sidebar() {
                       rel="noopener noreferrer"
                       className={rowClass(undefined, isCollapsed)}
                     >
-                      <Icon className={isCollapsed ? "h-[22px] w-[22px] shrink-0 mx-auto" : "h-4 w-4"} />
-                      {!isCollapsed && <span>{it.label}</span>}
+                      <Icon className={isCollapsed ? "h-[22px] w-[22px] shrink-0 mx-auto transition-transform" : "h-5 w-5 shrink-0 transition-transform group-hover:scale-110"} />
+                      {!isCollapsed && <span className="font-medium text-sm">{it.label}</span>}
                     </a>
                   ) : (
                     <NavLink 
                       to={it.to!} 
                       className={({ isActive }) => rowClass(isActive, isCollapsed)}
                     >
-                      <Icon className={isCollapsed ? "h-[22px] w-[22px] shrink-0 mx-auto" : "h-4 w-4"} />
-                      {!isCollapsed && <span>{it.label}</span>}
+                      <Icon className={isCollapsed ? "h-[22px] w-[22px] shrink-0 mx-auto transition-transform" : "h-5 w-5 shrink-0 transition-transform group-hover:scale-110"} />
+                      {!isCollapsed && <span className="font-medium text-sm">{it.label}</span>}
                     </NavLink>
                   );
 
@@ -200,11 +200,11 @@ export function Sidebar() {
 function rowClass(active?: boolean, collapsed?: boolean) {
   return clsx(
     "group flex items-center rounded-md text-sm transition-all duration-200 w-full",
-    collapsed ? "justify-center px-2 py-3" : "gap-3 px-2 py-2",
+    collapsed ? "justify-center px-2 py-3" : "gap-3.5 px-3 py-2.5",
     active && collapsed
       ? "bg-muted text-foreground font-medium border-l-2 border-primary"
       : active
-        ? "bg-muted text-foreground font-medium"
-        : "text-muted-foreground hover:bg-muted/50 hover:text-foreground hover:scale-[1.02]"
+        ? "bg-muted text-foreground font-semibold shadow-sm"
+        : "text-foreground/80 hover:bg-muted/50 hover:text-foreground hover:scale-[1.02]"
   );
 }
