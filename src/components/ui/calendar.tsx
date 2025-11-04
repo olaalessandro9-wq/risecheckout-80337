@@ -28,13 +28,13 @@ function Calendar({ className, classNames, showOutsideDays = false, ...props }: 
         head_row: "flex",
         head_cell: "text-muted-foreground rounded-md w-9 font-normal text-[0.8rem]",
         row: "flex w-full mt-2",
-        cell: "h-9 w-9 text-center text-sm p-0 relative hover:bg-green-500/10 transition-colors focus-within:relative focus-within:z-20",
-        day: cn(buttonVariants({ variant: "ghost" }), "h-9 w-9 p-0 font-normal aria-selected:opacity-100 hover:bg-green-500/10 transition-colors"),
+        cell: "h-9 w-9 text-center text-sm p-0 relative has-[button:not(.day-outside)]:hover:bg-primary/20 transition-colors focus-within:relative focus-within:z-20",
+        day: cn(buttonVariants({ variant: "ghost" }), "h-9 w-9 p-0 font-normal aria-selected:opacity-100 hover:bg-primary/20 transition-colors"),
         day_selected:
           "bg-transparent text-foreground ring-2 ring-primary hover:bg-transparent focus:bg-transparent",
         day_today: "bg-transparent text-foreground font-semibold",
         day_outside:
-          "day-outside text-muted-foreground opacity-50 aria-selected:bg-transparent aria-selected:text-muted-foreground aria-selected:opacity-30",
+          "day-outside text-muted-foreground opacity-50 aria-selected:bg-transparent aria-selected:text-muted-foreground aria-selected:opacity-30 hover:bg-transparent pointer-events-none",
         day_disabled: "text-muted-foreground opacity-50",
         day_range_middle: "aria-selected:bg-transparent",
         day_hidden: "invisible",
