@@ -302,67 +302,97 @@ const CheckoutCustomizer = () => {
         console.log('Produto carregado:', checkout.products);
         console.log('Preço do produto:', checkout.products?.price);
         
+        // Carregar design do campo JSONB (prioridade) ou fallback para colunas individuais
+        const savedDesign = parseJsonSafely(checkout.design, {});
+        const hasDesignField = savedDesign && Object.keys(savedDesign).length > 0;
+        
         const loadedCustomization: CheckoutCustomization = {
           design: {
-            font: checkout.font || 'Inter',
-            theme: checkout.theme || 'custom',
+            font: hasDesignField ? (savedDesign.font || 'Inter') : (checkout.font || 'Inter'),
+            theme: hasDesignField ? (savedDesign.theme || 'custom') : (checkout.theme || 'custom'),
             colors: {
-              background: checkout.background_color || '#FFFFFF',
-              primaryText: checkout.primary_text_color || '#000000',
-              secondaryText: checkout.secondary_text_color || '#6B7280',
-              active: checkout.active_text_color || '#10B981',
-              icon: checkout.icon_color || '#000000',
-              formBackground: checkout.form_background_color || '#F9FAFB',
+              // Mesclar cores do design JSONB com fallback para colunas individuais (retrocompatibilidade)
+              background: savedDesign.colors?.background || checkout.background_color || '#FFFFFF',
+              primaryText: savedDesign.colors?.primaryText || checkout.primary_text_color || '#000000',
+              secondaryText: savedDesign.colors?.secondaryText || checkout.secondary_text_color || '#6B7280',
+              active: savedDesign.colors?.active || checkout.active_text_color || '#10B981',
+              icon: savedDesign.colors?.icon || checkout.icon_color || '#000000',
+              formBackground: savedDesign.colors?.formBackground || checkout.form_background_color || '#F9FAFB',
               
               unselectedButton: {
-                text: checkout.unselected_button_text_color || '#000000',
-                background: checkout.unselected_button_bg_color || '#FFFFFF',
-                icon: checkout.unselected_button_icon_color || '#000000',
+                text: savedDesign.colors?.unselectedButton?.text || checkout.unselected_button_text_color || '#000000',
+                background: savedDesign.colors?.unselectedButton?.background || checkout.unselected_button_bg_color || '#FFFFFF',
+                icon: savedDesign.colors?.unselectedButton?.icon || checkout.unselected_button_icon_color || '#000000',
               },
               
               selectedButton: {
-                text: checkout.selected_button_text_color || '#FFFFFF',
-                background: checkout.selected_button_bg_color || '#10B981',
-                icon: checkout.selected_button_icon_color || '#FFFFFF',
+                text: savedDesign.colors?.selectedButton?.text || checkout.selected_button_text_color || '#FFFFFF',
+                background: savedDesign.colors?.selectedButton?.background || checkout.selected_button_bg_color || '#10B981',
+                icon: savedDesign.colors?.selectedButton?.icon || checkout.selected_button_icon_color || '#FFFFFF',
               },
               
               box: {
-                headerBg: checkout.box_header_bg_color || '#1A1A1A',
-                headerPrimaryText: checkout.box_header_primary_text_color || '#FFFFFF',
-                headerSecondaryText: checkout.box_header_secondary_text_color || '#CCCCCC',
-                bg: checkout.box_bg_color || '#0A0A0A',
-                primaryText: checkout.box_primary_text_color || '#FFFFFF',
-                secondaryText: checkout.box_secondary_text_color || '#CCCCCC',
+                headerBg: savedDesign.colors?.box?.headerBg || checkout.box_header_bg_color || '#1A1A1A',
+                headerPrimaryText: savedDesign.colors?.box?.headerPrimaryText || checkout.box_header_primary_text_color || '#FFFFFF',
+                headerSecondaryText: savedDesign.colors?.box?.headerSecondaryText || checkout.box_header_secondary_text_color || '#CCCCCC',
+                bg: savedDesign.colors?.box?.bg || checkout.box_bg_color || '#0A0A0A',
+                primaryText: savedDesign.colors?.box?.primaryText || checkout.box_primary_text_color || '#FFFFFF',
+                secondaryText: savedDesign.colors?.box?.secondaryText || checkout.box_secondary_text_color || '#CCCCCC',
               },
               
               unselectedBox: {
-                headerBg: checkout.unselected_box_header_bg_color || '#1A1A1A',
-                headerPrimaryText: checkout.unselected_box_header_primary_text_color || '#FFFFFF',
-                headerSecondaryText: checkout.unselected_box_header_secondary_text_color || '#CCCCCC',
-                bg: checkout.unselected_box_bg_color || '#0A0A0A',
-                primaryText: checkout.unselected_box_primary_text_color || '#FFFFFF',
-                secondaryText: checkout.unselected_box_secondary_text_color || '#CCCCCC',
+                headerBg: savedDesign.colors?.unselectedBox?.headerBg || checkout.unselected_box_header_bg_color || '#1A1A1A',
+                headerPrimaryText: savedDesign.colors?.unselectedBox?.headerPrimaryText || checkout.unselected_box_header_primary_text_color || '#FFFFFF',
+                headerSecondaryText: savedDesign.colors?.unselectedBox?.headerSecondaryText || checkout.unselected_box_header_secondary_text_color || '#CCCCCC',
+                bg: savedDesign.colors?.unselectedBox?.bg || checkout.unselected_box_bg_color || '#0A0A0A',
+                primaryText: savedDesign.colors?.unselectedBox?.primaryText || checkout.unselected_box_primary_text_color || '#FFFFFF',
+                secondaryText: savedDesign.colors?.unselectedBox?.secondaryText || checkout.unselected_box_secondary_text_color || '#CCCCCC',
               },
               
               selectedBox: {
-                headerBg: checkout.selected_box_header_bg_color || '#10B981',
-                headerPrimaryText: checkout.selected_box_header_primary_text_color || '#FFFFFF',
-                headerSecondaryText: checkout.selected_box_header_secondary_text_color || '#CCCCCC',
-                bg: checkout.selected_box_bg_color || '#0A0A0A',
-                primaryText: checkout.selected_box_primary_text_color || '#FFFFFF',
-                secondaryText: checkout.selected_box_secondary_text_color || '#CCCCCC',
+                headerBg: savedDesign.colors?.selectedBox?.headerBg || checkout.selected_box_header_bg_color || '#10B981',
+                headerPrimaryText: savedDesign.colors?.selectedBox?.headerPrimaryText || checkout.selected_box_header_primary_text_color || '#FFFFFF',
+                headerSecondaryText: savedDesign.colors?.selectedBox?.headerSecondaryText || checkout.selected_box_header_secondary_text_color || '#CCCCCC',
+                bg: savedDesign.colors?.selectedBox?.bg || checkout.selected_box_bg_color || '#0A0A0A',
+                primaryText: savedDesign.colors?.selectedBox?.primaryText || checkout.selected_box_primary_text_color || '#FFFFFF',
+                secondaryText: savedDesign.colors?.selectedBox?.secondaryText || checkout.selected_box_secondary_text_color || '#CCCCCC',
               },
               
               button: {
-                background: checkout.payment_button_bg_color || '#10B981',
-                text: checkout.payment_button_text_color || '#FFFFFF',
+                background: savedDesign.colors?.button?.background || checkout.payment_button_bg_color || '#10B981',
+                text: savedDesign.colors?.button?.text || checkout.payment_button_text_color || '#FFFFFF',
+              },
+              
+              // Carregar cores novas do design JSONB (orderSummary, footer, securePurchase)
+              orderSummary: savedDesign.colors?.orderSummary || {
+                background: '#F9FAFB',
+                titleText: '#1F2937',
+                productName: '#111827',
+                priceText: '#10B981',
+                labelText: '#6B7280',
+                borderColor: '#E5E7EB',
+              },
+              
+              footer: savedDesign.colors?.footer || {
+                background: '#1F2937',
+                primaryText: '#FFFFFF',
+                secondaryText: '#D1D5DB',
+              },
+              
+              securePurchase: savedDesign.colors?.securePurchase || {
+                headerBackground: '#10B981',
+                headerText: '#FFFFFF',
+                cardBackground: '#F9FAFB',
+                primaryText: '#1F2937',
+                secondaryText: '#6B7280',
+                linkText: '#10B981',
               },
             },
             backgroundImage: {
-              url: checkout.background_image_url || '',
-              fixed: checkout.background_image_fixed || false,
-              repeat: checkout.background_image_repeat || false,
-              expand: checkout.background_image_expand || false,
+              url: savedDesign.backgroundImage?.url || checkout.background_image_url || '',
+              fixed: savedDesign.backgroundImage?.fixed || checkout.background_image_fixed || false,
+              repeat: savedDesign.backgroundImage?.repeat || checkout.background_image_repeat || false,
+              expand: savedDesign.backgroundImage?.expand || checkout.background_image_expand || false,
             },
           },
           rows: parseJsonSafely(checkout.components, []),
@@ -568,6 +598,9 @@ const CheckoutCustomizer = () => {
           background_image_fixed: customization.design.backgroundImage?.fixed || false,
           background_image_repeat: customization.design.backgroundImage?.repeat || false,
           background_image_expand: customization.design.backgroundImage?.expand || false,
+          
+          // Salvar objeto design completo (JSONB) - inclui cores novas como orderSummary, footer, securePurchase
+          design: JSON.parse(JSON.stringify(customization.design, (k, v) => (k.startsWith('_') ? undefined : v))) as any,
           
           components: JSON.parse(JSON.stringify(customization.rows, (k, v) => (k.startsWith('_') ? undefined : v))) as any,
           top_components: JSON.parse(JSON.stringify(customization.topComponents || [], (k, v) => (k.startsWith('_') ? undefined : v))) as any,
