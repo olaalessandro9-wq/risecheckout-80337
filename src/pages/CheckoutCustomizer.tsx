@@ -212,6 +212,7 @@ const CheckoutCustomizer = () => {
   
   // Flags para controlar resync/auto-save
   const [isDirty, setIsDirty] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const [lastLocalRev, setLastLocalRev] = useState<number>(Date.now());
   
   // Função para marcar estado como modificado
@@ -457,6 +458,9 @@ const CheckoutCustomizer = () => {
       return;
     }
 
+    setIsSaving(true);
+    toast({ title: "Salvando alterações..." });
+
     // 1. Aguardar uploads pendentes
     if (hasPendingUploads(customization)) {
       toast({ title: "Aguardando upload", description: "Existem imagens sendo enviadas. Salvando automaticamente quando terminar..." });
@@ -579,6 +583,7 @@ const CheckoutCustomizer = () => {
       });
     } finally {
       setLoading(false);
+      setIsSaving(false);
     }
   };
 
@@ -1042,8 +1047,8 @@ const CheckoutCustomizer = () => {
                 Preview
               </Button>
 
-              <Button onClick={handleSave} disabled={loading}>
-                {loading ? "Salvando..." : "Salvar"}
+              <Button onClick={handleSave} disabled={loading || isSaving}>
+                {loading || isSaving ? "Salvando..." : "Salvar"}
               </Button>
             </div>
           </div>

@@ -1165,22 +1165,90 @@ export const CheckoutCustomizationPanel = ({
             </p>
           </div>
 
-          <CheckoutColorSettings 
-            customization={customization.design}
-            onUpdate={(field, value) => {
-              const keys = field.split('.');
-              const newDesign = JSON.parse(JSON.stringify(customization.design));
-              
-              let current: any = newDesign;
-              for (let i = 0; i < keys.length - 1; i++) {
-                if (!current[keys[i]]) current[keys[i]] = {};
-                current = current[keys[i]];
+        <CheckoutColorSettings 
+          customization={customization.design}
+          onUpdate={(field, value) => {
+            // Map DB field names to nested structure and use onUpdateDesign
+            const fieldMap: Record<string, string[]> = {
+              'theme': ['theme'],
+              'font': ['font'],
+              'primary_text_color': ['colors', 'primaryText'],
+              'secondary_text_color': ['colors', 'secondaryText'],
+              'active_text_color': ['colors', 'active'],
+              'icon_color': ['colors', 'icon'],
+              'background_color': ['colors', 'background'],
+              'form_background_color': ['colors', 'formBackground'],
+              'unselected_button_text_color': ['colors', 'unselectedButton', 'text'],
+              'unselected_button_bg_color': ['colors', 'unselectedButton', 'background'],
+              'unselected_button_icon_color': ['colors', 'unselectedButton', 'icon'],
+              'selected_button_text_color': ['colors', 'selectedButton', 'text'],
+              'selected_button_bg_color': ['colors', 'selectedButton', 'background'],
+              'selected_button_icon_color': ['colors', 'selectedButton', 'icon'],
+              'box_header_bg_color': ['colors', 'box', 'headerBg'],
+              'box_header_primary_text_color': ['colors', 'box', 'headerPrimaryText'],
+              'box_header_secondary_text_color': ['colors', 'box', 'headerSecondaryText'],
+              'box_bg_color': ['colors', 'box', 'bg'],
+              'box_primary_text_color': ['colors', 'box', 'primaryText'],
+              'box_secondary_text_color': ['colors', 'box', 'secondaryText'],
+              'unselected_box_header_bg_color': ['colors', 'unselectedBox', 'headerBg'],
+              'unselected_box_header_primary_text_color': ['colors', 'unselectedBox', 'headerPrimaryText'],
+              'unselected_box_header_secondary_text_color': ['colors', 'unselectedBox', 'headerSecondaryText'],
+              'unselected_box_bg_color': ['colors', 'unselectedBox', 'bg'],
+              'unselected_box_primary_text_color': ['colors', 'unselectedBox', 'primaryText'],
+              'unselected_box_secondary_text_color': ['colors', 'unselectedBox', 'secondaryText'],
+              'selected_box_header_bg_color': ['colors', 'selectedBox', 'headerBg'],
+              'selected_box_header_primary_text_color': ['colors', 'selectedBox', 'headerPrimaryText'],
+              'selected_box_header_secondary_text_color': ['colors', 'selectedBox', 'headerSecondaryText'],
+              'selected_box_bg_color': ['colors', 'selectedBox', 'bg'],
+              'selected_box_primary_text_color': ['colors', 'selectedBox', 'primaryText'],
+              'selected_box_secondary_text_color': ['colors', 'selectedBox', 'secondaryText'],
+              'payment_button_bg_color': ['colors', 'button', 'background'],
+              'payment_button_text_color': ['colors', 'button', 'text'],
+            };
+
+            const keys = fieldMap[field];
+            if (!keys) {
+              console.warn('Unknown field:', field);
+              return;
+            }
+
+            // Build new design object efficiently with spread operators
+            let newDesign = { ...customization.design };
+            
+            if (keys.length === 1) {
+              // Top level (theme, font)
+              newDesign = {
+                ...newDesign,
+                [keys[0]]: value
+              };
+            } else if (keys[0] === 'colors') {
+              if (keys.length === 2) {
+                // Single level color
+                newDesign = {
+                  ...newDesign,
+                  colors: {
+                    ...newDesign.colors,
+                    [keys[1]]: value
+                  }
+                };
+              } else if (keys.length === 3) {
+                // Nested color (e.g., unselectedButton.text)
+                newDesign = {
+                  ...newDesign,
+                  colors: {
+                    ...newDesign.colors,
+                    [keys[1]]: {
+                      ...(newDesign.colors as any)[keys[1]],
+                      [keys[2]]: value
+                    }
+                  }
+                };
               }
-              current[keys[keys.length - 1]] = value;
-              
-              onUpdateDesign(newDesign);
-            }}
-          />
+            }
+            
+            onUpdateDesign(newDesign);
+          }}
+        />
         </TabsContent>
       </Tabs>
     </div>

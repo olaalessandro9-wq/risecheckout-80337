@@ -487,7 +487,9 @@ const RowRenderer = ({
   );
 };
 
-export const CheckoutPreview = ({
+import React from 'react';
+
+const CheckoutPreviewComponent = ({
   customization,
   viewMode,
   selectedComponentId,
@@ -1120,4 +1122,14 @@ export const CheckoutPreview = ({
     </div>
   );
 };
+
+export const CheckoutPreview = React.memo(CheckoutPreviewComponent, (prevProps, nextProps) => {
+  return (
+    prevProps.customization === nextProps.customization &&
+    prevProps.viewMode === nextProps.viewMode &&
+    prevProps.isPreviewMode === nextProps.isPreviewMode &&
+    prevProps.selectedComponentId === nextProps.selectedComponentId &&
+    prevProps.selectedRowId === nextProps.selectedRowId
+  );
+});
 
