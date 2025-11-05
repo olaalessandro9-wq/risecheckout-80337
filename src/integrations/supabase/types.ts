@@ -263,8 +263,19 @@ export type Database = {
       }
       checkouts: {
         Row: {
+          active_text_color: string | null
           background_color: string | null
+          background_image_expand: boolean | null
+          background_image_fixed: boolean | null
+          background_image_repeat: boolean | null
+          background_image_url: string | null
           bottom_components: Json | null
+          box_bg_color: string | null
+          box_header_bg_color: string | null
+          box_header_primary_text_color: string | null
+          box_header_secondary_text_color: string | null
+          box_primary_text_color: string | null
+          box_secondary_text_color: string | null
           button_color: string | null
           button_text_color: string | null
           components: Json | null
@@ -272,24 +283,59 @@ export type Database = {
           design: Json | null
           font: string | null
           form_background_color: string | null
+          icon_color: string | null
           id: string
           is_default: boolean
           name: string
+          payment_button_bg_color: string | null
+          payment_button_text_color: string | null
           primary_color: string | null
+          primary_text_color: string | null
           product_id: string | null
           secondary_color: string | null
+          secondary_text_color: string | null
+          selected_box_bg_color: string | null
+          selected_box_header_bg_color: string | null
+          selected_box_header_primary_text_color: string | null
+          selected_box_header_secondary_text_color: string | null
+          selected_box_primary_text_color: string | null
+          selected_box_secondary_text_color: string | null
+          selected_button_bg_color: string | null
+          selected_button_icon_color: string | null
+          selected_button_text_color: string | null
           selected_payment_color: string | null
           seller_name: string | null
           slug: string | null
           status: string | null
           text_color: string | null
+          theme: string | null
           top_components: Json | null
+          unselected_box_bg_color: string | null
+          unselected_box_header_bg_color: string | null
+          unselected_box_header_primary_text_color: string | null
+          unselected_box_header_secondary_text_color: string | null
+          unselected_box_primary_text_color: string | null
+          unselected_box_secondary_text_color: string | null
+          unselected_button_bg_color: string | null
+          unselected_button_icon_color: string | null
+          unselected_button_text_color: string | null
           updated_at: string | null
           visits_count: number
         }
         Insert: {
+          active_text_color?: string | null
           background_color?: string | null
+          background_image_expand?: boolean | null
+          background_image_fixed?: boolean | null
+          background_image_repeat?: boolean | null
+          background_image_url?: string | null
           bottom_components?: Json | null
+          box_bg_color?: string | null
+          box_header_bg_color?: string | null
+          box_header_primary_text_color?: string | null
+          box_header_secondary_text_color?: string | null
+          box_primary_text_color?: string | null
+          box_secondary_text_color?: string | null
           button_color?: string | null
           button_text_color?: string | null
           components?: Json | null
@@ -297,24 +343,59 @@ export type Database = {
           design?: Json | null
           font?: string | null
           form_background_color?: string | null
+          icon_color?: string | null
           id?: string
           is_default?: boolean
           name: string
+          payment_button_bg_color?: string | null
+          payment_button_text_color?: string | null
           primary_color?: string | null
+          primary_text_color?: string | null
           product_id?: string | null
           secondary_color?: string | null
+          secondary_text_color?: string | null
+          selected_box_bg_color?: string | null
+          selected_box_header_bg_color?: string | null
+          selected_box_header_primary_text_color?: string | null
+          selected_box_header_secondary_text_color?: string | null
+          selected_box_primary_text_color?: string | null
+          selected_box_secondary_text_color?: string | null
+          selected_button_bg_color?: string | null
+          selected_button_icon_color?: string | null
+          selected_button_text_color?: string | null
           selected_payment_color?: string | null
           seller_name?: string | null
           slug?: string | null
           status?: string | null
           text_color?: string | null
+          theme?: string | null
           top_components?: Json | null
+          unselected_box_bg_color?: string | null
+          unselected_box_header_bg_color?: string | null
+          unselected_box_header_primary_text_color?: string | null
+          unselected_box_header_secondary_text_color?: string | null
+          unselected_box_primary_text_color?: string | null
+          unselected_box_secondary_text_color?: string | null
+          unselected_button_bg_color?: string | null
+          unselected_button_icon_color?: string | null
+          unselected_button_text_color?: string | null
           updated_at?: string | null
           visits_count?: number
         }
         Update: {
+          active_text_color?: string | null
           background_color?: string | null
+          background_image_expand?: boolean | null
+          background_image_fixed?: boolean | null
+          background_image_repeat?: boolean | null
+          background_image_url?: string | null
           bottom_components?: Json | null
+          box_bg_color?: string | null
+          box_header_bg_color?: string | null
+          box_header_primary_text_color?: string | null
+          box_header_secondary_text_color?: string | null
+          box_primary_text_color?: string | null
+          box_secondary_text_color?: string | null
           button_color?: string | null
           button_text_color?: string | null
           components?: Json | null
@@ -322,18 +403,42 @@ export type Database = {
           design?: Json | null
           font?: string | null
           form_background_color?: string | null
+          icon_color?: string | null
           id?: string
           is_default?: boolean
           name?: string
+          payment_button_bg_color?: string | null
+          payment_button_text_color?: string | null
           primary_color?: string | null
+          primary_text_color?: string | null
           product_id?: string | null
           secondary_color?: string | null
+          secondary_text_color?: string | null
+          selected_box_bg_color?: string | null
+          selected_box_header_bg_color?: string | null
+          selected_box_header_primary_text_color?: string | null
+          selected_box_header_secondary_text_color?: string | null
+          selected_box_primary_text_color?: string | null
+          selected_box_secondary_text_color?: string | null
+          selected_button_bg_color?: string | null
+          selected_button_icon_color?: string | null
+          selected_button_text_color?: string | null
           selected_payment_color?: string | null
           seller_name?: string | null
           slug?: string | null
           status?: string | null
           text_color?: string | null
+          theme?: string | null
           top_components?: Json | null
+          unselected_box_bg_color?: string | null
+          unselected_box_header_bg_color?: string | null
+          unselected_box_header_primary_text_color?: string | null
+          unselected_box_header_secondary_text_color?: string | null
+          unselected_box_primary_text_color?: string | null
+          unselected_box_secondary_text_color?: string | null
+          unselected_button_bg_color?: string | null
+          unselected_button_icon_color?: string | null
+          unselected_button_text_color?: string | null
           updated_at?: string | null
           visits_count?: number
         }

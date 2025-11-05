@@ -65,20 +65,59 @@ export interface CheckoutDesign {
     background: string;
     primaryText: string;
     secondaryText: string;
-    accent: string;
+    active: string;
+    icon: string;
+    formBackground: string;
+    
+    unselectedButton: {
+      text: string;
+      background: string;
+      icon: string;
+    };
+    
+    selectedButton: {
+      text: string;
+      background: string;
+      icon: string;
+    };
+    
+    box: {
+      headerBg: string;
+      headerPrimaryText: string;
+      headerSecondaryText: string;
+      bg: string;
+      primaryText: string;
+      secondaryText: string;
+    };
+    
+    unselectedBox: {
+      headerBg: string;
+      headerPrimaryText: string;
+      headerSecondaryText: string;
+      bg: string;
+      primaryText: string;
+      secondaryText: string;
+    };
+    
+    selectedBox: {
+      headerBg: string;
+      headerPrimaryText: string;
+      headerSecondaryText: string;
+      bg: string;
+      primaryText: string;
+      secondaryText: string;
+    };
+    
     button: {
       background: string;
       text: string;
     };
-    form?: {
-      background: string;
-    };
-    selectedPayment?: string;
   };
   backgroundImage?: {
     url?: string;
     fixed?: boolean;
     repeat?: boolean;
+    expand?: boolean;
   };
 }
 
@@ -115,15 +154,47 @@ const CheckoutCustomizer = () => {
         background: "#FFFFFF",
         primaryText: "#000000",
         secondaryText: "#6B7280",
-        accent: "#10B981",
+        active: "#10B981",
+        icon: "#000000",
+        formBackground: "#F9FAFB",
+        unselectedButton: {
+          text: "#000000",
+          background: "#FFFFFF",
+          icon: "#000000",
+        },
+        selectedButton: {
+          text: "#FFFFFF",
+          background: "#10B981",
+          icon: "#FFFFFF",
+        },
+        box: {
+          headerBg: "#1A1A1A",
+          headerPrimaryText: "#FFFFFF",
+          headerSecondaryText: "#CCCCCC",
+          bg: "#0A0A0A",
+          primaryText: "#FFFFFF",
+          secondaryText: "#CCCCCC",
+        },
+        unselectedBox: {
+          headerBg: "#1A1A1A",
+          headerPrimaryText: "#FFFFFF",
+          headerSecondaryText: "#CCCCCC",
+          bg: "#0A0A0A",
+          primaryText: "#FFFFFF",
+          secondaryText: "#CCCCCC",
+        },
+        selectedBox: {
+          headerBg: "#10B981",
+          headerPrimaryText: "#FFFFFF",
+          headerSecondaryText: "#CCCCCC",
+          bg: "#0A0A0A",
+          primaryText: "#FFFFFF",
+          secondaryText: "#CCCCCC",
+        },
         button: {
           background: "#10B981",
           text: "#FFFFFF",
         },
-        form: {
-          background: "#F9FAFB",
-        },
-        selectedPayment: "#10B981",
       },
     },
     rows: [],
@@ -208,20 +279,64 @@ const CheckoutCustomizer = () => {
         const loadedCustomization: CheckoutCustomization = {
           design: {
             font: checkout.font || 'Inter',
-            theme: 'custom',
+            theme: checkout.theme || 'custom',
             colors: {
               background: checkout.background_color || '#FFFFFF',
-              primaryText: checkout.text_color || '#000000',
-              secondaryText: '#6B7280',
-              accent: checkout.primary_color || '#10B981',
+              primaryText: checkout.primary_text_color || '#000000',
+              secondaryText: checkout.secondary_text_color || '#6B7280',
+              active: checkout.active_text_color || '#10B981',
+              icon: checkout.icon_color || '#000000',
+              formBackground: checkout.form_background_color || '#F9FAFB',
+              
+              unselectedButton: {
+                text: checkout.unselected_button_text_color || '#000000',
+                background: checkout.unselected_button_bg_color || '#FFFFFF',
+                icon: checkout.unselected_button_icon_color || '#000000',
+              },
+              
+              selectedButton: {
+                text: checkout.selected_button_text_color || '#FFFFFF',
+                background: checkout.selected_button_bg_color || '#10B981',
+                icon: checkout.selected_button_icon_color || '#FFFFFF',
+              },
+              
+              box: {
+                headerBg: checkout.box_header_bg_color || '#1A1A1A',
+                headerPrimaryText: checkout.box_header_primary_text_color || '#FFFFFF',
+                headerSecondaryText: checkout.box_header_secondary_text_color || '#CCCCCC',
+                bg: checkout.box_bg_color || '#0A0A0A',
+                primaryText: checkout.box_primary_text_color || '#FFFFFF',
+                secondaryText: checkout.box_secondary_text_color || '#CCCCCC',
+              },
+              
+              unselectedBox: {
+                headerBg: checkout.unselected_box_header_bg_color || '#1A1A1A',
+                headerPrimaryText: checkout.unselected_box_header_primary_text_color || '#FFFFFF',
+                headerSecondaryText: checkout.unselected_box_header_secondary_text_color || '#CCCCCC',
+                bg: checkout.unselected_box_bg_color || '#0A0A0A',
+                primaryText: checkout.unselected_box_primary_text_color || '#FFFFFF',
+                secondaryText: checkout.unselected_box_secondary_text_color || '#CCCCCC',
+              },
+              
+              selectedBox: {
+                headerBg: checkout.selected_box_header_bg_color || '#10B981',
+                headerPrimaryText: checkout.selected_box_header_primary_text_color || '#FFFFFF',
+                headerSecondaryText: checkout.selected_box_header_secondary_text_color || '#CCCCCC',
+                bg: checkout.selected_box_bg_color || '#0A0A0A',
+                primaryText: checkout.selected_box_primary_text_color || '#FFFFFF',
+                secondaryText: checkout.selected_box_secondary_text_color || '#CCCCCC',
+              },
+              
               button: {
-                background: checkout.button_color || '#10B981',
-                text: checkout.button_text_color || '#FFFFFF',
+                background: checkout.payment_button_bg_color || '#10B981',
+                text: checkout.payment_button_text_color || '#FFFFFF',
               },
-              form: {
-                background: checkout.form_background_color || '#F9FAFB',
-              },
-              selectedPayment: checkout.selected_payment_color || '#10B981',
+            },
+            backgroundImage: {
+              url: checkout.background_image_url || '',
+              fixed: checkout.background_image_fixed || false,
+              repeat: checkout.background_image_repeat || false,
+              expand: checkout.background_image_expand || false,
             },
           },
           rows: parseJsonSafely(checkout.components, []),
@@ -379,13 +494,52 @@ const CheckoutCustomizer = () => {
       const { error } = await supabase
         .from("checkouts")
         .update({
+          theme: customization.design.theme,
           font: customization.design.font,
           background_color: customization.design.colors.background,
-          text_color: customization.design.colors.primaryText,
-          primary_color: customization.design.colors.accent,
-          button_color: customization.design.colors.button.background,
-          button_text_color: customization.design.colors.button.text,
-          // Remover campos temporários antes de salvar
+          primary_text_color: customization.design.colors.primaryText,
+          secondary_text_color: customization.design.colors.secondaryText,
+          active_text_color: customization.design.colors.active,
+          icon_color: customization.design.colors.icon,
+          form_background_color: customization.design.colors.formBackground,
+          
+          unselected_button_text_color: customization.design.colors.unselectedButton.text,
+          unselected_button_bg_color: customization.design.colors.unselectedButton.background,
+          unselected_button_icon_color: customization.design.colors.unselectedButton.icon,
+          
+          selected_button_text_color: customization.design.colors.selectedButton.text,
+          selected_button_bg_color: customization.design.colors.selectedButton.background,
+          selected_button_icon_color: customization.design.colors.selectedButton.icon,
+          
+          box_header_bg_color: customization.design.colors.box.headerBg,
+          box_header_primary_text_color: customization.design.colors.box.headerPrimaryText,
+          box_header_secondary_text_color: customization.design.colors.box.headerSecondaryText,
+          box_bg_color: customization.design.colors.box.bg,
+          box_primary_text_color: customization.design.colors.box.primaryText,
+          box_secondary_text_color: customization.design.colors.box.secondaryText,
+          
+          unselected_box_header_bg_color: customization.design.colors.unselectedBox.headerBg,
+          unselected_box_header_primary_text_color: customization.design.colors.unselectedBox.headerPrimaryText,
+          unselected_box_header_secondary_text_color: customization.design.colors.unselectedBox.headerSecondaryText,
+          unselected_box_bg_color: customization.design.colors.unselectedBox.bg,
+          unselected_box_primary_text_color: customization.design.colors.unselectedBox.primaryText,
+          unselected_box_secondary_text_color: customization.design.colors.unselectedBox.secondaryText,
+          
+          selected_box_header_bg_color: customization.design.colors.selectedBox.headerBg,
+          selected_box_header_primary_text_color: customization.design.colors.selectedBox.headerPrimaryText,
+          selected_box_header_secondary_text_color: customization.design.colors.selectedBox.headerSecondaryText,
+          selected_box_bg_color: customization.design.colors.selectedBox.bg,
+          selected_box_primary_text_color: customization.design.colors.selectedBox.primaryText,
+          selected_box_secondary_text_color: customization.design.colors.selectedBox.secondaryText,
+          
+          payment_button_bg_color: customization.design.colors.button.background,
+          payment_button_text_color: customization.design.colors.button.text,
+          
+          background_image_url: customization.design.backgroundImage?.url || null,
+          background_image_fixed: customization.design.backgroundImage?.fixed || false,
+          background_image_repeat: customization.design.backgroundImage?.repeat || false,
+          background_image_expand: customization.design.backgroundImage?.expand || false,
+          
           components: JSON.parse(JSON.stringify(customization.rows, (k, v) => (k.startsWith('_') ? undefined : v))) as any,
           top_components: JSON.parse(JSON.stringify(customization.topComponents || [], (k, v) => (k.startsWith('_') ? undefined : v))) as any,
           bottom_components: JSON.parse(JSON.stringify(customization.bottomComponents || [], (k, v) => (k.startsWith('_') ? undefined : v))) as any,

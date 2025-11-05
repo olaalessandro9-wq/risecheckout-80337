@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { CheckoutComponent, CheckoutDesign, CheckoutRow, LayoutType } from "@/pages/CheckoutCustomizer";
 import { ArrowLeft, Trash2, Columns, Columns2, Columns3, LayoutGrid, Copy, MoveUp, MoveDown } from "lucide-react";
-import { CheckoutColorSettingsEssential } from "./CheckoutColorSettingsEssential";
+import { CheckoutColorSettings } from "./CheckoutColorSettings";
 import { TypeIcon, ImageIcon, CheckCircleIcon, AwardIcon, TimerIcon, QuoteIcon, VideoIcon } from "@/components/icons";
 import { useDraggable } from "@dnd-kit/core";
 import { supabase } from "@/integrations/supabase/client";
@@ -1165,9 +1165,21 @@ export const CheckoutCustomizationPanel = ({
             </p>
           </div>
 
-          <CheckoutColorSettingsEssential 
-            design={customization.design}
-            onUpdateDesign={onUpdateDesign}
+          <CheckoutColorSettings 
+            customization={customization.design}
+            onUpdate={(field, value) => {
+              const keys = field.split('.');
+              const newDesign = JSON.parse(JSON.stringify(customization.design));
+              
+              let current: any = newDesign;
+              for (let i = 0; i < keys.length - 1; i++) {
+                if (!current[keys[i]]) current[keys[i]] = {};
+                current = current[keys[i]];
+              }
+              current[keys[keys.length - 1]] = value;
+              
+              onUpdateDesign(newDesign);
+            }}
           />
         </TabsContent>
       </Tabs>

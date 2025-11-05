@@ -1,5 +1,7 @@
 import { ColorPicker } from "./ColorPicker";
 import { Separator } from "@/components/ui/separator";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface CheckoutColorSettingsProps {
   customization: any;
@@ -12,13 +14,42 @@ export const CheckoutColorSettings = ({ customization, onUpdate }: CheckoutColor
       {/* Tema e Fonte */}
       <div className="space-y-4">
         <h3 className="text-lg font-semibold">Tema e Fonte</h3>
+        
         <div className="space-y-2">
-          <label className="text-sm font-medium">Tema</label>
-          <p className="text-xs text-muted-foreground">Customizado</p>
+          <Label>Tema</Label>
+          <Select
+            value={customization.theme || 'custom'}
+            onValueChange={(value) => onUpdate('theme', value)}
+          >
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="light">Claro</SelectItem>
+              <SelectItem value="dark">Escuro</SelectItem>
+              <SelectItem value="custom">Customizado</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
+        
         <div className="space-y-2">
-          <label className="text-sm font-medium">Fonte</label>
-          <p className="text-xs text-muted-foreground">Roboto</p>
+          <Label>Fonte</Label>
+          <Select
+            value={customization.font || 'Inter'}
+            onValueChange={(value) => onUpdate('font', value)}
+          >
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="Inter">Inter</SelectItem>
+              <SelectItem value="Roboto">Roboto</SelectItem>
+              <SelectItem value="Poppins">Poppins</SelectItem>
+              <SelectItem value="Montserrat">Montserrat</SelectItem>
+              <SelectItem value="Open Sans">Open Sans</SelectItem>
+              <SelectItem value="Lato">Lato</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
       </div>
 

@@ -278,7 +278,7 @@ const ComponentRenderer = ({
         <CountdownTimer
           initialMinutes={component.content?.minutes || 15}
           initialSeconds={component.content?.seconds || 0}
-          backgroundColor={component.content?.timerColor || customization.design.colors.accent}
+          backgroundColor={component.content?.timerColor || customization.design.colors.active}
           textColor={component.content?.textColor || "#FFFFFF"}
           activeText={component.content?.activeText || "Oferta por tempo limitado"}
           finishedText={component.content?.finishedText || "Oferta finalizada"}
@@ -295,7 +295,7 @@ const ComponentRenderer = ({
           className={`p-6 rounded-lg ${baseClasses}`}
           onClick={onClick}
           style={{
-            backgroundColor: customization.design.colors.form?.background || "#F9FAFB",
+            backgroundColor: customization.design.colors.formBackground || "#F9FAFB",
           }}
         >
           <div className="flex gap-4">
@@ -349,7 +349,7 @@ const ComponentRenderer = ({
           className={`p-4 rounded-lg ${baseClasses}`}
           onClick={onClick}
           style={{
-            backgroundColor: customization.design.colors.form?.background || "#F9FAFB",
+            backgroundColor: customization.design.colors.formBackground || "#F9FAFB",
           }}
         >
           {embedUrl ? (
@@ -865,10 +865,10 @@ export const CheckoutPreview = ({
                 className="p-4 rounded-2xl border-2 transition-all duration-200 cursor-pointer hover:scale-[1.01] hover:shadow-md"
                 style={{
                   backgroundColor: selectedBumps.has(bump.id) 
-                    ? customization.design.colors.accent + "10" 
+                    ? customization.design.colors.active + "10" 
                     : customization.design.colors.background,
                   borderColor: selectedBumps.has(bump.id) 
-                    ? customization.design.colors.accent 
+                    ? customization.design.colors.active 
                     : "#E5E7EB",
                 }}
                 onClick={() => toggleBump(bump.id)}
@@ -878,11 +878,11 @@ export const CheckoutPreview = ({
                   <div className="flex items-start gap-2 mb-3">
                     <div 
                       className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5"
-                      style={{ backgroundColor: customization.design.colors.accent + "20" }}
+                      style={{ backgroundColor: customization.design.colors.active + "20" }}
                     >
                       <div 
                         className="w-2.5 h-2.5 rounded-full" 
-                        style={{ backgroundColor: customization.design.colors.accent }}
+                        style={{ backgroundColor: customization.design.colors.active }}
                       ></div>
                     </div>
                     <h5 
@@ -904,7 +904,7 @@ export const CheckoutPreview = ({
                     }}
                     onClick={(e) => e.stopPropagation()}
                     className="mt-1"
-                    style={{ accentColor: customization.design.colors.accent }}
+                    style={{ accentColor: customization.design.colors.active }}
                   />
                   
                   {/* Imagem (condicional) */}
@@ -945,14 +945,14 @@ export const CheckoutPreview = ({
                           </span>
                           <span 
                             className="font-bold" 
-                            style={{ color: customization.design.colors.accent }}
+                            style={{ color: customization.design.colors.active }}
                           >
                             {formatCentsToBRL(Number(bump.price))}
                           </span>
                           <span 
                             className="text-xs px-2 py-1 rounded font-semibold" 
                             style={{ 
-                              backgroundColor: customization.design.colors.accent,
+                              backgroundColor: customization.design.colors.active,
                               color: '#fff'
                             }}
                           >
@@ -962,7 +962,7 @@ export const CheckoutPreview = ({
                       ) : (
                         <span 
                           className="font-bold" 
-                          style={{ color: customization.design.colors.accent }}
+                          style={{ color: customization.design.colors.active }}
                         >
                           + {formatCentsToBRL(Number(bump.price))}
                         </span>
