@@ -95,6 +95,34 @@ const PublicCheckout = () => {
     };
   }, [checkout]);
 
+  // Forçar background do body e remover espaços para eliminar faixas azuis
+  useEffect(() => {
+    if (!design) return;
+    
+    // Salvar valores originais
+    const originalBodyBackground = document.body.style.background;
+    const originalBodyMargin = document.body.style.margin;
+    const originalBodyPadding = document.body.style.padding;
+    const originalHtmlMargin = document.documentElement.style.margin;
+    const originalHtmlPadding = document.documentElement.style.padding;
+    
+    // Aplicar background do checkout e remover espaços
+    document.body.style.background = design.colors.background;
+    document.body.style.margin = '0';
+    document.body.style.padding = '0';
+    document.documentElement.style.margin = '0';
+    document.documentElement.style.padding = '0';
+    
+    // Restaurar ao desmontar
+    return () => {
+      document.body.style.background = originalBodyBackground;
+      document.body.style.margin = originalBodyMargin;
+      document.body.style.padding = originalBodyPadding;
+      document.documentElement.style.margin = originalHtmlMargin;
+      document.documentElement.style.padding = originalHtmlPadding;
+    };
+  }, [design]);
+
   const loadCheckout = async () => {
     try {
       setLoading(true);
