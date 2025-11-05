@@ -37,7 +37,7 @@ const CheckoutComponentRenderer = ({ component }: CheckoutComponentRendererProps
         <div className="w-full flex justify-center">
           {/* reduzir levemente o max-width para encurtar horizontalmente */}
           <div className="w-full max-w-[680px] mx-auto px-4">
-            <div className={`bg-white dark:bg-gray-800 p-0.5 rounded-sm shadow-sm ring-1 ring-gray-100 dark:ring-gray-700 mb-0.5`}>
+            <div className="p-0.5 rounded-sm mb-0.5">
               {/* Manter 16/9 para preservar área visível da imagem */}
               <div className="aspect-[16/9] relative overflow-hidden">
                 <img

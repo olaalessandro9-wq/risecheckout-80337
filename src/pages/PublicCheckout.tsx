@@ -12,6 +12,8 @@ import { LockIcon } from "@/components/icons/LockIcon";
 import { PixIcon } from "@/components/icons/PixIcon";
 import { CreditCardIcon } from "@/components/icons/CreditCardIcon";
 import { CheckCircleFilledIcon } from "@/components/icons/CheckCircleFilledIcon";
+import { normalizeDesign } from "@/lib/checkout/normalizeDesign";
+import type { ThemePreset } from "@/lib/checkout/themePresets";
 
 interface CheckoutData {
   id: string;
@@ -51,6 +53,7 @@ const PublicCheckout = () => {
   const { slug } = useParams<{ slug: string }>();
   const [searchParams] = useSearchParams();
   const [checkout, setCheckout] = useState<CheckoutData | null>(null);
+  const [design, setDesign] = useState<ThemePreset | null>(null);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
   const [selectedPayment, setSelectedPayment] = useState<'pix' | 'credit_card'>('pix');
@@ -128,6 +131,10 @@ const PublicCheckout = () => {
       };
       
       setCheckout(fullCheckoutData);
+      
+      // Normalizar o design para garantir todas as propriedades
+      const normalizedDesign = normalizeDesign(fullCheckoutData);
+      setDesign(normalizedDesign);
       
       // Define método de pagamento padrão baseado na configuração
       setSelectedPayment(defaultMethod);
@@ -287,18 +294,18 @@ const PublicCheckout = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#F9FAFB' }}>
-        <Loader2 className="w-8 h-8 animate-spin" style={{ color: checkout?.design?.colors?.accent || checkout?.primary_color || '#10B981' }} />
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: design?.colors.background || '#FFFFFF' }}>
+        <Loader2 className="w-8 h-8 animate-spin" style={{ color: design?.colors.active || '#10B981' }} />
       </div>
     );
   }
 
-  if (!checkout) {
+  if (!checkout || !design) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#F9FAFB' }}>
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#FFFFFF' }}>
         <div className="text-center">
-          <h1 className="text-2xl font-bold mb-2 text-gray-900">Checkout não encontrado</h1>
-          <p className="text-gray-600">O link que você acessou não existe ou foi desativado.</p>
+          <h1 className="text-2xl font-bold mb-2" style={{ color: '#000000' }}>Checkout não encontrado</h1>
+          <p style={{ color: '#6B7280' }}>O link que você acessou não existe ou foi desativado.</p>
         </div>
       </div>
     );
@@ -318,7 +325,7 @@ const PublicCheckout = () => {
         className="min-h-screen" 
         style={{ 
           fontFamily: checkout.font || 'Inter, system-ui, sans-serif',
-          backgroundColor: checkout.design?.colors?.background || checkout.background_color || '#F9FAFB'
+          backgroundColor: design.colors.background
         }}
       >
         <div className="max-w-[1120px] mx-auto px-4 lg:px-6 py-4 lg:py-8">
@@ -331,8 +338,8 @@ const PublicCheckout = () => {
                   <div 
                     className="rounded-sm shadow-sm ring-1 p-2 mb-1" 
                     style={{
-                      backgroundColor: checkout.design?.colors?.formBackground || '#FFFFFF',
-                      borderColor: checkout.design?.colors?.formBackground ? 'rgba(0,0,0,0.1)' : '#F3F4F6'
+                      backgroundColor: design.colors.formBackground,
+                      borderColor: design.colors.border
                     }}
                   >
                 {/* Cabeçalho do Produto */}
@@ -342,37 +349,37 @@ const PublicCheckout = () => {
                       src={checkout.product.image_url} 
                       alt={checkout.product?.name || 'Produto'}
                       className="w-16 h-16 object-cover rounded-sm border"
-                      style={{ borderColor: checkout.design?.colors?.border || 'rgba(0,0,0,0.1)' }}
+                      style={{ borderColor: design.colors.border }}
                     />
                   ) : (
                     <div 
                       className="w-16 h-16 rounded-sm flex items-center justify-center border"
                       style={{ 
-                        backgroundColor: checkout.design?.colors?.placeholder || 'rgba(0,0,0,0.05)',
-                        borderColor: checkout.design?.colors?.border || 'rgba(0,0,0,0.1)'
+                        backgroundColor: design.colors.placeholder,
+                        borderColor: design.colors.border
                       }}
                     >
                       <ImageIcon 
                         className="w-6 h-6" 
-                        color={checkout.design?.colors?.secondaryText || '#9CA3AF'} 
+                        color={design.colors.secondaryText} 
                       />
                     </div>
                   )}
                   <div>
                     <h1 
                       className="text-xl font-bold leading-tight tracking-tight"
-                      style={{ color: checkout.design?.colors?.primaryText || checkout.text_color || '#111827' }}
+                      style={{ color: design.colors.primaryText }}
                     >
                       {checkout.product?.name}
                     </h1>
                     <p 
                       className="text-lg font-semibold mt-1"
-                      style={{ color: checkout.design?.colors?.primaryText || checkout.text_color || '#111827' }}
+                      style={{ color: design.colors.primaryText }}
                     >
                       R$ {(checkout.product?.price / 100)?.toFixed(2).replace('.', ',')} 
                       <span 
                         className="text-sm font-normal"
-                        style={{ color: checkout.design?.colors?.secondaryText || '#6B7280' }}
+                        style={{ color: design.colors.secondaryText }}
                       >
                         à vista
                       </span>
@@ -383,13 +390,13 @@ const PublicCheckout = () => {
                 {/* Linha separadora sutil */}
                 <div 
                   className="border-t -mx-3 mb-2"
-                  style={{ borderColor: checkout.design?.colors?.formBackground ? 'rgba(0,0,0,0.1)' : '#F3F4F6' }}
+                  style={{ borderColor: design.colors.border }}
                 ></div>
 
                 {/* Formulário de Dados */}
                 <h2 
                   className="text-lg font-bold mb-4 flex items-center gap-2 tracking-tight"
-                  style={{ color: checkout.design?.colors?.primaryText || checkout.text_color || '#111827' }}
+                  style={{ color: design.colors.primaryText }}
                 >
                   <User className="w-5 h-5" />
                   Seus dados
@@ -398,7 +405,7 @@ const PublicCheckout = () => {
                   <div>
                     <label 
                       className="block text-sm font-medium mb-1.5"
-                      style={{ color: checkout.design?.colors?.secondaryText || '#374151' }}
+                      style={{ color: design.colors.secondaryText }}
                     >
                       Nome completo
                     </label>
@@ -406,11 +413,20 @@ const PublicCheckout = () => {
                       type="text"
                       value={formData.name}
                       onChange={(e) => setFormData({...formData, name: e.target.value})}
-                      className="w-full px-3 py-2.5 border rounded-lg focus:ring-2 focus:border-transparent text-sm transition-all"
+                      className="w-full px-3 py-2.5 border rounded-lg text-sm transition-all focus:outline-none"
                       style={{ 
-                        borderColor: checkout.design?.colors?.border || 'rgba(0,0,0,0.2)',
-                        backgroundColor: checkout.design?.colors?.inputBackground || '#FFFFFF',
-                        color: checkout.design?.colors?.primaryText || '#111827'
+                        borderColor: design.colors.border,
+                        backgroundColor: design.colors.inputBackground || design.colors.formBackground,
+                        color: design.colors.primaryText,
+                        boxShadow: 'none'
+                      }}
+                      onFocus={(e) => {
+                        e.target.style.borderColor = design.colors.active;
+                        e.target.style.outline = `2px solid ${design.colors.active}40`;
+                      }}
+                      onBlur={(e) => {
+                        e.target.style.borderColor = design.colors.border || 'rgba(0,0,0,0.2)';
+                        e.target.style.outline = 'none';
                       }}
                       required
                     />
@@ -419,7 +435,7 @@ const PublicCheckout = () => {
                   <div>
                     <label 
                       className="block text-sm font-medium mb-1.5"
-                      style={{ color: checkout.design?.colors?.secondaryText || '#374151' }}
+                      style={{ color: design.colors.secondaryText }}
                     >
                       Email
                     </label>
@@ -427,11 +443,20 @@ const PublicCheckout = () => {
                       type="email"
                       value={formData.email}
                       onChange={(e) => setFormData({...formData, email: e.target.value})}
-                      className="w-full px-3 py-2.5 border rounded-lg focus:ring-2 focus:border-transparent text-sm transition-all"
+                      className="w-full px-3 py-2.5 border rounded-lg text-sm transition-all focus:outline-none"
                       style={{ 
-                        borderColor: checkout.design?.colors?.border || 'rgba(0,0,0,0.2)',
-                        backgroundColor: checkout.design?.colors?.inputBackground || '#FFFFFF',
-                        color: checkout.design?.colors?.primaryText || '#111827'
+                        borderColor: design.colors.border,
+                        backgroundColor: design.colors.inputBackground || design.colors.formBackground,
+                        color: design.colors.primaryText,
+                        boxShadow: 'none'
+                      }}
+                      onFocus={(e) => {
+                        e.target.style.borderColor = design.colors.active;
+                        e.target.style.outline = `2px solid ${design.colors.active}40`;
+                      }}
+                      onBlur={(e) => {
+                        e.target.style.borderColor = design.colors.border || 'rgba(0,0,0,0.2)';
+                        e.target.style.outline = 'none';
                       }}
                       required
                     />
@@ -441,7 +466,7 @@ const PublicCheckout = () => {
                     <div>
                       <label 
                         className="block text-sm font-medium mb-1.5"
-                        style={{ color: checkout.design?.colors?.secondaryText || '#374151' }}
+                        style={{ color: design.colors.secondaryText }}
                       >
                         CPF/CNPJ
                       </label>
@@ -449,11 +474,20 @@ const PublicCheckout = () => {
                          type="text"
                          value={formData.document}
                          onChange={(e) => setFormData({...formData, document: e.target.value})}
-                         className="w-full px-3 py-2.5 border rounded-lg focus:ring-2 focus:border-transparent text-sm transition-all"
+                         className="w-full px-3 py-2.5 border rounded-lg text-sm transition-all focus:outline-none"
                          style={{ 
-                           borderColor: checkout.design?.colors?.border || 'rgba(0,0,0,0.2)',
-                           backgroundColor: checkout.design?.colors?.inputBackground || '#FFFFFF',
-                           color: checkout.design?.colors?.primaryText || '#111827'
+                           borderColor: design.colors.border,
+                           backgroundColor: design.colors.inputBackground || design.colors.formBackground,
+                           color: design.colors.primaryText,
+                           boxShadow: 'none'
+                         }}
+                         onFocus={(e) => {
+                           e.target.style.borderColor = design.colors.active;
+                           e.target.style.outline = `2px solid ${design.colors.active}40`;
+                         }}
+                         onBlur={(e) => {
+                           e.target.style.borderColor = design.colors.border || 'rgba(0,0,0,0.2)';
+                           e.target.style.outline = 'none';
                          }}
                          required
                        />
@@ -464,7 +498,7 @@ const PublicCheckout = () => {
                     <div>
                       <label 
                         className="block text-sm font-medium mb-1.5"
-                        style={{ color: checkout.design?.colors?.secondaryText || '#374151' }}
+                        style={{ color: design.colors.secondaryText }}
                       >
                         Celular
                       </label>
@@ -472,11 +506,20 @@ const PublicCheckout = () => {
                          type="tel"
                          value={formData.phone}
                          onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                         className="w-full px-3 py-2.5 border rounded-lg focus:ring-2 focus:border-transparent text-sm transition-all"
+                         className="w-full px-3 py-2.5 border rounded-lg text-sm transition-all focus:outline-none"
                          style={{ 
-                           borderColor: checkout.design?.colors?.border || 'rgba(0,0,0,0.2)',
-                           backgroundColor: checkout.design?.colors?.inputBackground || '#FFFFFF',
-                           color: checkout.design?.colors?.primaryText || '#111827'
+                           borderColor: design.colors.border,
+                           backgroundColor: design.colors.inputBackground || design.colors.formBackground,
+                           color: design.colors.primaryText,
+                           boxShadow: 'none'
+                         }}
+                         onFocus={(e) => {
+                           e.target.style.borderColor = design.colors.active;
+                           e.target.style.outline = `2px solid ${design.colors.active}40`;
+                         }}
+                         onBlur={(e) => {
+                           e.target.style.borderColor = design.colors.border || 'rgba(0,0,0,0.2)';
+                           e.target.style.outline = 'none';
                          }}
                          placeholder="+55 (00) 00000-0000"
                          required
@@ -491,11 +534,11 @@ const PublicCheckout = () => {
               {/* Métodos de Pagamento */}
               <div 
                 className="rounded-xl shadow-sm p-5"
-                style={{ backgroundColor: checkout.design?.colors?.formBackground || '#FFFFFF' }}
+                style={{ backgroundColor: design.colors.formBackground }}
               >
                 <h2 
                   className="text-lg font-bold mb-4 flex items-center gap-2 tracking-tight"
-                  style={{ color: checkout.design?.colors?.primaryText || checkout.text_color || '#111827' }}
+                  style={{ color: design.colors.primaryText }}
                 >
                   <Wallet className="w-5 h-5" />
                   Pagamento
@@ -508,22 +551,22 @@ const PublicCheckout = () => {
                     className="w-full px-4 py-3 rounded-lg border-2 transition-all duration-200 text-left"
                     style={{
                       backgroundColor: selectedPayment === 'pix' 
-                        ? (checkout.design?.colors?.selectedButton?.background || '#ECFDF5')
-                        : (checkout.design?.colors?.unselectedButton?.background || '#FFFFFF'),
+                        ? design.colors.selectedButton.background
+                        : design.colors.unselectedButton.background,
                       borderColor: selectedPayment === 'pix'
-                        ? (checkout.design?.colors?.selectedButton?.border || '#10B981')
-                        : (checkout.design?.colors?.unselectedButton?.border || '#E5E7EB'),
+                        ? (design.colors.selectedButton.border || design.colors.active)
+                        : (design.colors.unselectedButton.border || design.colors.border),
                       color: selectedPayment === 'pix'
-                        ? (checkout.design?.colors?.selectedButton?.text || '#111827')
-                        : (checkout.design?.colors?.unselectedButton?.text || '#111827')
+                        ? design.colors.selectedButton.text
+                        : design.colors.unselectedButton.text
                     }}
                   >
                     <div className="flex items-center gap-3">
                       <PixIcon 
                         className="w-5 h-5" 
                         color={selectedPayment === 'pix' 
-                          ? (checkout.design?.colors?.selectedButton?.icon || '#00A868')
-                          : (checkout.design?.colors?.unselectedButton?.icon || '#00A868')
+                          ? design.colors.selectedButton.icon
+                          : design.colors.unselectedButton.icon
                         }
                       />
                       <span className="font-semibold text-sm">PIX</span>
@@ -536,22 +579,22 @@ const PublicCheckout = () => {
                     className="w-full px-4 py-3 rounded-lg border-2 transition-all duration-200 text-left"
                     style={{
                       backgroundColor: selectedPayment === 'credit_card' 
-                        ? (checkout.design?.colors?.selectedButton?.background || '#EFF6FF')
-                        : (checkout.design?.colors?.unselectedButton?.background || '#FFFFFF'),
+                        ? design.colors.selectedButton.background
+                        : design.colors.unselectedButton.background,
                       borderColor: selectedPayment === 'credit_card'
-                        ? (checkout.design?.colors?.selectedButton?.border || '#3B82F6')
-                        : (checkout.design?.colors?.unselectedButton?.border || '#E5E7EB'),
+                        ? (design.colors.selectedButton.border || design.colors.active)
+                        : (design.colors.unselectedButton.border || design.colors.border),
                       color: selectedPayment === 'credit_card'
-                        ? (checkout.design?.colors?.selectedButton?.text || '#111827')
-                        : (checkout.design?.colors?.unselectedButton?.text || '#111827')
+                        ? design.colors.selectedButton.text
+                        : design.colors.unselectedButton.text
                     }}
                   >
                     <div className="flex items-center gap-3">
                       <CreditCardIcon 
                         className="w-5 h-5" 
                         color={selectedPayment === 'credit_card' 
-                          ? (checkout.design?.colors?.selectedButton?.icon || '#3B82F6')
-                          : (checkout.design?.colors?.unselectedButton?.icon || '#3B82F6')
+                          ? design.colors.selectedButton.icon
+                          : design.colors.unselectedButton.icon
                         }
                       />
                       <span className="font-semibold text-sm">Cartão de Crédito</span>
@@ -564,19 +607,19 @@ const PublicCheckout = () => {
                     <div 
                       className="border rounded-lg p-3 space-y-2 mb-4"
                       style={{ 
-                        backgroundColor: checkout.design?.colors?.infoBox?.background || 'rgba(16, 185, 129, 0.05)',
-                        borderColor: checkout.design?.colors?.infoBox?.border || 'rgba(16, 185, 129, 0.2)'
+                        backgroundColor: design.colors.infoBox?.background || 'rgba(16, 185, 129, 0.05)',
+                        borderColor: design.colors.infoBox?.border || design.colors.active
                       }}
                     >
                       <div className="flex items-start gap-2.5">
                         <CheckCircleFilledIcon 
                           size={18} 
-                          color={checkout.design?.colors?.accent || checkout.primary_color || '#10B981'} 
+                          color={design.colors.active} 
                           className="flex-shrink-0 mt-0.5" 
                         />
                         <span 
                           className="text-xs leading-relaxed font-medium"
-                          style={{ color: checkout.design?.colors?.infoBox?.text || checkout.design?.colors?.primaryText || '#111827' }}
+                          style={{ color: design.colors.infoBox?.text || design.colors.primaryText }}
                         >
                           Liberação imediata
                         </span>
@@ -584,12 +627,12 @@ const PublicCheckout = () => {
                       <div className="flex items-start gap-2.5">
                         <CheckCircleFilledIcon 
                           size={18} 
-                          color={checkout.design?.colors?.accent || checkout.primary_color || '#10B981'} 
+                          color={design.colors.active} 
                           className="flex-shrink-0 mt-0.5" 
                         />
                         <span 
                           className="text-xs leading-relaxed font-medium"
-                          style={{ color: checkout.design?.colors?.infoBox?.text || checkout.design?.colors?.primaryText || '#111827' }}
+                          style={{ color: design.colors.infoBox?.text || design.colors.primaryText }}
                         >
                           É simples, só usar o aplicativo de seu banco para pagar Pix
                         </span>

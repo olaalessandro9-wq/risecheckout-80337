@@ -7,15 +7,20 @@ export interface ThemePreset {
     active: string;
     icon: string;
     formBackground: string;
+    border?: string;
+    placeholder?: string;
+    inputBackground?: string;
     unselectedButton: {
       text: string;
       background: string;
       icon: string;
+      border?: string;
     };
     selectedButton: {
       text: string;
       background: string;
       icon: string;
+      border?: string;
     };
     box: {
       headerBg: string;
@@ -65,6 +70,11 @@ export interface ThemePreset {
       primaryText: string;
       secondaryText: string;
       linkText: string;
+    };
+    infoBox?: {
+      background: string;
+      border: string;
+      text: string;
     };
   };
 }
