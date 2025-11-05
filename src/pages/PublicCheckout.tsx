@@ -370,28 +370,25 @@ const PublicCheckout = () => {
           <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_360px]">
             {/* Coluna Principal - Formulário (Esquerda no Desktop) */}
             <div className="space-y-1 min-w-0">
-              {/* Header do Produto - card compacto alinhado ao mesmo max-width */}
-              <div className="w-full flex justify-center">
-                <div className="w-full max-w-[680px] mx-auto px-4">
-                  <div 
-                    className="rounded-sm shadow-sm border p-2 mb-1" 
-                    style={{
-                      backgroundColor: design.colors.formBackground,
-                      borderColor: design.colors.border
-                    }}
-                  >
+              {/* Header do Produto */}
+              <div 
+                className="rounded-xl shadow-sm p-5 mb-1" 
+                style={{
+                  backgroundColor: design.colors.formBackground
+                }}
+              >
                 {/* Cabeçalho do Produto */}
-                <div className="flex items-center gap-3 mb-2">
+                <div className="flex items-center gap-3 mb-5">
                   {checkout.product?.image_url ? (
                     <img 
                       src={checkout.product.image_url} 
                       alt={checkout.product?.name || 'Produto'}
-                      className="w-16 h-16 object-cover rounded-sm border"
+                      className="w-16 h-16 object-cover rounded-lg border"
                       style={{ borderColor: design.colors.border }}
                     />
                   ) : (
                     <div 
-                      className="w-16 h-16 rounded-sm flex items-center justify-center border"
+                      className="w-16 h-16 rounded-lg flex items-center justify-center border"
                       style={{ 
                         backgroundColor: design.colors.placeholder,
                         borderColor: design.colors.border
@@ -426,10 +423,7 @@ const PublicCheckout = () => {
                 </div>
 
                 {/* Linha separadora sutil */}
-                <div 
-                  className="border-t -mx-3 mb-2"
-                  style={{ borderColor: design.colors.border }}
-                ></div>
+                <div className="border-t border-gray-200 my-5"></div>
 
                 {/* Formulário de Dados */}
                 <h2 
@@ -442,7 +436,7 @@ const PublicCheckout = () => {
                 <form onSubmit={handleSubmit} className="space-y-3">
                   <div>
                     <label 
-                      className="block text-sm font-medium mb-1.5"
+                      className="block text-sm mb-1"
                       style={{ color: design.colors.secondaryText }}
                     >
                       Nome completo
@@ -451,20 +445,11 @@ const PublicCheckout = () => {
                       type="text"
                       value={formData.name}
                       onChange={(e) => setFormData({...formData, name: e.target.value})}
-                      className="w-full px-3 py-2.5 border rounded-lg text-sm transition-all focus:outline-none"
+                      className="w-full px-3 py-2 border rounded-lg text-sm transition-all focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                       style={{ 
                         borderColor: design.colors.border,
                         backgroundColor: design.colors.inputBackground || design.colors.formBackground,
-                        color: design.colors.primaryText,
-                        boxShadow: 'none'
-                      }}
-                      onFocus={(e) => {
-                        e.target.style.borderColor = design.colors.active;
-                        e.target.style.outline = `2px solid ${design.colors.active}40`;
-                      }}
-                      onBlur={(e) => {
-                        e.target.style.borderColor = design.colors.border || 'rgba(0,0,0,0.2)';
-                        e.target.style.outline = 'none';
+                        color: design.colors.primaryText
                       }}
                       required
                     />
@@ -472,7 +457,7 @@ const PublicCheckout = () => {
 
                   <div>
                     <label 
-                      className="block text-sm font-medium mb-1.5"
+                      className="block text-sm mb-1"
                       style={{ color: design.colors.secondaryText }}
                     >
                       Email
@@ -481,20 +466,11 @@ const PublicCheckout = () => {
                       type="email"
                       value={formData.email}
                       onChange={(e) => setFormData({...formData, email: e.target.value})}
-                      className="w-full px-3 py-2.5 border rounded-lg text-sm transition-all focus:outline-none"
+                      className="w-full px-3 py-2 border rounded-lg text-sm transition-all focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                       style={{ 
                         borderColor: design.colors.border,
                         backgroundColor: design.colors.inputBackground || design.colors.formBackground,
-                        color: design.colors.primaryText,
-                        boxShadow: 'none'
-                      }}
-                      onFocus={(e) => {
-                        e.target.style.borderColor = design.colors.active;
-                        e.target.style.outline = `2px solid ${design.colors.active}40`;
-                      }}
-                      onBlur={(e) => {
-                        e.target.style.borderColor = design.colors.border || 'rgba(0,0,0,0.2)';
-                        e.target.style.outline = 'none';
+                        color: design.colors.primaryText
                       }}
                       required
                     />
@@ -503,7 +479,7 @@ const PublicCheckout = () => {
                   {checkout?.product.required_fields?.cpf && (
                     <div>
                       <label 
-                        className="block text-sm font-medium mb-1.5"
+                        className="block text-sm mb-1"
                         style={{ color: design.colors.secondaryText }}
                       >
                         CPF/CNPJ
@@ -512,20 +488,11 @@ const PublicCheckout = () => {
                          type="text"
                          value={formData.document}
                          onChange={(e) => setFormData({...formData, document: e.target.value})}
-                         className="w-full px-3 py-2.5 border rounded-lg text-sm transition-all focus:outline-none"
+                         className="w-full px-3 py-2 border rounded-lg text-sm transition-all focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                          style={{ 
                            borderColor: design.colors.border,
                            backgroundColor: design.colors.inputBackground || design.colors.formBackground,
-                           color: design.colors.primaryText,
-                           boxShadow: 'none'
-                         }}
-                         onFocus={(e) => {
-                           e.target.style.borderColor = design.colors.active;
-                           e.target.style.outline = `2px solid ${design.colors.active}40`;
-                         }}
-                         onBlur={(e) => {
-                           e.target.style.borderColor = design.colors.border || 'rgba(0,0,0,0.2)';
-                           e.target.style.outline = 'none';
+                           color: design.colors.primaryText
                          }}
                          required
                        />
@@ -535,7 +502,7 @@ const PublicCheckout = () => {
                   {checkout?.product.required_fields?.phone && (
                     <div>
                       <label 
-                        className="block text-sm font-medium mb-1.5"
+                        className="block text-sm mb-1"
                         style={{ color: design.colors.secondaryText }}
                       >
                         Celular
@@ -544,20 +511,11 @@ const PublicCheckout = () => {
                          type="tel"
                          value={formData.phone}
                          onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                         className="w-full px-3 py-2.5 border rounded-lg text-sm transition-all focus:outline-none"
+                         className="w-full px-3 py-2 border rounded-lg text-sm transition-all focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                          style={{ 
                            borderColor: design.colors.border,
                            backgroundColor: design.colors.inputBackground || design.colors.formBackground,
-                           color: design.colors.primaryText,
-                           boxShadow: 'none'
-                         }}
-                         onFocus={(e) => {
-                           e.target.style.borderColor = design.colors.active;
-                           e.target.style.outline = `2px solid ${design.colors.active}40`;
-                         }}
-                         onBlur={(e) => {
-                           e.target.style.borderColor = design.colors.border || 'rgba(0,0,0,0.2)';
-                           e.target.style.outline = 'none';
+                           color: design.colors.primaryText
                          }}
                          placeholder="+55 (00) 00000-0000"
                          required
@@ -565,8 +523,6 @@ const PublicCheckout = () => {
                     </div>
                   )}
                 </form>
-                  </div>
-                </div>
               </div>
 
               {/* Métodos de Pagamento */}
@@ -990,24 +946,24 @@ const PublicCheckout = () => {
 
             {/* Sidebar - Resumo do Pedido (Direita no Desktop) */}
             <aside className="hidden lg:block min-w-0">
-              <div className="lg:sticky lg:top-2">
+              <div className="sticky top-6 space-y-3">
                 {/* Card Principal Único com Cabeçalho Verde */}
                 <div 
-                  className="rounded-xl shadow-sm overflow-hidden"
+                  className="rounded-lg shadow-sm border border-gray-200 overflow-hidden"
                   style={{ backgroundColor: design.colors.securePurchase?.cardBackground || '#FFFFFF' }}
                 >
                   {/* 1. Cabeçalho "Compra segura" com Fundo Verde */}
                   <div 
-                    className="px-5 py-3 text-center"
+                    className="px-4 py-3"
                     style={{ backgroundColor: design.colors.securePurchase?.headerBackground || '#10B981' }}
                   >
-                    <div className="flex items-center justify-center gap-2">
+                    <div className="flex items-center gap-2">
                       <LockIcon 
-                        className="w-4 h-4" 
+                        size={16}
                         color={design.colors.securePurchase?.headerText || '#FFFFFF'} 
                       />
                       <span 
-                        className="font-semibold text-sm tracking-tight"
+                        className="font-semibold text-sm"
                         style={{ color: design.colors.securePurchase?.headerText || '#FFFFFF' }}
                       >
                         Compra segura
@@ -1016,7 +972,7 @@ const PublicCheckout = () => {
                   </div>
 
                   {/* 2. Mini Preview do Produto */}
-                  <div className="p-4">
+                  <div className="p-4 space-y-4">
                     <div className="flex items-center gap-3">
                       {checkout.product?.image_url ? (
                         <img 
@@ -1059,16 +1015,13 @@ const PublicCheckout = () => {
                   </div>
 
                   {/* Divisória Pontilhada */}
-                  <div 
-                    className="border-t border-dashed mx-4"
-                    style={{ borderColor: design.colors.border || 'rgba(0,0,0,0.1)' }}
-                  ></div>
+                  <div className="border-t border-dashed border-gray-300"></div>
 
                   {/* 3. Total */}
-                  <div className="p-4">
+                  <div>
                     <div className="flex justify-between items-baseline mb-1">
                       <span 
-                        className="text-base font-semibold tracking-tight"
+                        className="text-sm font-semibold tracking-tight"
                         style={{ color: design.colors.securePurchase?.primaryText || '#000000' }}
                       >
                         Total
@@ -1095,13 +1048,10 @@ const PublicCheckout = () => {
                   </div>
 
                   {/* Divisória Pontilhada */}
-                  <div 
-                    className="border-t border-dashed mx-4"
-                    style={{ borderColor: design.colors.border || 'rgba(0,0,0,0.1)' }}
-                  ></div>
+                  <div className="border-t border-dashed border-gray-300"></div>
 
                   {/* 4. Informações Legais */}
-                  <div className="p-4 text-center">
+                  <div className="text-center">
                     <div className="space-y-3">
                       {/* Logo/Nome + Processador */}
                     <p 
