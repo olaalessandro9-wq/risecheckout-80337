@@ -36,14 +36,14 @@ const CheckoutComponentRenderer = ({ component, design }: CheckoutComponentRende
 
       return (
         <div className="w-full flex justify-center mb-2">
-          {/* imagem com mesma largura do cronômetro */}
+          {/* imagem com mesma largura do cronômetro, sem cortes */}
           <div className="max-w-4xl mx-auto px-4 lg:px-6 w-full">
             <div className={`w-full ${roundedImage ? 'rounded-sm' : 'rounded-none'} overflow-hidden`}>
               <img
                 key={component.id}
                 src={src}
                 alt={component.content?.alt || 'Imagem'}
-                className={`w-full object-contain h-auto max-h-[500px] lg:object-cover lg:aspect-[21/9] lg:max-h-none ${roundedImage ? 'rounded-sm' : 'rounded-none'}`}
+                className={`w-full h-auto object-contain ${roundedImage ? 'rounded-sm' : 'rounded-none'}`}
                 loading="eager"
                 fetchPriority="high"
                 decoding="async"
