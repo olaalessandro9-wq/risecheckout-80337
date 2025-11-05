@@ -73,6 +73,25 @@ const PublicCheckout = () => {
     }
   }, [slug]);
 
+  // Aplicar tema dark/light no documento
+  useEffect(() => {
+    if (!checkout) return;
+
+    const theme = checkout.theme || checkout.design?.theme || 'light';
+    const root = document.documentElement;
+    
+    if (theme === 'dark') {
+      root.classList.add('dark');
+    } else {
+      root.classList.remove('dark');
+    }
+
+    // Cleanup ao desmontar
+    return () => {
+      root.classList.remove('dark');
+    };
+  }, [checkout]);
+
   const loadCheckout = async () => {
     try {
       setLoading(true);
@@ -268,7 +287,7 @@ const PublicCheckout = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#F9FAFB' }}>
         <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
       </div>
     );
@@ -276,7 +295,7 @@ const PublicCheckout = () => {
 
   if (!checkout) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#F9FAFB' }}>
         <div className="text-center">
           <h1 className="text-2xl font-bold mb-2 text-gray-900">Checkout não encontrado</h1>
           <p className="text-gray-600">O link que você acessou não existe ou foi desativado.</p>
@@ -295,7 +314,13 @@ const PublicCheckout = () => {
         </div>
       )}
 
-      <div className="min-h-screen bg-gray-50" style={{ fontFamily: 'Inter, system-ui, sans-serif' }}>
+      <div 
+        className="min-h-screen" 
+        style={{ 
+          fontFamily: checkout.font || 'Inter, system-ui, sans-serif',
+          backgroundColor: checkout.design?.colors?.background || checkout.background_color || '#F9FAFB'
+        }}
+      >
         <div className="max-w-[1120px] mx-auto px-4 lg:px-6 py-4 lg:py-8">
           <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_360px]">
             {/* Coluna Principal - Formulário (Esquerda no Desktop) */}
@@ -303,7 +328,13 @@ const PublicCheckout = () => {
               {/* Header do Produto - card compacto alinhado ao mesmo max-width */}
               <div className="w-full flex justify-center">
                 <div className="w-full max-w-[680px] mx-auto px-4">
-                  <div className="bg-white dark:bg-gray-800 rounded-sm shadow-sm ring-1 ring-gray-100 dark:ring-gray-700 p-2 mb-1">
+                  <div 
+                    className="rounded-sm shadow-sm ring-1 p-2 mb-1" 
+                    style={{
+                      backgroundColor: checkout.design?.colors?.formBackground || '#FFFFFF',
+                      borderColor: checkout.design?.colors?.formBackground ? 'rgba(0,0,0,0.1)' : '#F3F4F6'
+                    }}
+                  >
                 {/* Cabeçalho do Produto */}
                 <div className="flex items-center gap-3 mb-2">
                   {checkout.product?.image_url ? (
@@ -319,24 +350,47 @@ const PublicCheckout = () => {
                     </div>
                   )}
                   <div>
-                    <h1 className="text-xl font-bold text-gray-900 dark:text-white leading-tight tracking-tight">{checkout.product?.name}</h1>
-                    <p className="text-lg font-semibold text-gray-900 dark:text-gray-100 mt-1">
-                      R$ {(checkout.product?.price / 100)?.toFixed(2).replace('.', ',')} <span className="text-sm font-normal text-gray-600 dark:text-gray-300">à vista</span>
+                    <h1 
+                      className="text-xl font-bold leading-tight tracking-tight"
+                      style={{ color: checkout.design?.colors?.primaryText || checkout.text_color || '#111827' }}
+                    >
+                      {checkout.product?.name}
+                    </h1>
+                    <p 
+                      className="text-lg font-semibold mt-1"
+                      style={{ color: checkout.design?.colors?.primaryText || checkout.text_color || '#111827' }}
+                    >
+                      R$ {(checkout.product?.price / 100)?.toFixed(2).replace('.', ',')} 
+                      <span 
+                        className="text-sm font-normal"
+                        style={{ color: checkout.design?.colors?.secondaryText || '#6B7280' }}
+                      >
+                        à vista
+                      </span>
                     </p>
                   </div>
                 </div>
 
                 {/* Linha separadora sutil */}
-                <div className="border-t border-gray-100 dark:border-gray-700 -mx-3 mb-2"></div>
+                <div 
+                  className="border-t -mx-3 mb-2"
+                  style={{ borderColor: checkout.design?.colors?.formBackground ? 'rgba(0,0,0,0.1)' : '#F3F4F6' }}
+                ></div>
 
                 {/* Formulário de Dados */}
-                <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2 tracking-tight">
+                <h2 
+                  className="text-lg font-bold mb-4 flex items-center gap-2 tracking-tight"
+                  style={{ color: checkout.design?.colors?.primaryText || checkout.text_color || '#111827' }}
+                >
                   <User className="w-5 h-5" />
                   Seus dados
                 </h2>
                 <form onSubmit={handleSubmit} className="space-y-3">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                    <label 
+                      className="block text-sm font-medium mb-1.5"
+                      style={{ color: checkout.design?.colors?.secondaryText || '#374151' }}
+                    >
                       Nome completo
                     </label>
                     <input
@@ -349,7 +403,10 @@ const PublicCheckout = () => {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                    <label 
+                      className="block text-sm font-medium mb-1.5"
+                      style={{ color: checkout.design?.colors?.secondaryText || '#374151' }}
+                    >
                       Email
                     </label>
                     <input
@@ -363,7 +420,10 @@ const PublicCheckout = () => {
 
                   {checkout?.product.required_fields?.cpf && (
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                      <label 
+                        className="block text-sm font-medium mb-1.5"
+                        style={{ color: checkout.design?.colors?.secondaryText || '#374151' }}
+                      >
                         CPF/CNPJ
                       </label>
                       <input
@@ -378,7 +438,10 @@ const PublicCheckout = () => {
 
                   {checkout?.product.required_fields?.phone && (
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                      <label 
+                        className="block text-sm font-medium mb-1.5"
+                        style={{ color: checkout.design?.colors?.secondaryText || '#374151' }}
+                      >
                         Celular
                       </label>
                       <input
@@ -397,8 +460,14 @@ const PublicCheckout = () => {
               </div>
 
               {/* Métodos de Pagamento */}
-              <div className="bg-white rounded-xl shadow-sm p-5">
-                <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2 tracking-tight">
+              <div 
+                className="rounded-xl shadow-sm p-5"
+                style={{ backgroundColor: checkout.design?.colors?.formBackground || '#FFFFFF' }}
+              >
+                <h2 
+                  className="text-lg font-bold mb-4 flex items-center gap-2 tracking-tight"
+                  style={{ color: checkout.design?.colors?.primaryText || checkout.text_color || '#111827' }}
+                >
                   <Wallet className="w-5 h-5" />
                   Pagamento
                 </h2>
@@ -407,30 +476,56 @@ const PublicCheckout = () => {
                   <button
                     type="button"
                     onClick={() => setSelectedPayment('pix')}
-                    className={`w-full px-4 py-3 rounded-lg border-2 transition-all duration-200 text-left ${
-                      selectedPayment === 'pix' 
-                        ? 'border-green-500 bg-green-50' 
-                        : 'border-gray-200 hover:border-gray-300'
-                    }`}
+                    className="w-full px-4 py-3 rounded-lg border-2 transition-all duration-200 text-left"
+                    style={{
+                      backgroundColor: selectedPayment === 'pix' 
+                        ? (checkout.design?.colors?.selectedButton?.background || '#ECFDF5')
+                        : (checkout.design?.colors?.unselectedButton?.background || '#FFFFFF'),
+                      borderColor: selectedPayment === 'pix'
+                        ? (checkout.design?.colors?.selectedButton?.border || '#10B981')
+                        : (checkout.design?.colors?.unselectedButton?.border || '#E5E7EB'),
+                      color: selectedPayment === 'pix'
+                        ? (checkout.design?.colors?.selectedButton?.text || '#111827')
+                        : (checkout.design?.colors?.unselectedButton?.text || '#111827')
+                    }}
                   >
                     <div className="flex items-center gap-3">
-                      <PixIcon className="w-5 h-5" color="#00A868" />
-                      <span className="font-semibold text-gray-900 text-sm">PIX</span>
+                      <PixIcon 
+                        className="w-5 h-5" 
+                        color={selectedPayment === 'pix' 
+                          ? (checkout.design?.colors?.selectedButton?.icon || '#00A868')
+                          : (checkout.design?.colors?.unselectedButton?.icon || '#00A868')
+                        }
+                      />
+                      <span className="font-semibold text-sm">PIX</span>
                     </div>
                   </button>
 
                   <button
                     type="button"
                     onClick={() => setSelectedPayment('credit_card')}
-                    className={`w-full px-4 py-3 rounded-lg border-2 transition-all duration-200 text-left ${
-                      selectedPayment === 'credit_card' 
-                        ? 'border-blue-500 bg-blue-50' 
-                        : 'border-gray-200 hover:border-gray-300'
-                    }`}
+                    className="w-full px-4 py-3 rounded-lg border-2 transition-all duration-200 text-left"
+                    style={{
+                      backgroundColor: selectedPayment === 'credit_card' 
+                        ? (checkout.design?.colors?.selectedButton?.background || '#EFF6FF')
+                        : (checkout.design?.colors?.unselectedButton?.background || '#FFFFFF'),
+                      borderColor: selectedPayment === 'credit_card'
+                        ? (checkout.design?.colors?.selectedButton?.border || '#3B82F6')
+                        : (checkout.design?.colors?.unselectedButton?.border || '#E5E7EB'),
+                      color: selectedPayment === 'credit_card'
+                        ? (checkout.design?.colors?.selectedButton?.text || '#111827')
+                        : (checkout.design?.colors?.unselectedButton?.text || '#111827')
+                    }}
                   >
                     <div className="flex items-center gap-3">
-                      <CreditCardIcon className="w-5 h-5" color="#3B82F6" />
-                      <span className="font-semibold text-gray-900 text-sm">Cartão de Crédito</span>
+                      <CreditCardIcon 
+                        className="w-5 h-5" 
+                        color={selectedPayment === 'credit_card' 
+                          ? (checkout.design?.colors?.selectedButton?.icon || '#3B82F6')
+                          : (checkout.design?.colors?.unselectedButton?.icon || '#3B82F6')
+                        }
+                      />
+                      <span className="font-semibold text-sm">Cartão de Crédito</span>
                     </div>
                   </button>
                 </div>
@@ -671,14 +766,10 @@ const PublicCheckout = () => {
                   <button
                     onClick={handleSubmit}
                     disabled={processingPayment}
-                    className={`w-full mt-5 py-3.5 rounded-lg font-bold text-base transition-all duration-200 shadow-sm ${
-                      processingPayment
-                        ? 'opacity-50 cursor-not-allowed'
-                        : 'hover:opacity-90'
-                    }`}
+                    className="w-full mt-5 py-3.5 rounded-lg font-bold text-base transition-all duration-200 shadow-sm hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
                     style={{
-                      backgroundColor: checkout.button_color || '#10B981',
-                      color: checkout.button_text_color || '#FFFFFF'
+                      backgroundColor: checkout.design?.colors?.button?.background || checkout.button_color || '#10B981',
+                      color: checkout.design?.colors?.button?.text || checkout.button_text_color || '#FFFFFF'
                     }}
                   >
                     {processingPayment ? (
