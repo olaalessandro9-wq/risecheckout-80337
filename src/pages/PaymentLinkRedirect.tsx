@@ -53,13 +53,15 @@ const PaymentLinkRedirect = () => {
 
         if (linkError) {
           console.error("Erro ao buscar link:", linkError);
-          setError("Erro ao processar link de pagamento");
+          // Fallback: redirecionar direto para /pay/:slug (compatibilidade com slugs antigos de checkout)
+          navigate(`/pay/${slug}?build=v2_7`, { replace: true });
           return;
         }
 
         if (!linkData) {
           console.error("Link não encontrado");
-          setError("Link de pagamento não encontrado");
+          // Fallback: ainda tentar abrir diretamente no /pay/:slug
+          navigate(`/pay/${slug}?build=v2_7`, { replace: true });
           return;
         }
 
@@ -109,7 +111,9 @@ const PaymentLinkRedirect = () => {
         navigate(`/pay/${linkData.slug}?build=v2_7`, { replace: true });
       } catch (err) {
         console.error("Erro ao processar link:", err);
-        setError("Erro ao processar link de pagamento");
+        // Fallback: redirecionar direto para /pay/:slug
+        navigate(`/pay/${slug}?build=v2_7`, { replace: true });
+        return;
       }
     };
 
