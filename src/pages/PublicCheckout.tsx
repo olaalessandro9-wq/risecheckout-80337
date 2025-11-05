@@ -920,7 +920,7 @@ const PublicCheckout = () => {
                     <div className="flex items-center justify-center gap-2">
                       <CheckCircleFilledIcon 
                         size={16} 
-                        color={design.colors.accent || design.colors.active || checkout.primary_color || '#10B981'} 
+                        color={design.colors.active || checkout.primary_color || '#10B981'} 
                       />
                       <span 
                         className="text-xs font-semibold"
@@ -1004,7 +1004,7 @@ const PublicCheckout = () => {
                         </p>
                         <button 
                           className="hover:underline text-xs font-medium transition-all"
-                          style={{ color: design.colors.accent || design.colors.active || checkout.primary_color || '#10B981' }}
+                          style={{ color: design.colors.securePurchase?.linkText || design.colors.active || checkout.primary_color || '#10B981' }}
                         >
                           Veja o contato do vendedor
                         </button>
