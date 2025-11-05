@@ -314,9 +314,9 @@ const PublicCheckout = () => {
   return (
     <>
       {checkout.top_components && Array.isArray(checkout.top_components) && checkout.top_components.length > 0 && (
-        <div className="w-full" style={{ fontFamily: 'Inter, system-ui, sans-serif' }}>
+        <div className="w-full" style={{ fontFamily: 'Inter, system-ui, sans-serif', backgroundColor: design.colors.background }}>
           {checkout.top_components.map((component: any, index: number) => (
-            <CheckoutComponentRenderer key={index} component={component} />
+            <CheckoutComponentRenderer key={index} component={component} design={design} />
           ))}
         </div>
       )}
@@ -336,7 +336,7 @@ const PublicCheckout = () => {
               <div className="w-full flex justify-center">
                 <div className="w-full max-w-[680px] mx-auto px-4">
                   <div 
-                    className="rounded-sm shadow-sm ring-1 p-2 mb-1" 
+                    className="rounded-sm shadow-sm border p-2 mb-1" 
                     style={{
                       backgroundColor: design.colors.formBackground,
                       borderColor: design.colors.border
@@ -643,15 +643,15 @@ const PublicCheckout = () => {
                     <div 
                       className="rounded-lg p-4"
                       style={{
-                        backgroundColor: checkout.design?.colors?.orderSummary?.background || '#F9FAFB',
-                        borderColor: checkout.design?.colors?.orderSummary?.borderColor || '#D1D5DB',
+                        backgroundColor: design.colors.orderSummary?.background || '#F9FAFB',
+                        borderColor: design.colors.orderSummary?.borderColor || '#D1D5DB',
                         borderWidth: '1px',
                         borderStyle: 'solid'
                       }}
                     >
                       <h4 
                         className="font-semibold mb-3 text-sm tracking-tight"
-                        style={{ color: checkout.design?.colors?.orderSummary?.titleText || '#000000' }}
+                        style={{ color: design.colors.orderSummary?.titleText || '#000000' }}
                       >
                         Resumo do pedido
                       </h4>
@@ -666,24 +666,24 @@ const PublicCheckout = () => {
                         ) : (
                           <div 
                             className="w-14 h-14 rounded-lg flex items-center justify-center"
-                            style={{ backgroundColor: checkout.design?.colors?.placeholder || 'rgba(0,0,0,0.05)' }}
+                            style={{ backgroundColor: design.colors.placeholder || 'rgba(0,0,0,0.05)' }}
                           >
                             <ImageIcon 
                               className="w-5 h-5" 
-                              color={checkout.design?.colors?.secondaryText || '#9CA3AF'} 
+                              color={design.colors.secondaryText || '#9CA3AF'} 
                             />
                           </div>
                         )}
                         <div className="flex-1">
                           <h5 
                             className="text-sm font-medium leading-tight"
-                            style={{ color: checkout.design?.colors?.orderSummary?.productName || '#000000' }}
+                            style={{ color: design.colors.orderSummary?.productName || '#000000' }}
                           >
                             {checkout.product?.name}
                           </h5>
                           <p 
                             className="text-base font-bold mt-0.5"
-                            style={{ color: checkout.design?.colors?.orderSummary?.priceText || '#000000' }}
+                            style={{ color: design.colors.orderSummary?.priceText || '#000000' }}
                           >
                             R$ {(checkout.product?.price / 100)?.toFixed(2).replace('.', ',')}
                           </p>
@@ -695,27 +695,27 @@ const PublicCheckout = () => {
                         style={{ 
                           borderTopWidth: '1px',
                           borderTopStyle: 'solid',
-                          borderTopColor: checkout.design?.colors?.orderSummary?.borderColor || '#D1D5DB'
+                          borderTopColor: design.colors.orderSummary?.borderColor || '#D1D5DB'
                         }}
                       >
                         <div className="flex justify-between">
-                          <span style={{ color: checkout.design?.colors?.orderSummary?.labelText || '#6B7280' }}>
+                          <span style={{ color: design.colors.orderSummary?.labelText || '#6B7280' }}>
                             Produto
                           </span>
                           <span 
                             className="font-medium"
-                            style={{ color: checkout.design?.colors?.orderSummary?.priceText || '#000000' }}
+                            style={{ color: design.colors.orderSummary?.priceText || '#000000' }}
                           >
                             R$ {(checkout.product?.price / 100)?.toFixed(2).replace('.', ',')}
                           </span>
                         </div>
                         <div className="flex justify-between">
-                          <span style={{ color: checkout.design?.colors?.orderSummary?.labelText || '#6B7280' }}>
+                          <span style={{ color: design.colors.orderSummary?.labelText || '#6B7280' }}>
                             Taxa de serviço
                           </span>
                           <span 
                             className="font-medium"
-                            style={{ color: checkout.design?.colors?.orderSummary?.priceText || '#000000' }}
+                            style={{ color: design.colors.orderSummary?.priceText || '#000000' }}
                           >
                             R$ 0,99
                           </span>
@@ -725,13 +725,13 @@ const PublicCheckout = () => {
                           style={{
                             borderTopWidth: '1px',
                             borderTopStyle: 'solid',
-                            borderTopColor: checkout.design?.colors?.orderSummary?.borderColor || '#D1D5DB'
+                            borderTopColor: design.colors.orderSummary?.borderColor || '#D1D5DB'
                           }}
                         >
-                          <span style={{ color: checkout.design?.colors?.orderSummary?.labelText || '#6B7280' }}>
+                          <span style={{ color: design.colors.orderSummary?.labelText || '#6B7280' }}>
                             Total
                           </span>
-                          <span style={{ color: checkout.design?.colors?.orderSummary?.priceText || '#000000' }}>
+                          <span style={{ color: design.colors.orderSummary?.priceText || '#000000' }}>
                             R$ {((checkout.product?.price / 100 || 0) + 0.99).toFixed(2).replace('.', ',')}
                           </span>
                         </div>
@@ -746,15 +746,15 @@ const PublicCheckout = () => {
                     <div 
                       className="rounded-lg p-4"
                       style={{
-                        backgroundColor: checkout.design?.colors?.orderSummary?.background || '#F9FAFB',
-                        borderColor: checkout.design?.colors?.orderSummary?.borderColor || '#D1D5DB',
+                        backgroundColor: design.colors.orderSummary?.background || '#F9FAFB',
+                        borderColor: design.colors.orderSummary?.borderColor || '#D1D5DB',
                         borderWidth: '1px',
                         borderStyle: 'solid'
                       }}
                     >
                       <h4 
                         className="font-semibold mb-3 text-sm tracking-tight"
-                        style={{ color: checkout.design?.colors?.orderSummary?.titleText || '#000000' }}
+                        style={{ color: design.colors.orderSummary?.titleText || '#000000' }}
                       >
                         Resumo do pedido
                       </h4>
@@ -769,24 +769,24 @@ const PublicCheckout = () => {
                         ) : (
                           <div 
                             className="w-14 h-14 rounded-lg flex items-center justify-center"
-                            style={{ backgroundColor: checkout.design?.colors?.placeholder || 'rgba(0,0,0,0.05)' }}
+                            style={{ backgroundColor: design.colors.placeholder || 'rgba(0,0,0,0.05)' }}
                           >
                             <ImageIcon 
                               className="w-5 h-5" 
-                              color={checkout.design?.colors?.secondaryText || '#9CA3AF'} 
+                              color={design.colors.secondaryText || '#9CA3AF'} 
                             />
                           </div>
                         )}
                         <div className="flex-1">
                           <h5 
                             className="text-sm font-medium leading-tight"
-                            style={{ color: checkout.design?.colors?.orderSummary?.productName || '#000000' }}
+                            style={{ color: design.colors.orderSummary?.productName || '#000000' }}
                           >
                             {checkout.product?.name}
                           </h5>
                           <p 
                             className="text-base font-bold mt-0.5"
-                            style={{ color: checkout.design?.colors?.orderSummary?.priceText || '#000000' }}
+                            style={{ color: design.colors.orderSummary?.priceText || '#000000' }}
                           >
                             R$ {(checkout.product?.price / 100)?.toFixed(2).replace('.', ',')}
                           </p>
@@ -798,27 +798,27 @@ const PublicCheckout = () => {
                         style={{ 
                           borderTopWidth: '1px',
                           borderTopStyle: 'solid',
-                          borderTopColor: checkout.design?.colors?.orderSummary?.borderColor || '#D1D5DB'
+                          borderTopColor: design.colors.orderSummary?.borderColor || '#D1D5DB'
                         }}
                       >
                         <div className="flex justify-between">
-                          <span style={{ color: checkout.design?.colors?.orderSummary?.labelText || '#6B7280' }}>
+                          <span style={{ color: design.colors.orderSummary?.labelText || '#6B7280' }}>
                             Produto
                           </span>
                           <span 
                             className="font-medium"
-                            style={{ color: checkout.design?.colors?.orderSummary?.priceText || '#000000' }}
+                            style={{ color: design.colors.orderSummary?.priceText || '#000000' }}
                           >
                             R$ {(checkout.product?.price / 100)?.toFixed(2).replace('.', ',')}
                           </span>
                         </div>
                         <div className="flex justify-between">
-                          <span style={{ color: checkout.design?.colors?.orderSummary?.labelText || '#6B7280' }}>
+                          <span style={{ color: design.colors.orderSummary?.labelText || '#6B7280' }}>
                             Taxa de serviço
                           </span>
                           <span 
                             className="font-medium"
-                            style={{ color: checkout.design?.colors?.orderSummary?.priceText || '#000000' }}
+                            style={{ color: design.colors.orderSummary?.priceText || '#000000' }}
                           >
                             R$ 0,99
                           </span>
@@ -828,13 +828,13 @@ const PublicCheckout = () => {
                           style={{
                             borderTopWidth: '1px',
                             borderTopStyle: 'solid',
-                            borderTopColor: checkout.design?.colors?.orderSummary?.borderColor || '#D1D5DB'
+                            borderTopColor: design.colors.orderSummary?.borderColor || '#D1D5DB'
                           }}
                         >
-                          <span style={{ color: checkout.design?.colors?.orderSummary?.labelText || '#6B7280' }}>
+                          <span style={{ color: design.colors.orderSummary?.labelText || '#6B7280' }}>
                             Total
                           </span>
-                          <span style={{ color: checkout.design?.colors?.orderSummary?.priceText || '#000000' }}>
+                          <span style={{ color: design.colors.orderSummary?.priceText || '#000000' }}>
                             R$ {((checkout.product?.price / 100 || 0) + 0.99).toFixed(2).replace('.', ',')}
                           </span>
                         </div>
@@ -842,7 +842,7 @@ const PublicCheckout = () => {
 
                       <p 
                         className="text-xs mt-2"
-                        style={{ color: checkout.design?.colors?.orderSummary?.labelText || '#6B7280' }}
+                        style={{ color: design.colors.orderSummary?.labelText || '#6B7280' }}
                       >
                         à vista no Cartão de Crédito
                       </p>
@@ -876,8 +876,8 @@ const PublicCheckout = () => {
                     disabled={processingPayment}
                     className="w-full mt-5 py-3.5 rounded-lg font-bold text-base transition-all duration-200 shadow-sm hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
                     style={{
-                      backgroundColor: checkout.design?.colors?.button?.background || checkout.button_color || '#10B981',
-                      color: checkout.design?.colors?.button?.text || checkout.button_text_color || '#FFFFFF'
+                      backgroundColor: design.colors.button?.background || checkout.button_color || '#10B981',
+                      color: design.colors.button?.text || checkout.button_text_color || '#FFFFFF'
                     }}
                   >
                     {processingPayment ? (
@@ -894,23 +894,23 @@ const PublicCheckout = () => {
                 {/* Card de Informações Legais - Unificado sem divisórias */}
                 <div 
                   className="rounded-xl shadow-sm p-5 mt-5 text-center"
-                  style={{ backgroundColor: checkout.design?.colors?.footer?.background || '#FFFFFF' }}
+                  style={{ backgroundColor: design.colors.footer?.background || '#FFFFFF' }}
                 >
                   <div className="space-y-3">
                     {/* Logo/Nome + Processador */}
                     <p 
                       className="text-xs leading-relaxed"
-                      style={{ color: checkout.design?.colors?.footer?.secondaryText || '#6B7280' }}
+                      style={{ color: design.colors.footer?.secondaryText || '#6B7280' }}
                     >
                       <span 
                         className="font-bold"
-                        style={{ color: checkout.design?.colors?.footer?.primaryText || '#000000' }}
+                        style={{ color: design.colors.footer?.primaryText || '#000000' }}
                       >
                         Rise Checkout
                       </span> está processando este pagamento para o vendedor{' '}
                       <span 
                         className="font-semibold"
-                        style={{ color: checkout.design?.colors?.footer?.primaryText || '#000000' }}
+                        style={{ color: design.colors.footer?.primaryText || '#000000' }}
                       >
                         {checkout.seller_name || checkout.product?.support_name || 'Vendedor'}
                       </span>
@@ -920,11 +920,11 @@ const PublicCheckout = () => {
                     <div className="flex items-center justify-center gap-2">
                       <CheckCircleFilledIcon 
                         size={16} 
-                        color={checkout.design?.colors?.accent || checkout.primary_color || '#10B981'} 
+                        color={design.colors.accent || design.colors.active || checkout.primary_color || '#10B981'} 
                       />
                       <span 
                         className="text-xs font-semibold"
-                        style={{ color: checkout.design?.colors?.footer?.primaryText || '#000000' }}
+                        style={{ color: design.colors.footer?.primaryText || '#000000' }}
                       >
                         Compra 100% segura
                       </span>
@@ -933,7 +933,7 @@ const PublicCheckout = () => {
                     {/* reCAPTCHA */}
                     <p 
                       className="text-xs leading-relaxed"
-                      style={{ color: checkout.design?.colors?.footer?.secondaryText || '#6B7280' }}
+                      style={{ color: design.colors.footer?.secondaryText || '#6B7280' }}
                     >
                       Este site é protegido pelo reCAPTCHA do Google
                     </p>
@@ -948,21 +948,21 @@ const PublicCheckout = () => {
                 {/* Card Principal Único com Cabeçalho Verde */}
                 <div 
                   className="rounded-xl shadow-sm overflow-hidden"
-                  style={{ backgroundColor: checkout.design?.colors?.securePurchase?.cardBackground || '#FFFFFF' }}
+                  style={{ backgroundColor: design.colors.securePurchase?.cardBackground || '#FFFFFF' }}
                 >
                   {/* 1. Cabeçalho "Compra segura" com Fundo Verde */}
                   <div 
                     className="px-5 py-3 text-center"
-                    style={{ backgroundColor: checkout.design?.colors?.securePurchase?.headerBackground || '#10B981' }}
+                    style={{ backgroundColor: design.colors.securePurchase?.headerBackground || '#10B981' }}
                   >
                     <div className="flex items-center justify-center gap-2">
                       <LockIcon 
                         className="w-4 h-4" 
-                        color={checkout.design?.colors?.securePurchase?.headerText || '#FFFFFF'} 
+                        color={design.colors.securePurchase?.headerText || '#FFFFFF'} 
                       />
                       <span 
                         className="font-semibold text-sm tracking-tight"
-                        style={{ color: checkout.design?.colors?.securePurchase?.headerText || '#FFFFFF' }}
+                        style={{ color: design.colors.securePurchase?.headerText || '#FFFFFF' }}
                       >
                         Compra segura
                       </span>
@@ -981,30 +981,30 @@ const PublicCheckout = () => {
                       ) : (
                         <div 
                           className="w-14 h-14 rounded-lg flex items-center justify-center"
-                          style={{ backgroundColor: checkout.design?.colors?.placeholder || 'rgba(0,0,0,0.05)' }}
+                          style={{ backgroundColor: design.colors.placeholder || 'rgba(0,0,0,0.05)' }}
                         >
                           <ImageIcon 
                             className="w-5 h-5" 
-                            color={checkout.design?.colors?.secondaryText || '#9CA3AF'} 
+                            color={design.colors.secondaryText || '#9CA3AF'} 
                           />
                         </div>
                       )}
                       <div className="flex-1">
                         <h4 
                           className="font-semibold text-sm leading-tight tracking-tight"
-                          style={{ color: checkout.design?.colors?.securePurchase?.primaryText || '#000000' }}
+                          style={{ color: design.colors.securePurchase?.primaryText || '#000000' }}
                         >
                           {checkout.product?.name}
                         </h4>
                         <p 
                           className="text-xs mt-1 leading-relaxed"
-                          style={{ color: checkout.design?.colors?.securePurchase?.secondaryText || '#6B7280' }}
+                          style={{ color: design.colors.securePurchase?.secondaryText || '#6B7280' }}
                         >
                           Precisa de ajuda?
                         </p>
                         <button 
                           className="hover:underline text-xs font-medium transition-all"
-                          style={{ color: checkout.design?.colors?.accent || checkout.primary_color || '#10B981' }}
+                          style={{ color: design.colors.accent || design.colors.active || checkout.primary_color || '#10B981' }}
                         >
                           Veja o contato do vendedor
                         </button>
@@ -1015,7 +1015,7 @@ const PublicCheckout = () => {
                   {/* Divisória Pontilhada */}
                   <div 
                     className="border-t border-dashed mx-4"
-                    style={{ borderColor: checkout.design?.colors?.border || 'rgba(0,0,0,0.1)' }}
+                    style={{ borderColor: design.colors.border || 'rgba(0,0,0,0.1)' }}
                   ></div>
 
                   {/* 3. Total */}
@@ -1023,26 +1023,26 @@ const PublicCheckout = () => {
                     <div className="flex justify-between items-baseline mb-1">
                       <span 
                         className="text-base font-semibold tracking-tight"
-                        style={{ color: checkout.design?.colors?.securePurchase?.primaryText || '#000000' }}
+                        style={{ color: design.colors.securePurchase?.primaryText || '#000000' }}
                       >
                         Total
                       </span>
                       <p 
                         className="text-xl font-bold"
-                        style={{ color: checkout.design?.colors?.securePurchase?.primaryText || '#000000' }}
+                        style={{ color: design.colors.securePurchase?.primaryText || '#000000' }}
                       >
                         R$ {((checkout.product?.price / 100 || 0) + 0.99).toFixed(2).replace('.', ',')}
                       </p>
                     </div>
                     <p 
                       className="text-xs text-right leading-relaxed"
-                      style={{ color: checkout.design?.colors?.securePurchase?.secondaryText || '#6B7280' }}
+                      style={{ color: design.colors.securePurchase?.secondaryText || '#6B7280' }}
                     >
                       à vista no {selectedPayment === 'pix' ? 'PIX' : 'Cartão de Crédito'}
                     </p>
                     <p 
                       className="text-xs text-right leading-relaxed mt-0.5"
-                      style={{ color: checkout.design?.colors?.securePurchase?.secondaryText || '#6B7280' }}
+                      style={{ color: design.colors.securePurchase?.secondaryText || '#6B7280' }}
                     >
                       Renovação atual
                     </p>
@@ -1051,38 +1051,38 @@ const PublicCheckout = () => {
                   {/* Divisória Pontilhada */}
                   <div 
                     className="border-t border-dashed mx-4"
-                    style={{ borderColor: checkout.design?.colors?.border || 'rgba(0,0,0,0.1)' }}
+                    style={{ borderColor: design.colors.border || 'rgba(0,0,0,0.1)' }}
                   ></div>
 
                   {/* 4. Informações Legais */}
                   <div className="p-4 text-center">
                     <div className="space-y-3">
                       {/* Logo/Nome + Processador */}
-                      <p 
-                        className="text-xs leading-relaxed"
-                        style={{ color: checkout.design?.colors?.securePurchase?.secondaryText || '#6B7280' }}
+                    <p 
+                      className="text-xs leading-relaxed"
+                      style={{ color: design.colors.securePurchase?.secondaryText || '#6B7280' }}
+                    >
+                      <span 
+                        className="font-bold"
+                        style={{ color: design.colors.securePurchase?.primaryText || '#000000' }}
                       >
-                        <span 
-                          className="font-bold"
-                          style={{ color: checkout.design?.colors?.securePurchase?.primaryText || '#000000' }}
-                        >
-                          Rise Checkout
-                        </span> está processando este pagamento para o vendedor{' '}
-                        <span 
-                          className="font-semibold"
-                          style={{ color: checkout.design?.colors?.securePurchase?.primaryText || '#000000' }}
-                        >
-                          {checkout.seller_name || checkout.product?.support_name || 'Vendedor'}
-                        </span>
-                      </p>
+                        Rise Checkout
+                      </span> está processando este pagamento para o vendedor{' '}
+                      <span 
+                        className="font-semibold"
+                        style={{ color: design.colors.securePurchase?.primaryText || '#000000' }}
+                      >
+                        {checkout.seller_name || checkout.product?.support_name || 'Vendedor'}
+                      </span>
+                    </p>
 
                       {/* reCAPTCHA */}
-                      <p 
-                        className="text-xs leading-relaxed"
-                        style={{ color: checkout.design?.colors?.securePurchase?.secondaryText || '#6B7280' }}
-                      >
-                        Este site é protegido pelo reCAPTCHA do Google
-                      </p>
+                    <p 
+                      className="text-xs leading-relaxed"
+                      style={{ color: design.colors.securePurchase?.secondaryText || '#6B7280' }}
+                    >
+                      Este site é protegido pelo reCAPTCHA do Google
+                    </p>
                     </div>
                   </div>
                 </div>
@@ -1094,9 +1094,9 @@ const PublicCheckout = () => {
       </div>
 
       {checkout.bottom_components && Array.isArray(checkout.bottom_components) && checkout.bottom_components.length > 0 && (
-        <div className="w-full" style={{ fontFamily: 'Inter, system-ui, sans-serif' }}>
+        <div className="w-full" style={{ fontFamily: 'Inter, system-ui, sans-serif', backgroundColor: design.colors.background }}>
           {checkout.bottom_components.map((component: any, index: number) => (
-            <CheckoutComponentRenderer key={index} component={component} />
+            <CheckoutComponentRenderer key={index} component={component} design={design} />
           ))}
         </div>
       )}

@@ -1,6 +1,7 @@
 import { ImageIcon, VideoIcon, TypeIcon, TimerIcon } from "@/components/icons";
 import { CountdownTimer } from "@/components/CountdownTimer";
 import DOMPurify from 'dompurify';
+import type { ThemePreset } from "@/lib/checkout/themePresets";
 
 interface CheckoutComponentRendererProps {
   component: {
@@ -8,9 +9,10 @@ interface CheckoutComponentRendererProps {
     type: string;
     content: any;
   };
+  design?: ThemePreset;
 }
 
-const CheckoutComponentRenderer = ({ component }: CheckoutComponentRendererProps) => {
+const CheckoutComponentRenderer = ({ component, design }: CheckoutComponentRendererProps) => {
   if (!component || !component.type) return null;
 
   switch (component.type) {
@@ -30,8 +32,7 @@ const CheckoutComponentRenderer = ({ component }: CheckoutComponentRendererProps
       const maxW = component.content?.maxWidth ?? 720;
       const fit = component.content?.fit ?? "cover";
       const roundedImage = component.content?.roundedImage ?? true; // agora por padrão arredondado médio
-      // cardBgClass: destaque do bloco (ajustável)
-      const cardBgClass = component.content?.cardBgClass || "bg-white dark:bg-gray-800";
+      // cardBgClass: destaque do bloco (não usado)
 
       return (
         <div className="w-full flex justify-center">
@@ -134,18 +135,26 @@ const CheckoutComponentRenderer = ({ component }: CheckoutComponentRendererProps
 
     case 'guarantee':
       return (
-        <div className="w-full mb-6 p-6 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
+        <div className="w-full mb-6 p-6 rounded-lg border" 
+          style={{
+            backgroundColor: design?.colors.infoBox?.background || 'transparent',
+            borderColor: design?.colors.infoBox?.border || 'transparent'
+          }}
+        >
           <div className="flex items-start gap-3">
-            <div className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
+            <div 
+              className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0"
+              style={{ backgroundColor: design?.colors.active || '#10B981' }}
+            >
               <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               </svg>
             </div>
             <div>
-              <h3 className="font-bold text-green-900 dark:text-green-100 mb-2">
+              <h3 className="font-bold mb-2" style={{ color: design?.colors.infoBox?.text || design?.colors.primaryText }}>
                 {component.content?.title || 'Garantia de Satisfação'}
               </h3>
-              <p className="text-sm text-green-800 dark:text-green-200">
+              <p className="text-sm" style={{ color: design?.colors.infoBox?.text || design?.colors.primaryText }}>
                 {component.content?.text || 'Garantia de 7 dias. Se não gostar, devolvemos seu dinheiro.'}
               </p>
             </div>
