@@ -9,8 +9,10 @@ export async function loadPublicCheckoutData(slug: string) {
     .eq('status', 'active')
     .maybeSingle();
 
+  // Log detalhado para debug de RLS
   if (linkError) {
-    throw linkError;
+    console.error('[loadPublicCheckoutData] Erro RLS ao buscar payment_link:', linkError.message, linkError);
+    console.log('[loadPublicCheckoutData] Tentando Estratégia 2 (buscar checkout por slug)...');
   }
 
   // Se encontrou pelo payment_link, segue o fluxo
