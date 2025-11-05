@@ -36,20 +36,21 @@ const CheckoutComponentRenderer = ({ component, design }: CheckoutComponentRende
 
       return (
         <div className="w-full flex justify-center mb-2">
-          {/* imagem ligeiramente maior horizontalmente no desktop */}
-          <div className="w-full lg:w-[110%] max-w-none mx-auto px-0">
+          {/* imagem expandida até as bordas da tela */}
+          <div className="relative w-[95vw] max-w-none mx-auto" style={{ marginLeft: 'calc(-47.5vw + 50%)', marginRight: 'calc(-47.5vw + 50%)' }}>
             <div className={`w-full ${roundedImage ? 'rounded-sm' : 'rounded-none'} overflow-hidden`}>
               <img
                 key={component.id}
                 src={src}
                 alt={component.content?.alt || 'Imagem'}
-                className={`w-full h-auto object-contain ${roundedImage ? 'rounded-sm' : 'rounded-none'} max-h-[500px] lg:max-h-[600px]`}
+                className={`w-full h-auto object-contain ${roundedImage ? 'rounded-sm' : 'rounded-none'}`}
                 loading="eager"
                 fetchPriority="high"
                 decoding="async"
                 style={{ 
                   width: '100%',
-                  height: 'auto'
+                  height: 'auto',
+                  maxHeight: '700px'
                 }}
                 onError={(e) => {
                   const imgEl = e.currentTarget as HTMLImageElement;
