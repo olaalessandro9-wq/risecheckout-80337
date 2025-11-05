@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import { Sidebar } from "./Sidebar";
-import { useThemeStore } from "@/contexts/ThemeProvider";
+import { useTheme } from "@/components/theme/ThemeProvider";
 import { Sun, Moon, Bell, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -9,7 +9,7 @@ interface MainLayoutProps {
 }
 
 export function MainLayout({ children }: MainLayoutProps) {
-  const { theme, toggleTheme } = useThemeStore();
+  const { theme, toggle: toggleTheme } = useTheme();
 
   return (
     <div className="min-h-screen flex w-full bg-bg">
