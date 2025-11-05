@@ -51,7 +51,9 @@ export async function loadPublicCheckoutData(slug: string) {
         components,
         top_components,
         bottom_components,
-        status
+        status,
+        design,
+        theme
       `)
       .eq('id', checkoutId)
       .maybeSingle();
@@ -134,6 +136,8 @@ export async function loadPublicCheckoutData(slug: string) {
         components: checkoutData.components,
         top_components: checkoutData.top_components,
         bottom_components: checkoutData.bottom_components,
+        design: checkoutData.design,
+        theme: checkoutData.theme,
       },
       product: {
         id: productData.id,
@@ -168,7 +172,9 @@ export async function loadPublicCheckoutData(slug: string) {
       components,
       top_components,
       bottom_components,
-      status
+      status,
+      design,
+      theme
     `)
     .eq('slug', slug)
     .order('created_at', { ascending: false })
@@ -238,6 +244,8 @@ export async function loadPublicCheckoutData(slug: string) {
       components: checkoutData.components,
       top_components: checkoutData.top_components,
       bottom_components: checkoutData.bottom_components,
+      design: checkoutData.design,
+      theme: checkoutData.theme,
     },
     product: {
       id: productData.id,
