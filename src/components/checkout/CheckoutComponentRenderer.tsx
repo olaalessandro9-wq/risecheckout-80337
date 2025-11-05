@@ -36,31 +36,24 @@ const CheckoutComponentRenderer = ({ component, design }: CheckoutComponentRende
 
       return (
         <div className="w-full flex justify-center mb-2">
-          {/* imagem alinhada com a largura do cronômetro */}
-          <div className="w-full max-w-[1400px] px-4 lg:px-6">
-            <div className="w-full max-w-5xl mx-auto">
-              <div className={`w-full ${roundedImage ? 'rounded-sm' : 'rounded-none'} overflow-hidden`}>
-                <img
-                  key={component.id}
-                  src={src}
-                  alt={component.content?.alt || 'Imagem'}
-                  className={`w-full h-auto object-contain ${roundedImage ? 'rounded-sm' : 'rounded-none'}`}
-                  loading="eager"
-                  fetchPriority="high"
-                  decoding="async"
-                  style={{ 
-                    width: '100%',
-                    height: 'auto',
-                    maxHeight: '700px'
-                  }}
-                  onError={(e) => {
-                    const imgEl = e.currentTarget as HTMLImageElement;
-                    imgEl.onerror = null;
-                    imgEl.src = '/images/placeholder-top.png';
-                    console.error('Erro ao carregar imagem:', src);
-                  }}
-                />
-              </div>
+          {/* imagem alinhada com cronômetro (desktop only) */}
+          <div className="max-w-4xl mx-auto px-4 lg:px-6">
+            <div className={`w-full ${roundedImage ? 'rounded-sm' : 'rounded-none'} overflow-hidden`}>
+              <img
+                key={component.id}
+                src={src}
+                alt={component.content?.alt || 'Imagem'}
+                className={`w-full object-contain h-auto max-h-[500px] lg:object-cover lg:h-[480px] lg:max-h-none ${roundedImage ? 'rounded-sm' : 'rounded-none'}`}
+                loading="eager"
+                fetchPriority="high"
+                decoding="async"
+                onError={(e) => {
+                  const imgEl = e.currentTarget as HTMLImageElement;
+                  imgEl.onerror = null;
+                  imgEl.src = '/images/placeholder-top.png';
+                  console.error('Erro ao carregar imagem:', src);
+                }}
+              />
             </div>
           </div>
         </div>
