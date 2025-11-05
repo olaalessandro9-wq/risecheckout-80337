@@ -1168,85 +1168,66 @@ export const CheckoutCustomizationPanel = ({
         <CheckoutColorSettings 
           customization={customization.design}
           onUpdate={(field, value) => {
-            // Map DB field names to nested structure and use onUpdateDesign
-            const fieldMap: Record<string, string[]> = {
-              'theme': ['theme'],
-              'font': ['font'],
-              'primary_text_color': ['colors', 'primaryText'],
-              'secondary_text_color': ['colors', 'secondaryText'],
-              'active_text_color': ['colors', 'active'],
-              'icon_color': ['colors', 'icon'],
-              'background_color': ['colors', 'background'],
-              'form_background_color': ['colors', 'formBackground'],
-              'unselected_button_text_color': ['colors', 'unselectedButton', 'text'],
-              'unselected_button_bg_color': ['colors', 'unselectedButton', 'background'],
-              'unselected_button_icon_color': ['colors', 'unselectedButton', 'icon'],
-              'selected_button_text_color': ['colors', 'selectedButton', 'text'],
-              'selected_button_bg_color': ['colors', 'selectedButton', 'background'],
-              'selected_button_icon_color': ['colors', 'selectedButton', 'icon'],
-              'box_header_bg_color': ['colors', 'box', 'headerBg'],
-              'box_header_primary_text_color': ['colors', 'box', 'headerPrimaryText'],
-              'box_header_secondary_text_color': ['colors', 'box', 'headerSecondaryText'],
-              'box_bg_color': ['colors', 'box', 'bg'],
-              'box_primary_text_color': ['colors', 'box', 'primaryText'],
-              'box_secondary_text_color': ['colors', 'box', 'secondaryText'],
-              'unselected_box_header_bg_color': ['colors', 'unselectedBox', 'headerBg'],
-              'unselected_box_header_primary_text_color': ['colors', 'unselectedBox', 'headerPrimaryText'],
-              'unselected_box_header_secondary_text_color': ['colors', 'unselectedBox', 'headerSecondaryText'],
-              'unselected_box_bg_color': ['colors', 'unselectedBox', 'bg'],
-              'unselected_box_primary_text_color': ['colors', 'unselectedBox', 'primaryText'],
-              'unselected_box_secondary_text_color': ['colors', 'unselectedBox', 'secondaryText'],
-              'selected_box_header_bg_color': ['colors', 'selectedBox', 'headerBg'],
-              'selected_box_header_primary_text_color': ['colors', 'selectedBox', 'headerPrimaryText'],
-              'selected_box_header_secondary_text_color': ['colors', 'selectedBox', 'headerSecondaryText'],
-              'selected_box_bg_color': ['colors', 'selectedBox', 'bg'],
-              'selected_box_primary_text_color': ['colors', 'selectedBox', 'primaryText'],
-              'selected_box_secondary_text_color': ['colors', 'selectedBox', 'secondaryText'],
-              'payment_button_bg_color': ['colors', 'button', 'background'],
-              'payment_button_text_color': ['colors', 'button', 'text'],
-            };
-
-            const keys = fieldMap[field];
-            if (!keys) {
-              console.warn('Unknown field:', field);
-              return;
-            }
-
-            // Build new design object efficiently with spread operators
-            let newDesign = { ...customization.design };
+            const keys = field.split('.');
             
-            if (keys.length === 1) {
-              // Top level (theme, font)
-              newDesign = {
-                ...newDesign,
+            // Create new object using spread (MUCH faster than JSON.parse/stringify)
+            if (keys[0] === 'theme' || keys[0] === 'font') {
+              // Top-level fields
+              onUpdateDesign({
+                ...customization.design,
                 [keys[0]]: value
-              };
+              });
             } else if (keys[0] === 'colors') {
-              if (keys.length === 2) {
-                // Single level color
-                newDesign = {
-                  ...newDesign,
+              // Nested color fields
+              const colorKeys = keys.slice(1);
+              
+              if (colorKeys.length === 1) {
+                // Single level color (ex: colors.background)
+                onUpdateDesign({
+                  ...customization.design,
                   colors: {
-                    ...newDesign.colors,
-                    [keys[1]]: value
+                    ...customization.design.colors,
+                    [colorKeys[0]]: value
                   }
-                };
-              } else if (keys.length === 3) {
-                // Nested color (e.g., unselectedButton.text)
-                newDesign = {
-                  ...newDesign,
+                });
+              } else if (colorKeys.length === 2) {
+                // Nested color (ex: colors.unselectedButton.text)
+                onUpdateDesign({
+                  ...customization.design,
                   colors: {
-                    ...newDesign.colors,
-                    [keys[1]]: {
-                      ...(newDesign.colors as any)[keys[1]],
-                      [keys[2]]: value
+                    ...customization.design.colors,
+                    [colorKeys[0]]: {
+                      ...(customization.design.colors as any)[colorKeys[0]],
+                      [colorKeys[1]]: value
                     }
                   }
-                };
+                });
+              } else if (colorKeys.length === 3) {
+                // Deeply nested (ex: colors.box.headerBg)
+                onUpdateDesign({
+                  ...customization.design,
+                  colors: {
+                    ...customization.design.colors,
+                    [colorKeys[0]]: {
+                      ...(customization.design.colors as any)[colorKeys[0]],
+                      [colorKeys[1]]: {
+                        ...((customization.design.colors as any)[colorKeys[0]] || {})[colorKeys[1]],
+                        [colorKeys[2]]: value
+                      }
+                    }
+                  }
+                });
               }
+            } else if (keys[0] === 'backgroundImage') {
+              // Background image fields
+              onUpdateDesign({
+                ...customization.design,
+                backgroundImage: {
+                  ...customization.design.backgroundImage,
+                  [keys[1]]: value
+                }
+              });
             }
-            
-            onUpdateDesign(newDesign);
           }}
         />
         </TabsContent>

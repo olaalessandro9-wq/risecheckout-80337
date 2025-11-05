@@ -973,6 +973,11 @@ const CheckoutCustomizer = () => {
   };
 
   const handleUpdateDesign = (design: CheckoutDesign) => {
+    console.log('🎨 [handleUpdateDesign] Novo design:', design);
+    console.log('🎨 [handleUpdateDesign] Cor de fundo:', design.colors.background);
+    console.log('🎨 [handleUpdateDesign] Tema:', design.theme);
+    console.log('🎨 [handleUpdateDesign] Fonte:', design.font);
+    
     setCustomization((prev) => ({
       ...prev,
       design,

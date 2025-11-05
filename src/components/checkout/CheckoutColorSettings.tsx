@@ -60,26 +60,26 @@ export const CheckoutColorSettings = ({ customization, onUpdate }: CheckoutColor
         <h3 className="text-lg font-semibold">Cores de Texto</h3>
         <ColorPicker
           label="Cor Primária do Texto"
-          value={customization.primary_text_color || '#FFFFFF'}
-          onChange={(value) => onUpdate('primary_text_color', value)}
+          value={customization.colors?.primaryText || '#000000'}
+          onChange={(value) => onUpdate('colors.primaryText', value)}
           description="Títulos e labels principais"
         />
         <ColorPicker
           label="Cor Secundária do Texto"
-          value={customization.secondary_text_color || '#CCCCCC'}
-          onChange={(value) => onUpdate('secondary_text_color', value)}
+          value={customization.colors?.secondaryText || '#6B7280'}
+          onChange={(value) => onUpdate('colors.secondaryText', value)}
           description="Descrições e subtítulos"
         />
         <ColorPicker
           label="Cor Ativa do Texto"
-          value={customization.active_text_color || '#10B981'}
-          onChange={(value) => onUpdate('active_text_color', value)}
+          value={customization.colors?.active || '#10B981'}
+          onChange={(value) => onUpdate('colors.active', value)}
           description="Preços, CTAs e textos em destaque (padrão verde)"
         />
         <ColorPicker
           label="Cor dos Ícones"
-          value={customization.icon_color || '#FFFFFF'}
-          onChange={(value) => onUpdate('icon_color', value)}
+          value={customization.colors?.icon || '#000000'}
+          onChange={(value) => onUpdate('colors.icon', value)}
           description="Ícones do Pix, Cartão de Crédito, etc."
         />
       </div>
@@ -91,14 +91,14 @@ export const CheckoutColorSettings = ({ customization, onUpdate }: CheckoutColor
         <h3 className="text-lg font-semibold">Cores de Fundo</h3>
         <ColorPicker
           label="Cor de Fundo"
-          value={customization.background_color || '#000000'}
-          onChange={(value) => onUpdate('background_color', value)}
+          value={customization.colors?.background || '#FFFFFF'}
+          onChange={(value) => onUpdate('colors.background', value)}
           description="Fundo geral do checkout"
         />
         <ColorPicker
           label="Cor de Fundo do Formulário de Pagamento"
-          value={customization.form_background_color || '#1A1A1A'}
-          onChange={(value) => onUpdate('form_background_color', value)}
+          value={customization.colors?.formBackground || '#F9FAFB'}
+          onChange={(value) => onUpdate('colors.formBackground', value)}
           description="Fundo da seção de pagamento"
         />
       </div>
@@ -110,18 +110,18 @@ export const CheckoutColorSettings = ({ customization, onUpdate }: CheckoutColor
         <h3 className="text-lg font-semibold">Botões Não Selecionados</h3>
         <ColorPicker
           label="Cor do Texto"
-          value={customization.unselected_button_text_color || '#000000'}
-          onChange={(value) => onUpdate('unselected_button_text_color', value)}
+          value={customization.colors?.unselectedButton?.text || '#000000'}
+          onChange={(value) => onUpdate('colors.unselectedButton.text', value)}
         />
         <ColorPicker
           label="Cor de Fundo"
-          value={customization.unselected_button_bg_color || '#FFFFFF'}
-          onChange={(value) => onUpdate('unselected_button_bg_color', value)}
+          value={customization.colors?.unselectedButton?.background || '#FFFFFF'}
+          onChange={(value) => onUpdate('colors.unselectedButton.background', value)}
         />
         <ColorPicker
           label="Cor dos Ícones"
-          value={customization.unselected_button_icon_color || '#000000'}
-          onChange={(value) => onUpdate('unselected_button_icon_color', value)}
+          value={customization.colors?.unselectedButton?.icon || '#000000'}
+          onChange={(value) => onUpdate('colors.unselectedButton.icon', value)}
         />
       </div>
 
@@ -132,19 +132,19 @@ export const CheckoutColorSettings = ({ customization, onUpdate }: CheckoutColor
         <h3 className="text-lg font-semibold">Botão Selecionado</h3>
         <ColorPicker
           label="Cor do Texto"
-          value={customization.selected_button_text_color || '#FFFFFF'}
-          onChange={(value) => onUpdate('selected_button_text_color', value)}
+          value={customization.colors?.selectedButton?.text || '#FFFFFF'}
+          onChange={(value) => onUpdate('colors.selectedButton.text', value)}
         />
         <ColorPicker
           label="Cor de Fundo"
-          value={customization.selected_button_bg_color || '#10B981'}
-          onChange={(value) => onUpdate('selected_button_bg_color', value)}
+          value={customization.colors?.selectedButton?.background || '#10B981'}
+          onChange={(value) => onUpdate('colors.selectedButton.background', value)}
           description="Padrão verde"
         />
         <ColorPicker
           label="Cor do Ícone"
-          value={customization.selected_button_icon_color || '#FFFFFF'}
-          onChange={(value) => onUpdate('selected_button_icon_color', value)}
+          value={customization.colors?.selectedButton?.icon || '#FFFFFF'}
+          onChange={(value) => onUpdate('colors.selectedButton.icon', value)}
         />
       </div>
 
@@ -155,33 +155,33 @@ export const CheckoutColorSettings = ({ customization, onUpdate }: CheckoutColor
         <h3 className="text-lg font-semibold">Caixas Padrões</h3>
         <ColorPicker
           label="Cor de Fundo do Cabeçalho"
-          value={customization.box_header_bg_color || '#1A1A1A'}
-          onChange={(value) => onUpdate('box_header_bg_color', value)}
+          value={customization.colors?.box?.headerBg || '#1A1A1A'}
+          onChange={(value) => onUpdate('colors.box.headerBg', value)}
         />
         <ColorPicker
           label="Cor Primária do Texto do Cabeçalho"
-          value={customization.box_header_primary_text_color || '#FFFFFF'}
-          onChange={(value) => onUpdate('box_header_primary_text_color', value)}
+          value={customization.colors?.box?.headerPrimaryText || '#FFFFFF'}
+          onChange={(value) => onUpdate('colors.box.headerPrimaryText', value)}
         />
         <ColorPicker
           label="Cor Secundária do Texto do Cabeçalho"
-          value={customization.box_header_secondary_text_color || '#CCCCCC'}
-          onChange={(value) => onUpdate('box_header_secondary_text_color', value)}
+          value={customization.colors?.box?.headerSecondaryText || '#CCCCCC'}
+          onChange={(value) => onUpdate('colors.box.headerSecondaryText', value)}
         />
         <ColorPicker
           label="Cor de Fundo da Caixa"
-          value={customization.box_bg_color || '#0A0A0A'}
-          onChange={(value) => onUpdate('box_bg_color', value)}
+          value={customization.colors?.box?.bg || '#0A0A0A'}
+          onChange={(value) => onUpdate('colors.box.bg', value)}
         />
         <ColorPicker
           label="Cor Primária do Texto da Caixa"
-          value={customization.box_primary_text_color || '#FFFFFF'}
-          onChange={(value) => onUpdate('box_primary_text_color', value)}
+          value={customization.colors?.box?.primaryText || '#FFFFFF'}
+          onChange={(value) => onUpdate('colors.box.primaryText', value)}
         />
         <ColorPicker
           label="Cor Secundária do Texto da Caixa"
-          value={customization.box_secondary_text_color || '#CCCCCC'}
-          onChange={(value) => onUpdate('box_secondary_text_color', value)}
+          value={customization.colors?.box?.secondaryText || '#CCCCCC'}
+          onChange={(value) => onUpdate('colors.box.secondaryText', value)}
         />
       </div>
 
@@ -192,33 +192,33 @@ export const CheckoutColorSettings = ({ customization, onUpdate }: CheckoutColor
         <h3 className="text-lg font-semibold">Caixas Não Selecionadas</h3>
         <ColorPicker
           label="Cor de Fundo do Cabeçalho"
-          value={customization.unselected_box_header_bg_color || '#1A1A1A'}
-          onChange={(value) => onUpdate('unselected_box_header_bg_color', value)}
+          value={customization.colors?.unselectedBox?.headerBg || '#1A1A1A'}
+          onChange={(value) => onUpdate('colors.unselectedBox.headerBg', value)}
         />
         <ColorPicker
           label="Cor Primária do Texto do Cabeçalho"
-          value={customization.unselected_box_header_primary_text_color || '#FFFFFF'}
-          onChange={(value) => onUpdate('unselected_box_header_primary_text_color', value)}
+          value={customization.colors?.unselectedBox?.headerPrimaryText || '#FFFFFF'}
+          onChange={(value) => onUpdate('colors.unselectedBox.headerPrimaryText', value)}
         />
         <ColorPicker
           label="Cor Secundária do Texto do Cabeçalho"
-          value={customization.unselected_box_header_secondary_text_color || '#CCCCCC'}
-          onChange={(value) => onUpdate('unselected_box_header_secondary_text_color', value)}
+          value={customization.colors?.unselectedBox?.headerSecondaryText || '#CCCCCC'}
+          onChange={(value) => onUpdate('colors.unselectedBox.headerSecondaryText', value)}
         />
         <ColorPicker
           label="Cor de Fundo da Caixa"
-          value={customization.unselected_box_bg_color || '#0A0A0A'}
-          onChange={(value) => onUpdate('unselected_box_bg_color', value)}
+          value={customization.colors?.unselectedBox?.bg || '#0A0A0A'}
+          onChange={(value) => onUpdate('colors.unselectedBox.bg', value)}
         />
         <ColorPicker
           label="Cor Primária do Texto da Caixa"
-          value={customization.unselected_box_primary_text_color || '#FFFFFF'}
-          onChange={(value) => onUpdate('unselected_box_primary_text_color', value)}
+          value={customization.colors?.unselectedBox?.primaryText || '#FFFFFF'}
+          onChange={(value) => onUpdate('colors.unselectedBox.primaryText', value)}
         />
         <ColorPicker
           label="Cor Secundária do Texto da Caixa"
-          value={customization.unselected_box_secondary_text_color || '#CCCCCC'}
-          onChange={(value) => onUpdate('unselected_box_secondary_text_color', value)}
+          value={customization.colors?.unselectedBox?.secondaryText || '#CCCCCC'}
+          onChange={(value) => onUpdate('colors.unselectedBox.secondaryText', value)}
         />
       </div>
 
@@ -229,34 +229,34 @@ export const CheckoutColorSettings = ({ customization, onUpdate }: CheckoutColor
         <h3 className="text-lg font-semibold">Caixas Selecionadas</h3>
         <ColorPicker
           label="Cor de Fundo do Cabeçalho"
-          value={customization.selected_box_header_bg_color || '#10B981'}
-          onChange={(value) => onUpdate('selected_box_header_bg_color', value)}
+          value={customization.colors?.selectedBox?.headerBg || '#10B981'}
+          onChange={(value) => onUpdate('colors.selectedBox.headerBg', value)}
           description="Padrão verde"
         />
         <ColorPicker
           label="Cor Primária do Texto do Cabeçalho"
-          value={customization.selected_box_header_primary_text_color || '#FFFFFF'}
-          onChange={(value) => onUpdate('selected_box_header_primary_text_color', value)}
+          value={customization.colors?.selectedBox?.headerPrimaryText || '#FFFFFF'}
+          onChange={(value) => onUpdate('colors.selectedBox.headerPrimaryText', value)}
         />
         <ColorPicker
           label="Cor Secundária do Texto do Cabeçalho"
-          value={customization.selected_box_header_secondary_text_color || '#CCCCCC'}
-          onChange={(value) => onUpdate('selected_box_header_secondary_text_color', value)}
+          value={customization.colors?.selectedBox?.headerSecondaryText || '#CCCCCC'}
+          onChange={(value) => onUpdate('colors.selectedBox.headerSecondaryText', value)}
         />
         <ColorPicker
           label="Cor de Fundo da Caixa"
-          value={customization.selected_box_bg_color || '#0A0A0A'}
-          onChange={(value) => onUpdate('selected_box_bg_color', value)}
+          value={customization.colors?.selectedBox?.bg || '#0A0A0A'}
+          onChange={(value) => onUpdate('colors.selectedBox.bg', value)}
         />
         <ColorPicker
           label="Cor Primária do Texto da Caixa"
-          value={customization.selected_box_primary_text_color || '#FFFFFF'}
-          onChange={(value) => onUpdate('selected_box_primary_text_color', value)}
+          value={customization.colors?.selectedBox?.primaryText || '#FFFFFF'}
+          onChange={(value) => onUpdate('colors.selectedBox.primaryText', value)}
         />
         <ColorPicker
           label="Cor Secundária do Texto da Caixa"
-          value={customization.selected_box_secondary_text_color || '#CCCCCC'}
-          onChange={(value) => onUpdate('selected_box_secondary_text_color', value)}
+          value={customization.colors?.selectedBox?.secondaryText || '#CCCCCC'}
+          onChange={(value) => onUpdate('colors.selectedBox.secondaryText', value)}
         />
       </div>
 
@@ -267,13 +267,13 @@ export const CheckoutColorSettings = ({ customization, onUpdate }: CheckoutColor
         <h3 className="text-lg font-semibold">Botão do Pagamento</h3>
         <ColorPicker
           label="Cor do Texto Botão de Pagar"
-          value={customization.payment_button_text_color || '#FFFFFF'}
-          onChange={(value) => onUpdate('payment_button_text_color', value)}
+          value={customization.colors?.button?.text || '#FFFFFF'}
+          onChange={(value) => onUpdate('colors.button.text', value)}
         />
         <ColorPicker
           label="Cor do Botão de Pagar"
-          value={customization.payment_button_bg_color || '#10B981'}
-          onChange={(value) => onUpdate('payment_button_bg_color', value)}
+          value={customization.colors?.button?.background || '#10B981'}
+          onChange={(value) => onUpdate('colors.button.background', value)}
           description="Padrão verde"
         />
       </div>
