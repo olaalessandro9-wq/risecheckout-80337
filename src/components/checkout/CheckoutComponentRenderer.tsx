@@ -36,19 +36,18 @@ const CheckoutComponentRenderer = ({ component, design }: CheckoutComponentRende
 
       return (
         <div className="w-full flex justify-center mb-2">
-          {/* imagem 25% maior horizontalmente */}
-          <div className="w-[125%] max-w-none mx-auto px-0">
+          {/* imagem 25% maior horizontalmente apenas no desktop */}
+          <div className="w-full lg:w-[125%] max-w-none mx-auto px-0">
             <div className={`w-full ${roundedImage ? 'rounded-sm' : 'rounded-none'} overflow-hidden`}>
               <img
                 key={component.id}
                 src={src}
                 alt={component.content?.alt || 'Imagem'}
-                className={`w-full h-auto object-contain ${roundedImage ? 'rounded-sm' : 'rounded-none'}`}
+                className={`w-full h-auto object-contain ${roundedImage ? 'rounded-sm' : 'rounded-none'} max-h-[600px] lg:max-h-none`}
                 loading="eager"
                 fetchPriority="high"
                 decoding="async"
                 style={{ 
-                  maxHeight: '600px',
                   width: '100%',
                   height: 'auto'
                 }}
