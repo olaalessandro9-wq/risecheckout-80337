@@ -137,6 +137,7 @@ const CheckoutCustomizer = () => {
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const [activeId, setActiveId] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<"components" | "rows" | "settings">("components");
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -1096,6 +1097,8 @@ const CheckoutCustomizer = () => {
                   onBack={() => setSelectedComponent(null)}
                   rows={customization.rows}
                   selectedRowId={selectedRow}
+                  activeTab={activeTab}
+                  onActiveTabChange={setActiveTab}
                 />
               </div>
             </div>

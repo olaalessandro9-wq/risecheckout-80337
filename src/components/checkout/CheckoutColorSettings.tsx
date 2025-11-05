@@ -30,7 +30,7 @@ export const CheckoutColorSettings = ({ customization, onUpdate }: CheckoutColor
   };
 
   return (
-    <div className="space-y-6 p-4">
+    <div className="space-y-6 p-4 min-w-[400px] w-[400px]">
       {/* Tema e Fonte */}
       <div className="space-y-4">
         <h3 className="text-lg font-semibold">Tema e Fonte</h3>
@@ -59,16 +59,16 @@ export const CheckoutColorSettings = ({ customization, onUpdate }: CheckoutColor
         </div>
         
         {/* SELETOR DE FONTE */}
-        <div className="space-y-2">
+        <div className="space-y-2 relative">
           <Label className="text-sm font-medium">Fonte</Label>
           <Select
             value={customization.design?.font || 'Inter'}
             onValueChange={handleFontChange}
           >
-            <SelectTrigger>
+            <SelectTrigger className="will-change-auto">
               <SelectValue placeholder="Selecione a fonte" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="will-change-transform">
               {FONT_OPTIONS.map(font => (
                 <SelectItem key={font.value} value={font.value}>
                   {font.label}

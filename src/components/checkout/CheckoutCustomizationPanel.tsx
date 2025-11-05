@@ -25,6 +25,8 @@ interface CheckoutCustomizationPanelProps {
   onBack: () => void;
   rows: CheckoutRow[];
   selectedRowId: string | null;
+  activeTab: "components" | "rows" | "settings";
+  onActiveTabChange: (tab: "components" | "rows" | "settings") => void;
 }
 
 const DraggableComponent = ({ type, icon, label }: { type: string; icon: React.ReactNode; label: string }) => {
@@ -61,8 +63,9 @@ export const CheckoutCustomizationPanel = ({
   onBack,
   rows,
   selectedRowId,
+  activeTab,
+  onActiveTabChange,
 }: CheckoutCustomizationPanelProps) => {
-  const [activeTab, setActiveTab] = useState("components");
 
   const handleDesignUpdate = (field: string, value: any) => {
     // Se o campo é 'design.colors.ALGUMA_COR', marca como tema custom
@@ -1100,7 +1103,7 @@ export const CheckoutCustomizationPanel = ({
 
   return (
     <div className="w-96 border-l bg-card overflow-auto">
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="h-full">
+      <Tabs value={activeTab} onValueChange={onActiveTabChange} className="h-full">
         <TabsList className="w-full grid grid-cols-3 rounded-none border-b">
           <TabsTrigger value="components">Componentes</TabsTrigger>
           <TabsTrigger value="rows">Linhas</TabsTrigger>
