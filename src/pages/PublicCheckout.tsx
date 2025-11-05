@@ -312,9 +312,18 @@ const PublicCheckout = () => {
   }
 
   return (
-    <>
+    <div style={{ 
+      backgroundColor: design.colors.background,
+      minHeight: '100vh',
+      margin: 0,
+      padding: 0
+    }}>
       {checkout.top_components && Array.isArray(checkout.top_components) && checkout.top_components.length > 0 && (
-        <div className="w-full" style={{ fontFamily: 'Inter, system-ui, sans-serif', backgroundColor: design.colors.background }}>
+        <div style={{ 
+          width: '100%', 
+          fontFamily: 'Inter, system-ui, sans-serif', 
+          backgroundColor: design.colors.background 
+        }}>
           {checkout.top_components.map((component: any, index: number) => (
             <CheckoutComponentRenderer key={index} component={component} design={design} />
           ))}
@@ -322,10 +331,11 @@ const PublicCheckout = () => {
       )}
 
       <div 
-        className="min-h-screen" 
         style={{ 
+          minHeight: '100vh',
           fontFamily: checkout.font || 'Inter, system-ui, sans-serif',
-          backgroundColor: design.colors.background
+          backgroundColor: design.colors.background,
+          color: design.colors.primaryText
         }}
       >
         <div className="max-w-[1120px] mx-auto px-4 lg:px-6 py-4 lg:py-8">
@@ -548,6 +558,8 @@ const PublicCheckout = () => {
                   <button
                     type="button"
                     onClick={() => setSelectedPayment('pix')}
+                    onFocus={(e) => e.currentTarget.style.outline = 'none'}
+                    onBlur={(e) => e.currentTarget.style.outline = 'none'}
                     className="w-full px-4 py-3 rounded-lg border-2 transition-all duration-200 text-left"
                     style={{
                       backgroundColor: selectedPayment === 'pix' 
@@ -558,7 +570,9 @@ const PublicCheckout = () => {
                         : (design.colors.unselectedButton.border || design.colors.border),
                       color: selectedPayment === 'pix'
                         ? design.colors.selectedButton.text
-                        : design.colors.unselectedButton.text
+                        : design.colors.unselectedButton.text,
+                      outline: 'none',
+                      boxShadow: 'none'
                     }}
                   >
                     <div className="flex items-center gap-3">
@@ -576,6 +590,8 @@ const PublicCheckout = () => {
                   <button
                     type="button"
                     onClick={() => setSelectedPayment('credit_card')}
+                    onFocus={(e) => e.currentTarget.style.outline = 'none'}
+                    onBlur={(e) => e.currentTarget.style.outline = 'none'}
                     className="w-full px-4 py-3 rounded-lg border-2 transition-all duration-200 text-left"
                     style={{
                       backgroundColor: selectedPayment === 'credit_card' 
@@ -586,7 +602,9 @@ const PublicCheckout = () => {
                         : (design.colors.unselectedButton.border || design.colors.border),
                       color: selectedPayment === 'credit_card'
                         ? design.colors.selectedButton.text
-                        : design.colors.unselectedButton.text
+                        : design.colors.unselectedButton.text,
+                      outline: 'none',
+                      boxShadow: 'none'
                     }}
                   >
                     <div className="flex items-center gap-3">
@@ -1100,7 +1118,7 @@ const PublicCheckout = () => {
           ))}
         </div>
       )}
-    </>
+    </div>
   );
 };
 

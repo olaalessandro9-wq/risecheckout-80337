@@ -51,13 +51,20 @@ export const CountdownTimer = ({
   const seconds = timeLeft % 60;
 
   return (
-    <div className={`w-full bg-transparent ${fixedTop ? 'sticky top-0 z-50' : ''}`}>
+    <div 
+      className={`w-full ${fixedTop ? 'sticky top-0 z-50' : ''}`}
+      style={{ backgroundColor: 'transparent' }}
+    >
       {/* centraliza e fixa a largura ao mesmo "corpo" do cartão abaixo */}
       <div className="max-w-[720px] mx-auto px-4 lg:px-6">
         <div
           className={`mt-4 mb-2 lg:mb-6 rounded-xl min-h-[64px] px-6 py-4 flex items-center justify-center gap-4 shadow-sm ${className}`}
           onClick={onClick}
-          style={{ backgroundColor, color: textColor }}
+          style={{ 
+            backgroundColor, 
+            color: textColor,
+            margin: '1rem 0'
+          }}
         >
           {/* Ordem: tempo -> ícone -> texto (texto sempre visível no mobile) */}
           <span className="text-3xl lg:text-2xl font-semibold tabular-nums">
