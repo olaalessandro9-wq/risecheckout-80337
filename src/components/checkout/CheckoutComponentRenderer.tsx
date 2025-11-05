@@ -35,29 +35,30 @@ const CheckoutComponentRenderer = ({ component, design }: CheckoutComponentRende
       // cardBgClass: destaque do bloco (não usado)
 
       return (
-        <div className="w-full flex justify-center">
+        <div className="w-full flex justify-center mb-6">
           {/* largura alinhada com o formulário */}
           <div className="w-full max-w-4xl mx-auto px-4">
-            <div className="p-0.5 rounded-sm mb-0.5">
-              {/* 16/9 no mobile, 21/9 no desktop para aproveitar largura */}
-              <div className="aspect-[16/9] lg:aspect-[21/9] relative overflow-hidden">
-                <img
-                  key={component.id}
-                  src={src}
-                  alt={component.content?.alt || 'Imagem'}
-                  className={`absolute inset-0 w-full h-full object-${fit} object-center ${roundedImage ? 'rounded-sm' : 'rounded-none'}`}
-                  loading="eager"
-                  fetchPriority="high"
-                  decoding="async"
-                  style={{ width: '100%', height: '100%' }}
-                  onError={(e) => {
-                    const imgEl = e.currentTarget as HTMLImageElement;
-                    imgEl.onerror = null;
-                    imgEl.src = '/images/placeholder-top.png';
-                    console.error('Erro ao carregar imagem:', src);
-                  }}
-                />
-              </div>
+            <div className={`w-full ${roundedImage ? 'rounded-sm' : 'rounded-none'} overflow-hidden`}>
+              <img
+                key={component.id}
+                src={src}
+                alt={component.content?.alt || 'Imagem'}
+                className={`w-full h-auto object-contain ${roundedImage ? 'rounded-sm' : 'rounded-none'}`}
+                loading="eager"
+                fetchPriority="high"
+                decoding="async"
+                style={{ 
+                  maxHeight: '600px',
+                  width: '100%',
+                  height: 'auto'
+                }}
+                onError={(e) => {
+                  const imgEl = e.currentTarget as HTMLImageElement;
+                  imgEl.onerror = null;
+                  imgEl.src = '/images/placeholder-top.png';
+                  console.error('Erro ao carregar imagem:', src);
+                }}
+              />
             </div>
           </div>
         </div>
