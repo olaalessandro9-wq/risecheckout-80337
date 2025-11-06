@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, User, Wallet } from "lucide-react";
+import { Loader2, User, Wallet, Mail, Phone, FileText } from "lucide-react";
 import { toast } from "sonner";
 import { parseJsonSafely } from "@/lib/utils";
 import { loadPublicCheckoutData } from "@/hooks/usePublicCheckoutConfig";
@@ -366,8 +366,8 @@ const PublicCheckout = () => {
           color: design.colors.primaryText
         }}
       >
-        <div className="max-w-[1400px] mx-auto px-4 lg:px-6 pt-2 pb-4 lg:pt-2 lg:pb-8">
-          <div className="max-w-5xl mx-auto">
+        <div className="max-w-4xl mx-auto px-4 lg:px-6 pt-2 pb-4 lg:pt-2 lg:pb-8">
+          <div className="mx-auto">
             {/* Coluna Principal - Formulário (Esquerda no Desktop) */}
             <div className="space-y-1 min-w-0">
               {/* Header do Produto */}
@@ -431,7 +431,7 @@ const PublicCheckout = () => {
                   style={{ color: design.colors.primaryText }}
                 >
                   <User className="w-5 h-5" />
-                  Seus dados
+                  Dados necessários para envio do seu acesso:
                 </h2>
                 <form onSubmit={handleSubmit} className="space-y-3">
                   <div>
@@ -441,18 +441,25 @@ const PublicCheckout = () => {
                     >
                       Nome completo
                     </label>
-                    <input
-                      type="text"
-                      value={formData.name}
-                      onChange={(e) => setFormData({...formData, name: e.target.value})}
-                      className="w-full px-3 py-2 border rounded-lg text-sm transition-all focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                      style={{ 
-                        borderColor: design.colors.border,
-                        backgroundColor: design.colors.inputBackground || design.colors.formBackground,
-                        color: design.colors.primaryText
-                      }}
-                      required
-                    />
+                    <div className="relative">
+                      <User 
+                        className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" 
+                        style={{ color: design.colors.secondaryText }}
+                      />
+                      <input
+                        type="text"
+                        value={formData.name}
+                        onChange={(e) => setFormData({...formData, name: e.target.value})}
+                        placeholder="Digite seu nome completo"
+                        className="w-full pl-10 pr-3 py-2 border rounded-lg text-sm transition-all focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                        style={{ 
+                          borderColor: design.colors.border,
+                          backgroundColor: design.colors.inputBackground || design.colors.formBackground,
+                          color: design.colors.primaryText
+                        }}
+                        required
+                      />
+                    </div>
                   </div>
 
                   <div>
@@ -462,18 +469,25 @@ const PublicCheckout = () => {
                     >
                       Email
                     </label>
-                    <input
-                      type="email"
-                      value={formData.email}
-                      onChange={(e) => setFormData({...formData, email: e.target.value})}
-                      className="w-full px-3 py-2 border rounded-lg text-sm transition-all focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                      style={{ 
-                        borderColor: design.colors.border,
-                        backgroundColor: design.colors.inputBackground || design.colors.formBackground,
-                        color: design.colors.primaryText
-                      }}
-                      required
-                    />
+                    <div className="relative">
+                      <Mail 
+                        className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" 
+                        style={{ color: design.colors.secondaryText }}
+                      />
+                      <input
+                        type="email"
+                        value={formData.email}
+                        onChange={(e) => setFormData({...formData, email: e.target.value})}
+                        placeholder="Digite seu e-mail"
+                        className="w-full pl-10 pr-3 py-2 border rounded-lg text-sm transition-all focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                        style={{ 
+                          borderColor: design.colors.border,
+                          backgroundColor: design.colors.inputBackground || design.colors.formBackground,
+                          color: design.colors.primaryText
+                        }}
+                        required
+                      />
+                    </div>
                   </div>
 
                   {checkout?.product.required_fields?.cpf && (
@@ -484,18 +498,25 @@ const PublicCheckout = () => {
                       >
                         CPF/CNPJ
                       </label>
+                      <div className="relative">
+                        <FileText 
+                          className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" 
+                          style={{ color: design.colors.secondaryText }}
+                        />
                         <input
-                         type="text"
-                         value={formData.document}
-                         onChange={(e) => setFormData({...formData, document: e.target.value})}
-                         className="w-full px-3 py-2 border rounded-lg text-sm transition-all focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                         style={{ 
-                           borderColor: design.colors.border,
-                           backgroundColor: design.colors.inputBackground || design.colors.formBackground,
-                           color: design.colors.primaryText
-                         }}
-                         required
-                       />
+                          type="text"
+                          value={formData.document}
+                          onChange={(e) => setFormData({...formData, document: e.target.value})}
+                          placeholder="Digite seu CPF"
+                          className="w-full pl-10 pr-3 py-2 border rounded-lg text-sm transition-all focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                          style={{ 
+                            borderColor: design.colors.border,
+                            backgroundColor: design.colors.inputBackground || design.colors.formBackground,
+                            color: design.colors.primaryText
+                          }}
+                          required
+                        />
+                      </div>
                     </div>
                   )}
 
@@ -507,19 +528,25 @@ const PublicCheckout = () => {
                       >
                         Celular
                       </label>
-                       <input
-                         type="tel"
-                         value={formData.phone}
-                         onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                         className="w-full px-3 py-2 border rounded-lg text-sm transition-all focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                         style={{ 
-                           borderColor: design.colors.border,
-                           backgroundColor: design.colors.inputBackground || design.colors.formBackground,
-                           color: design.colors.primaryText
-                         }}
-                         placeholder="+55 (00) 00000-0000"
-                         required
-                       />
+                      <div className="relative">
+                        <Phone 
+                          className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" 
+                          style={{ color: design.colors.secondaryText }}
+                        />
+                        <input
+                          type="tel"
+                          value={formData.phone}
+                          onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                          placeholder="Digite seu telefone"
+                          className="w-full pl-10 pr-3 py-2 border rounded-lg text-sm transition-all focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                          style={{ 
+                            borderColor: design.colors.border,
+                            backgroundColor: design.colors.inputBackground || design.colors.formBackground,
+                            color: design.colors.primaryText
+                          }}
+                          required
+                        />
+                      </div>
                     </div>
                   )}
                 </form>
@@ -546,15 +573,11 @@ const PublicCheckout = () => {
                     onBlur={(e) => e.currentTarget.style.outline = 'none'}
                     className="w-full px-4 py-3 rounded-lg border-2 transition-all duration-200 text-left"
                     style={{
-                      backgroundColor: selectedPayment === 'pix' 
-                        ? design.colors.selectedButton.background
-                        : design.colors.unselectedButton.background,
+                      backgroundColor: design.colors.formBackground,
                       borderColor: selectedPayment === 'pix'
-                        ? (design.colors.selectedButton.border || design.colors.active)
-                        : (design.colors.unselectedButton.border || design.colors.border),
-                      color: selectedPayment === 'pix'
-                        ? design.colors.selectedButton.text
-                        : design.colors.unselectedButton.text,
+                        ? design.colors.active
+                        : design.colors.border,
+                      color: design.colors.primaryText,
                       outline: 'none',
                       boxShadow: 'none'
                     }}
@@ -562,10 +585,7 @@ const PublicCheckout = () => {
                     <div className="flex items-center gap-3">
                       <PixIcon 
                         className="w-5 h-5" 
-                        color={selectedPayment === 'pix' 
-                          ? design.colors.selectedButton.icon
-                          : design.colors.unselectedButton.icon
-                        }
+                        color={design.colors.primaryText}
                       />
                       <span className="font-semibold text-sm">PIX</span>
                     </div>
@@ -578,15 +598,11 @@ const PublicCheckout = () => {
                     onBlur={(e) => e.currentTarget.style.outline = 'none'}
                     className="w-full px-4 py-3 rounded-lg border-2 transition-all duration-200 text-left"
                     style={{
-                      backgroundColor: selectedPayment === 'credit_card' 
-                        ? design.colors.selectedButton.background
-                        : design.colors.unselectedButton.background,
+                      backgroundColor: design.colors.formBackground,
                       borderColor: selectedPayment === 'credit_card'
-                        ? (design.colors.selectedButton.border || design.colors.active)
-                        : (design.colors.unselectedButton.border || design.colors.border),
-                      color: selectedPayment === 'credit_card'
-                        ? design.colors.selectedButton.text
-                        : design.colors.unselectedButton.text,
+                        ? design.colors.active
+                        : design.colors.border,
+                      color: design.colors.primaryText,
                       outline: 'none',
                       boxShadow: 'none'
                     }}
@@ -594,10 +610,7 @@ const PublicCheckout = () => {
                     <div className="flex items-center gap-3">
                       <CreditCardIcon 
                         className="w-5 h-5" 
-                        color={selectedPayment === 'credit_card' 
-                          ? design.colors.selectedButton.icon
-                          : design.colors.unselectedButton.icon
-                        }
+                        color={design.colors.primaryText}
                       />
                       <span className="font-semibold text-sm">Cartão de Crédito</span>
                     </div>
