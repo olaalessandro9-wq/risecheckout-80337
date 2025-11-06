@@ -10,10 +10,21 @@ export type NormalizedOffer = {
 
 export async function fetchOffersByProduct(productId: string): Promise<NormalizedOffer[]> {
   const { data, error } = await supabase
-    .from("v_offers_normalized" as any)
-    .select("id, product_id, price, product_name, updated_at")
+    .from("offers")
+    .select("id, product_id, price, name, updated_at")
     .eq("product_id", productId)
     .order("updated_at", { ascending: false });
-  if (error) throw error;
-  return (data ?? []) as unknown as NormalizedOffer[];
+  
+  if (error) {
+    console.error("[Offers] load offers failed:", error);
+    throw error;
+  }
+  
+  return (data ?? []).map(offer => ({
+    id: offer.id,
+    product_id: offer.product_id,
+    price: offer.price,
+    product_name: offer.name,
+    updated_at: offer.updated_at
+  })) as NormalizedOffer[];
 }
