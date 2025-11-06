@@ -24,26 +24,25 @@ export async function fetchOrderBumpCandidates(opts?: {
 }): Promise<OrderBumpCandidate[]> {
   const excludeId = opts?.excludeProductId;
 
-  // Monta a query base a partir da VIEW canônica (filtrada no servidor)
+  // Busca diretamente da tabela products (RLS já filtra por user_id)
   let query = supabase
-    .from("v_order_bump_products" as any)
-    .select("id,name,price,updated_at"); // 'price' já normalizado na view
+    .from("products")
+    .select("id,name,price")
+    .eq("status", "active")
+    .order("created_at", { ascending: false });
 
   // Se quiser excluir o produto atual:
   if (excludeId) {
     query = query.neq("id", excludeId);
   }
 
-  // Dica: se quiser filtrar só ativos, descomente:
-  // query = query.eq("status", "active");
-
   const { data, error } = await query;
 
   if (error) {
-    // Deixe o throw para o chamador lidar (toast, etc.)
+    console.error("[OrderBump] load products failed:", error);
     throw error;
   }
 
-  // Defesa extra: view já filtra, mas garantimos sanidade no cliente
+  // Retorna produtos filtrados e validados
   return (data ?? []).filter((p: any) => p && p.id && p.name) as unknown as OrderBumpCandidate[];
 }
