@@ -1320,6 +1320,10 @@ export type Database = {
           product_id: string
         }[]
       }
+      has_active_payment_link_for_checkout: {
+        Args: { p_checkout_id: string }
+        Returns: boolean
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -1339,6 +1343,14 @@ export type Database = {
           p_severity?: string
         }
         Returns: string
+      }
+      offer_is_exposed_via_active_link: {
+        Args: { p_offer_id: string }
+        Returns: boolean
+      }
+      product_has_active_checkout: {
+        Args: { p_product_id: string }
+        Returns: boolean
       }
       slugify: { Args: { txt: string }; Returns: string }
       unaccent: { Args: { "": string }; Returns: string }
