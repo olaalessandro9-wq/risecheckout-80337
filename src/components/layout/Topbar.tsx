@@ -1,7 +1,7 @@
 // src/components/layout/Topbar.tsx
 import { Bell } from "lucide-react";
 import clsx from "clsx";
-import { ThemeToggleButton } from "@/components/theme/ThemeToggleButton";
+import ThemeToggle from "@/components/ThemeToggle";
 
 type TopbarProps = {
   scrolled?: boolean;
@@ -34,7 +34,7 @@ export function Topbar({ scrolled, onNotificationsClick }: TopbarProps) {
         </button>
 
         {/* Toggle de tema */}
-        <ThemeToggleButton />
+        <ThemeToggle />
       </div>
     </header>
   );
