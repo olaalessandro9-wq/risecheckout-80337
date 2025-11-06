@@ -1149,48 +1149,25 @@ const CheckoutPreviewComponent = ({
           </div>
         )}
 
-        {/* Footer com Informações Legais */}
-        <div 
-          className="rounded-xl shadow-sm p-5 mt-5 text-center"
-          style={{ backgroundColor: customization.design.colors.footer?.background || "#FFFFFF" }}
-        >
-          <div className="space-y-3">
-            {/* Logo/Nome + Processador */}
-            <p 
-              className="text-xs leading-relaxed"
-              style={{ color: customization.design.colors.footer?.secondaryText || "#6B7280" }}
-            >
-              <span 
-                className="font-bold"
-                style={{ color: customization.design.colors.footer?.primaryText || "#000000" }}
-              >
-                Rise Checkout
-              </span> está processando este pagamento para o vendedor{' '}
-              <span 
-                className="font-semibold"
-                style={{ color: customization.design.colors.footer?.primaryText || "#000000" }}
-              >
-                {productData?.seller_name || productData?.support_name || 'Vendedor'}
-              </span>
-            </p>
-
-            {/* Compra Segura com Check */}
-            <div className="flex items-center justify-center gap-2">
-              <CheckCircleFilledIcon size={16} color="#10B981" />
-              <span 
-                className="text-xs font-semibold"
-                style={{ color: customization.design.colors.footer?.primaryText || "#000000" }}
-              >
-                Compra 100% segura
-              </span>
-            </div>
-
-            {/* reCAPTCHA */}
-            <p 
-              className="text-xs leading-relaxed"
-              style={{ color: customization.design.colors.footer?.secondaryText || "#6B7280" }}
-            >
-              Este site é protegido pelo reCAPTCHA do Google
+        {/* Mini Footer - Security and Copyright */}
+        <div className="mt-8 space-y-4">
+          {/* Security badge */}
+          <div className="flex items-center justify-center gap-2 py-3">
+            <LockIconLucide className="w-4 h-4" style={{ color: customization.design.colors.active || '#10b981' }} />
+            <span className="text-sm font-medium" style={{ color: customization.design.colors.secondaryText }}>
+              Transação Segura e Criptografada
+            </span>
+          </div>
+          
+          {/* Description */}
+          <p className="text-xs text-center leading-relaxed" style={{ color: customization.design.colors.secondaryText }}>
+            Pagamento processado com segurança pela plataforma RiseCheckout
+          </p>
+          
+          {/* Copyright */}
+          <div className="border-t pt-4" style={{ borderColor: 'rgba(0,0,0,0.1)' }}>
+            <p className="text-xs text-center" style={{ color: customization.design.colors.secondaryText, opacity: 0.7 }}>
+              © 2025 RiseCheckout LTDA. Todos os direitos reservados.
             </p>
           </div>
         </div>

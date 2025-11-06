@@ -984,10 +984,15 @@ const PublicCheckout = () => {
                     </span>
                   </div>
                   
+                  {/* Description */}
+                  <p className="text-xs text-center leading-relaxed" style={{ color: design.colors.secondaryText }}>
+                    Pagamento processado com segurança pela plataforma RiseCheckout
+                  </p>
+                  
                   {/* Copyright */}
                   <div className="border-t pt-4" style={{ borderColor: design.colors.border }}>
                     <p className="text-xs text-center" style={{ color: design.colors.secondaryText, opacity: 0.7 }}>
-                      © 2025 ggCheckout LTDA. Todos os direitos reservados.
+                      © 2025 RiseCheckout LTDA. Todos os direitos reservados.
                     </p>
                   </div>
                 </div>
