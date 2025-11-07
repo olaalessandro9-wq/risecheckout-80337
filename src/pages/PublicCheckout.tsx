@@ -865,7 +865,7 @@ const PublicCheckout = () => {
                             </div>
                           )}
                           
-                          <div className="flex items-start gap-4">
+                          <div className="flex items-start gap-3">
                             <input
                               type="checkbox"
                               checked={selectedBumps.has(bump.id)}
@@ -886,53 +886,55 @@ const PublicCheckout = () => {
                               <img
                                 src={bump.image_url}
                                 alt={bump.name}
-                                className="w-20 h-20 rounded-lg object-cover flex-shrink-0"
+                                className="w-16 h-16 rounded-lg object-cover flex-shrink-0"
                               />
                             )}
                             
                             <div className="flex-1 min-w-0">
+                              {/* Título */}
                               <h5
-                                className="font-bold text-base mb-1.5"
+                                className="font-bold text-sm md:text-base mb-1"
                                 style={{ color: design.colors.primaryText }}
                               >
                                 {bump.name}
                               </h5>
                               
+                              {/* Descrição - sempre visível */}
                               {bump.description && (
                                 <p
-                                  className="text-sm mb-2 line-clamp-2"
+                                  className="text-xs md:text-sm mb-2 leading-relaxed"
                                   style={{ color: design.colors.secondaryText }}
                                 >
                                   {bump.description}
                                 </p>
                               )}
-                            </div>
-
-                            {/* Preço alinhado à direita */}
-                            <div className="flex flex-col items-end justify-start gap-1 flex-shrink-0 ml-2">
-                              {bump.original_price ? (
-                                <>
+                              
+                              {/* Preço - sempre embaixo no mobile */}
+                              <div className="flex items-center gap-2 flex-wrap mt-2">
+                                {bump.original_price ? (
+                                  <>
+                                    <span 
+                                      className="text-xs md:text-sm line-through" 
+                                      style={{ color: design.colors.secondaryText }}
+                                    >
+                                      R$ {(bump.original_price / 100).toFixed(2).replace('.', ',')}
+                                    </span>
+                                    <span 
+                                      className="text-base md:text-lg font-bold" 
+                                      style={{ color: design.colors.active }}
+                                    >
+                                      R$ {(bump.price / 100).toFixed(2).replace('.', ',')}
+                                    </span>
+                                  </>
+                                ) : (
                                   <span 
-                                    className="text-xs line-through" 
-                                    style={{ color: design.colors.secondaryText }}
-                                  >
-                                    R$ {(bump.original_price / 100).toFixed(2).replace('.', ',')}
-                                  </span>
-                                  <span 
-                                    className="text-xl font-bold" 
+                                    className="text-base md:text-lg font-bold" 
                                     style={{ color: design.colors.active }}
                                   >
                                     R$ {(bump.price / 100).toFixed(2).replace('.', ',')}
                                   </span>
-                                </>
-                              ) : (
-                                <span 
-                                  className="text-xl font-bold" 
-                                  style={{ color: design.colors.active }}
-                                >
-                                  R$ {(bump.price / 100).toFixed(2).replace('.', ',')}
-                                </span>
-                              )}
+                                )}
+                              </div>
                             </div>
                           </div>
                         </div>
