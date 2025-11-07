@@ -84,29 +84,7 @@ const PaymentLinkRedirect = () => {
           return;
         }
 
-        // 4. Verificar se existe checkout associado (opcional, apenas para validação)
-        const { data: checkoutLinksData, error: checkoutLinksError } = await supabase
-          .from("checkout_links")
-          .select(`
-            checkout_id,
-            checkouts (
-              id,
-              slug,
-              is_default,
-              product_id
-            )
-          `)
-          .eq("link_id", linkData.id);
-
-        console.log("[PaymentLinkRedirect] Checkout links:", checkoutLinksData);
-
-        if (checkoutLinksError || !checkoutLinksData || checkoutLinksData.length === 0) {
-          console.error("Nenhum checkout associado:", checkoutLinksError);
-          setError("Este link não está associado a nenhum checkout. Entre em contato com o suporte.");
-          return;
-        }
-
-        // 5. Redirecionar para /pay/:slug (usando o slug do payment_link)
+        // 4. Redirecionar para /pay/:slug (usando o slug do payment_link)
         // O checkout público agora busca pelo slug do payment_link, não do checkout
         navigate(`/pay/${linkData.slug}?build=v2_7`, { replace: true });
       } catch (err) {

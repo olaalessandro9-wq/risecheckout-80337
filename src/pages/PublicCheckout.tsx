@@ -816,7 +816,7 @@ const PublicCheckout = () => {
 
                 {/* NOVA SEÇÃO: Ofertas limitadas */}
                 {orderBumps.length > 0 && (
-                  <div className="mt-6">
+                  <div className="mt-6 mb-6 md:mb-8">
                     <h3 
                       className="text-lg font-bold mb-4 flex items-center gap-2"
                       style={{ color: design.colors.primaryText }}
@@ -945,7 +945,7 @@ const PublicCheckout = () => {
                   <>
                     {/* Resumo do Pedido - PIX - DINÂMICO */}
                     <div 
-                      className="rounded-lg p-4 mt-8"
+                      className="rounded-lg p-4 mt-6 md:mt-10"
                       style={{
                         backgroundColor: design.colors.orderSummary?.background || '#F9FAFB',
                         borderColor: design.colors.orderSummary?.borderColor || '#D1D5DB',
@@ -1067,7 +1067,7 @@ const PublicCheckout = () => {
                   <>
                     {/* Resumo do Pedido - Cartão - DINÂMICO */}
                     <div 
-                      className="rounded-lg p-4 mt-8"
+                      className="rounded-lg p-4 mt-6 md:mt-10"
                       style={{
                         backgroundColor: design.colors.orderSummary?.background || '#F9FAFB',
                         borderColor: design.colors.orderSummary?.borderColor || '#D1D5DB',
