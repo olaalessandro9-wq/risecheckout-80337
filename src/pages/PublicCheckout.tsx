@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, User, Wallet, Mail, Phone, FileText, Lock } from "lucide-react";
+import { Loader2, User, Wallet, Mail, Phone, FileText, Lock, Zap, CheckCircle } from "lucide-react";
 import { toast } from "sonner";
 import { parseJsonSafely } from "@/lib/utils";
 import { loadPublicCheckoutData } from "@/hooks/usePublicCheckoutConfig";
@@ -793,6 +793,27 @@ const PublicCheckout = () => {
                   </button>
                 </div>
 
+                {/* Mensagem PIX - aparece ANTES dos order bumps */}
+                {selectedPayment === 'pix' && (
+                  <div 
+                    className="rounded-lg p-4 space-y-2 mt-4"
+                    style={{
+                      backgroundColor: design.colors.active + '15',
+                      borderLeft: `4px solid ${design.colors.active}`
+                    }}
+                  >
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className="w-5 h-5" style={{ color: design.colors.active }} />
+                      <span className="font-semibold" style={{ color: design.colors.primaryText }}>
+                        Liberação imediata
+                      </span>
+                    </div>
+                    <p className="text-sm" style={{ color: design.colors.secondaryText }}>
+                      É simples, só usar o aplicativo de seu banco para pagar Pix
+                    </p>
+                  </div>
+                )}
+
                 {/* NOVA SEÇÃO: Ofertas limitadas */}
                 {orderBumps.length > 0 && (
                   <div className="mt-6">
@@ -800,23 +821,18 @@ const PublicCheckout = () => {
                       className="text-lg font-bold mb-4 flex items-center gap-2"
                       style={{ color: design.colors.primaryText }}
                     >
-                      <span 
-                        className="inline-flex items-center justify-center w-6 h-6 rounded-full text-xs font-bold"
-                        style={{
-                          backgroundColor: design.colors.active,
-                          color: '#fff'
-                        }}
-                      >
-                        🔥
-                      </span>
+                      <Zap 
+                        className="w-5 h-5"
+                        style={{ color: design.colors.active }}
+                      />
                       Ofertas limitadas
                     </h3>
                     
-                    <div className="space-y-3">
+                    <div className="space-y-4">
                       {orderBumps.map((bump) => (
                         <div
                           key={bump.id}
-                          className="rounded-xl border-2 transition-all duration-200 cursor-pointer hover:scale-[1.005]"
+                          className="rounded-xl border-2 transition-all duration-200 cursor-pointer hover:scale-[1.002]"
                           style={{
                             backgroundColor: selectedBumps.has(bump.id)
                               ? design.colors.active + "10"
@@ -824,13 +840,13 @@ const PublicCheckout = () => {
                             borderColor: selectedBumps.has(bump.id)
                               ? design.colors.active
                               : design.colors.border,
-                            padding: '16px'
+                            padding: '20px'
                           }}
                           onClick={() => toggleBump(bump.id)}
                         >
                           {/* Call to Action */}
                           {bump.call_to_action && (
-                            <div className="flex items-start gap-2 mb-3">
+                            <div className="flex items-start gap-2 mb-4">
                               <div 
                                 className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5"
                                 style={{ backgroundColor: design.colors.active + "20" }}
@@ -849,7 +865,7 @@ const PublicCheckout = () => {
                             </div>
                           )}
                           
-                          <div className="flex items-start gap-3">
+                          <div className="flex items-start gap-4">
                             <input
                               type="checkbox"
                               checked={selectedBumps.has(bump.id)}
@@ -858,7 +874,7 @@ const PublicCheckout = () => {
                                 toggleBump(bump.id);
                               }}
                               onClick={(e) => e.stopPropagation()}
-                              className="mt-1 w-5 h-5 rounded border-2 cursor-pointer"
+                              className="mt-1 w-5 h-5 rounded border-2 cursor-pointer flex-shrink-0"
                               style={{ 
                                 accentColor: design.colors.active,
                                 borderColor: design.colors.border
@@ -870,13 +886,13 @@ const PublicCheckout = () => {
                               <img
                                 src={bump.image_url}
                                 alt={bump.name}
-                                className="w-16 h-16 rounded-lg object-cover flex-shrink-0"
+                                className="w-20 h-20 rounded-lg object-cover flex-shrink-0"
                               />
                             )}
                             
                             <div className="flex-1 min-w-0">
                               <h5
-                                className="font-bold text-base mb-1"
+                                className="font-bold text-base mb-1.5"
                                 style={{ color: design.colors.primaryText }}
                               >
                                 {bump.name}
@@ -890,33 +906,33 @@ const PublicCheckout = () => {
                                   {bump.description}
                                 </p>
                               )}
-                              
-                              {/* Preço */}
-                              <div className="flex items-center gap-2 flex-wrap">
-                                {bump.original_price ? (
-                                  <>
-                                    <span 
-                                      className="text-sm line-through" 
-                                      style={{ color: design.colors.secondaryText }}
-                                    >
-                                      R$ {(bump.original_price / 100).toFixed(2).replace('.', ',')}
-                                    </span>
-                                    <span 
-                                      className="text-lg font-bold" 
-                                      style={{ color: design.colors.active }}
-                                    >
-                                      + R$ {(bump.price / 100).toFixed(2).replace('.', ',')}
-                                    </span>
-                                  </>
-                                ) : (
+                            </div>
+
+                            {/* Preço alinhado à direita */}
+                            <div className="flex flex-col items-end justify-start gap-1 flex-shrink-0 ml-2">
+                              {bump.original_price ? (
+                                <>
                                   <span 
-                                    className="text-lg font-bold" 
+                                    className="text-xs line-through" 
+                                    style={{ color: design.colors.secondaryText }}
+                                  >
+                                    R$ {(bump.original_price / 100).toFixed(2).replace('.', ',')}
+                                  </span>
+                                  <span 
+                                    className="text-xl font-bold" 
                                     style={{ color: design.colors.active }}
                                   >
-                                    + R$ {(bump.price / 100).toFixed(2).replace('.', ',')}
+                                    R$ {(bump.price / 100).toFixed(2).replace('.', ',')}
                                   </span>
-                                )}
-                              </div>
+                                </>
+                              ) : (
+                                <span 
+                                  className="text-xl font-bold" 
+                                  style={{ color: design.colors.active }}
+                                >
+                                  R$ {(bump.price / 100).toFixed(2).replace('.', ',')}
+                                </span>
+                              )}
                             </div>
                           </div>
                         </div>
@@ -927,41 +943,6 @@ const PublicCheckout = () => {
 
                 {selectedPayment === 'pix' && (
                   <>
-                    <div 
-                      className="border rounded-lg p-3 space-y-2 mb-4"
-                      style={{ 
-                        backgroundColor: design.colors.infoBox?.background || 'rgba(16, 185, 129, 0.05)',
-                        borderColor: design.colors.infoBox?.border || design.colors.active
-                      }}
-                    >
-                      <div className="flex items-start gap-2.5">
-                        <CheckCircleFilledIcon 
-                          size={18} 
-                          color={design.colors.active} 
-                          className="flex-shrink-0 mt-0.5" 
-                        />
-                        <span 
-                          className="text-xs leading-relaxed font-medium"
-                          style={{ color: design.colors.infoBox?.text || design.colors.primaryText }}
-                        >
-                          Liberação imediata
-                        </span>
-                      </div>
-                      <div className="flex items-start gap-2.5">
-                        <CheckCircleFilledIcon 
-                          size={18} 
-                          color={design.colors.active} 
-                          className="flex-shrink-0 mt-0.5" 
-                        />
-                        <span 
-                          className="text-xs leading-relaxed font-medium"
-                          style={{ color: design.colors.infoBox?.text || design.colors.primaryText }}
-                        >
-                          É simples, só usar o aplicativo de seu banco para pagar Pix
-                        </span>
-                      </div>
-                    </div>
-
                     {/* Resumo do Pedido - PIX - DINÂMICO */}
                     <div 
                       className="rounded-lg p-4"
@@ -985,15 +966,15 @@ const PublicCheckout = () => {
                           <img 
                             src={checkout.product.image_url} 
                             alt={checkout.product?.name || 'Produto'}
-                            className="w-12 h-12 object-cover rounded-lg flex-shrink-0"
+                            className="w-16 h-16 object-cover rounded-lg flex-shrink-0"
                           />
                         ) : (
                           <div 
-                            className="w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0"
+                            className="w-16 h-16 rounded-lg flex items-center justify-center flex-shrink-0"
                             style={{ backgroundColor: design.colors.placeholder || 'rgba(0,0,0,0.05)' }}
                           >
                             <ImageIcon 
-                              className="w-5 h-5" 
+                              className="w-6 h-6" 
                               color={design.colors.secondaryText || '#9CA3AF'} 
                             />
                           </div>
@@ -1027,7 +1008,7 @@ const PublicCheckout = () => {
                                   <img
                                     src={bump.image_url}
                                     alt={bump.name}
-                                    className="w-10 h-10 rounded-lg object-cover flex-shrink-0"
+                                    className="w-14 h-14 rounded-lg object-cover flex-shrink-0"
                                   />
                                 )}
                                 <div className="flex-1 min-w-0">

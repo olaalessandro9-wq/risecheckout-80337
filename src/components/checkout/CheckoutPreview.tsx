@@ -1,6 +1,6 @@
 import { CheckoutCustomization, CheckoutComponent, CheckoutRow, ViewMode } from "@/pages/CheckoutCustomizer";
 import { useState } from "react";
-import { Plus, Wallet, Lock as LockIconLucide, User } from "lucide-react";
+import { Plus, Wallet, Lock as LockIconLucide, User, Zap, CheckCircle } from "lucide-react";
 import { formatCentsToBRL } from "@/utils/money";
 import { useDroppable, useDraggable } from "@dnd-kit/core";
 import { PixIcon, CreditCardIcon, LockIcon } from "@/components/icons";
@@ -989,11 +989,11 @@ const CheckoutPreviewComponent = ({
                     <img 
                       src={productData.image_url} 
                       alt={productData?.name || 'Produto'}
-                      className="w-12 h-12 object-cover rounded-lg flex-shrink-0"
+                      className="w-16 h-16 object-cover rounded-lg flex-shrink-0"
                     />
                   ) : (
-                    <div className="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center flex-shrink-0">
-                      <ImageIcon className="w-5 h-5 text-gray-400" />
+                    <div className="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <ImageIcon className="w-6 h-6 text-gray-400" />
                     </div>
                   )}
                   <div className="flex-1 min-w-0">
@@ -1021,13 +1021,13 @@ const CheckoutPreviewComponent = ({
                       
                       return (
                         <div key={bumpId} className="flex items-start gap-3">
-                          {bump.image_url && (
-                            <img
-                              src={bump.image_url}
-                              alt={bump.name}
-                              className="w-10 h-10 rounded-lg object-cover flex-shrink-0"
-                            />
-                          )}
+                  {bump.image_url && (
+                    <img
+                      src={bump.image_url}
+                      alt={bump.name}
+                      className="w-14 h-14 rounded-lg object-cover flex-shrink-0"
+                    />
+                  )}
                           <div className="flex-1 min-w-0">
                             <p 
                               className="text-sm font-medium leading-tight mb-0.5 line-clamp-1"
@@ -1100,11 +1100,11 @@ const CheckoutPreviewComponent = ({
                     <img 
                       src={productData.image_url} 
                       alt={productData?.name || 'Produto'}
-                      className="w-12 h-12 object-cover rounded-lg flex-shrink-0"
+                      className="w-16 h-16 object-cover rounded-lg flex-shrink-0"
                     />
                   ) : (
-                    <div className="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center flex-shrink-0">
-                      <ImageIcon className="w-5 h-5 text-gray-400" />
+                    <div className="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <ImageIcon className="w-6 h-6 text-gray-400" />
                     </div>
                   )}
                   <div className="flex-1 min-w-0">
@@ -1136,7 +1136,7 @@ const CheckoutPreviewComponent = ({
                             <img
                               src={bump.image_url}
                               alt={bump.name}
-                              className="w-10 h-10 rounded-lg object-cover flex-shrink-0"
+                              className="w-14 h-14 rounded-lg object-cover flex-shrink-0"
                             />
                           )}
                           <div className="flex-1 min-w-0">
