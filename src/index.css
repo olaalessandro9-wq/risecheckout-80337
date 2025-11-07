@@ -9,11 +9,11 @@ All colors MUST be HSL.
 @layer base {
   :root {
     /* Colors in HSL format for Tailwind CSS v3 compatibility */
-    --background: 223.8136 -172.5242% 100.0000%;
+    --background: 0 0% 100%;
     --foreground: 223.8136 0.0000% 3.9388%;
-    --card: 223.8136 -172.5242% 100.0000%;
+    --card: 0 0% 100%;
     --card-foreground: 223.8136 0.0000% 3.9388%;
-    --popover: 223.8136 -172.5242% 100.0000%;
+    --popover: 0 0% 100%;
     --popover-foreground: 223.8136 0.0000% 3.9388%;
     --primary: 223.8136 0.0000% 9.0527%;
     --primary-foreground: 223.8136 0.0004% 98.0256%;
@@ -24,7 +24,7 @@ All colors MUST be HSL.
     --accent: 223.8136 0.0002% 96.0587%;
     --accent-foreground: 223.8136 0.0000% 9.0527%;
     --destructive: 351.7303 123.6748% 40.5257%;
-    --destructive-foreground: 223.8136 -172.5242% 100.0000%;
+    --destructive-foreground: 0 0% 100%;
     --border: 223.8136 0.0001% 89.8161%;
     --input: 223.8136 0.0001% 89.8161%;
     --ring: 223.8136 0.0000% 63.0163%;
