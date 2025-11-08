@@ -464,10 +464,10 @@ const PublicCheckout = () => {
       setOrderId(orderResponse.order_id);
       toast.success("Gerando PIX...");
       
-      // Redirecionar para página dedicada após 500ms
+      // Redirecionar para página dedicada após 1500ms (aguardar commit do banco)
       setTimeout(() => {
         navigate(`/pay/pix/${orderResponse.order_id}`);
-      }, 500);
+      }, 1500);
 
     } catch (error: any) {
       console.error("Erro ao processar pagamento:", error);
