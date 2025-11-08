@@ -862,7 +862,7 @@ const CheckoutPreviewComponent = ({
                     style={{
                       borderColor: selectedBumps.has(bump.id)
                         ? customization.design.colors.active
-                        : "#E5E7EB",
+                        : customization.design.colors.border,
                     }}
                   >
                     {/* Cabeçalho - Call to Action */}
