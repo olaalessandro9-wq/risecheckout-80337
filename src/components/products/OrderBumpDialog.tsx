@@ -489,13 +489,7 @@ export function OrderBumpDialog({ open, onOpenChange, productId, onSuccess }: Or
               </Label>
             </div>
 
-            <div className="bg-muted rounded-lg p-4 space-y-2">
-              <h4 className="text-sm font-semibold text-foreground">💡 Dica</h4>
-              <p className="text-xs text-muted-foreground">
-                Order bumps são exibidos no checkout como ofertas complementares. 
-                O cliente pode aceitar ou recusar clicando em um checkbox.
-              </p>
-            </div>
+
           </div>
 
           {/* Preview */}
@@ -534,11 +528,9 @@ export function OrderBumpDialog({ open, onOpenChange, productId, onSuccess }: Or
                     </h3>
                     
                     {/* Descrição */}
-                    {customDescription && (
-                      <p className="text-sm text-muted-foreground">
-                        {customDescription}
-                      </p>
-                    )}
+                    <p className="text-sm text-muted-foreground">
+                      {customDescription || "Adicione a compra"}
+                    </p>
                     
                     {/* Preço */}
                     <div className="flex items-center gap-2 pt-3 border-t border-border flex-wrap">
