@@ -842,9 +842,9 @@ const CheckoutPreviewComponent = ({
 
           {/* NOVA SEÇÃO: Ofertas limitadas */}
           {orderBumps.length > 0 && (
-            <div className="mt-6 mb-6 md:mb-8">
+            <div className="mt-12 mb-3">
               <h3 
-                className="text-lg font-bold mb-4 flex items-center gap-2"
+                className="text-base font-bold mb-3 flex items-center gap-2"
                 style={{ color: customization.design.colors.primaryText }}
               >
                 <Zap 
@@ -1012,19 +1012,19 @@ const CheckoutPreviewComponent = ({
           {selectedPayment === 'pix' && (
             <>
               {/* Resumo do Pedido - PIX - DINÂMICO */}
+              <h4 
+                className="font-semibold mb-3 text-base mt-16"
+                style={{ color: customization.design.colors.orderSummary?.titleText || "#000000" }}
+              >
+                Resumo do pedido
+              </h4>
               <div 
-                className="border rounded-lg p-4 mt-6 md:mt-10"
+                className="border rounded-lg p-4"
                 style={{ 
                   backgroundColor: customization.design.colors.orderSummary?.background || "#F9FAFB",
                   borderColor: customization.design.colors.orderSummary?.borderColor || "#D1D5DB",
                 }}
               >
-                <h4 
-                  className="font-semibold mb-3 text-sm tracking-tight"
-                  style={{ color: customization.design.colors.orderSummary?.titleText || "#000000" }}
-                >
-                  Resumo do pedido
-                </h4>
                 
                 {/* Produto Principal */}
                 <div className="flex items-start gap-3 mb-3 pb-3 border-b" style={{ borderColor: customization.design.colors.orderSummary?.borderColor || "#D1D5DB" }}>
@@ -1123,19 +1123,19 @@ const CheckoutPreviewComponent = ({
           {selectedPayment === 'credit_card' && (
             <>
               {/* Resumo do Pedido - Cartão - DINÂMICO */}
+              <h4 
+                className="font-semibold mb-3 text-base mt-16"
+                style={{ color: customization.design.colors.orderSummary?.titleText || "#000000" }}
+              >
+                Resumo do pedido
+              </h4>
               <div 
-                className="border rounded-lg p-4 mt-6 md:mt-10"
+                className="border rounded-lg p-4"
                 style={{ 
                   backgroundColor: customization.design.colors.orderSummary?.background || "#F9FAFB",
                   borderColor: customization.design.colors.orderSummary?.borderColor || "#D1D5DB",
                 }}
               >
-                <h4 
-                  className="font-semibold mb-3 text-sm tracking-tight"
-                  style={{ color: customization.design.colors.orderSummary?.titleText || "#000000" }}
-                >
-                  Resumo do pedido
-                </h4>
                 
                 {/* Produto Principal */}
                 <div className="flex items-start gap-3 mb-3 pb-3 border-b" style={{ borderColor: customization.design.colors.orderSummary?.borderColor || "#D1D5DB" }}>
