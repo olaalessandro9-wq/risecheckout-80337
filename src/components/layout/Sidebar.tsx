@@ -27,23 +27,19 @@ const BRAND_H = 88; // px (maior que antes; menor que o Rise Insights)
 // Função que retorna estrutura dinâmica baseada no estado do sidebar
 const getNavSections = (isCollapsed: boolean): Section[] => {
   if (isCollapsed) {
-    // Quando MINIMIZADO: Configurações em OPERAÇÕES
-    // WhatsApp e Ajuda vão para o rodapé (não aparecem aqui)
+    // Quando MINIMIZADO: todos os itens sem separação de seções
     return [
       {
-        title: "NAVEGAÇÃO",
+        title: "",
         items: [
           { label: "Dashboard", icon: LayoutDashboard, to: "/" },
           { label: "Produtos", icon: Package, to: "/produtos" },
           { label: "Afiliados", icon: Users, to: "/afiliados" },
-        ],
-      },
-      {
-        title: "OPERAÇÕES",
-        items: [
           { label: "Financeiro", icon: Banknote, to: "/financeiro" },
           { label: "Integrações", icon: Plug, to: "/integracoes" },
           { label: "Configurações", icon: Cog, to: "/config" },
+          { label: "Suporte pelo WhatsApp", icon: LifeBuoy, external: SUPPORT_WHATSAPP_URL },
+          { label: "Ajuda", icon: HelpCircle, external: HELP_CENTER_URL },
         ],
       },
     ];
@@ -108,23 +104,24 @@ function SidebarContent() {
           "scrollbar-none flex-1 overflow-y-auto py-4 transition-all duration-300 ease-in-out",
           isCollapsed ? "px-2.5" : "px-2"
         )}>
-          {getNavSections(isCollapsed).map((section) => (
+          {getNavSections(isCollapsed).map((section, sectionIdx) => (
             <div 
-              key={section.title} 
+              key={section.title || sectionIdx} 
               className={clsx(
-                "mb-4",
-                section.title === "OPERAÇÕES" && isCollapsed && "pt-3 border-t border-border/20 mt-3"
+                "mb-4"
               )}
             >
-              <div className={clsx(
-                "px-2 font-medium uppercase tracking-widest transition-all duration-300 ease-in-out",
-                isCollapsed 
-                  ? "text-center pb-1 text-[10px] text-muted-foreground/60 mb-2.5" 
-                  : "pb-2 text-[11px] text-foreground/70 font-semibold"
-              )}>
-                {section.title}
-              </div>
-              <ul className={clsx(isCollapsed ? "space-y-2" : "space-y-1.5")}>
+              {/* Título da seção - só aparece quando expandido */}
+              {!isCollapsed && section.title && (
+                <div className={clsx(
+                  "px-2 font-medium uppercase tracking-widest transition-all duration-300 ease-in-out",
+                  "pb-2 text-[11px] text-foreground/70 font-semibold"
+                )}>
+                  {section.title}
+                </div>
+              )}
+              
+              <ul className={clsx(isCollapsed ? "space-y-4" : "space-y-1.5")}>
                 {section.items.map((it) => {
                   const Icon = it.icon;
                   const content = it.external ? (
@@ -134,7 +131,7 @@ function SidebarContent() {
                       rel="noopener noreferrer"
                       className={rowClass(undefined, isCollapsed)}
                     >
-                      <Icon className={isCollapsed ? "h-[22px] w-[22px] shrink-0 mx-auto transition-transform" : "h-5 w-5 shrink-0 transition-transform group-hover:scale-110"} />
+                      <Icon className={isCollapsed ? "h-6 w-6 shrink-0 mx-auto transition-transform" : "h-5 w-5 shrink-0 transition-transform group-hover:scale-110"} />
                       {!isCollapsed && <span className="font-medium text-sm">{it.label}</span>}
                     </a>
                   ) : (
@@ -142,7 +139,7 @@ function SidebarContent() {
                       to={it.to!} 
                       className={({ isActive }) => rowClass(isActive, isCollapsed)}
                     >
-                      <Icon className={isCollapsed ? "h-[22px] w-[22px] shrink-0 mx-auto transition-transform" : "h-5 w-5 shrink-0 transition-transform group-hover:scale-110"} />
+                      <Icon className={isCollapsed ? "h-6 w-6 shrink-0 mx-auto transition-transform" : "h-5 w-5 shrink-0 transition-transform group-hover:scale-110"} />
                       {!isCollapsed && <span className="font-medium text-sm">{it.label}</span>}
                     </NavLink>
                   );
@@ -191,7 +188,7 @@ export function Sidebar() {
 function rowClass(active?: boolean, collapsed?: boolean) {
   return clsx(
     "group flex items-center rounded-md text-sm transition-all duration-200 w-full",
-    collapsed ? "justify-center px-2 py-3" : "gap-3.5 px-3 py-2.5",
+    collapsed ? "justify-center px-2 py-4" : "gap-3.5 px-3 py-2.5",
     active && collapsed
       ? "bg-muted text-foreground font-medium border-l-2 border-primary"
       : active
