@@ -868,7 +868,7 @@ const CheckoutPreviewComponent = ({
                     {/* Cabeçalho - Call to Action */}
                     {bump.call_to_action && (
                       <div 
-                        className="px-4 py-3 flex items-center gap-2"
+                        className="px-3 py-2 flex items-center gap-2"
                         style={{ 
                           backgroundColor: selectedBumps.has(bump.id) 
                             ? customization.design.colors.active + "25" 
@@ -970,7 +970,7 @@ const CheckoutPreviewComponent = ({
                     
                     {/* Rodapé - Adicionar Produto */}
                     <div 
-                      className="px-4 py-3 flex items-center gap-3 cursor-pointer"
+                      className="px-3 py-2 flex items-center gap-3 cursor-pointer"
                       style={{ 
                         backgroundColor: selectedBumps.has(bump.id) 
                           ? customization.design.colors.active + "25" 
