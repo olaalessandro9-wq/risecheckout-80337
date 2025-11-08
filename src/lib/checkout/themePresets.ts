@@ -161,9 +161,9 @@ export const THEME_PRESETS: Record<'light' | 'dark', ThemePreset> = {
         linkText: '#3B82F6',
       },
       orderBump: {
-        headerBackground: 'rgba(255,255,255,0.15)',
+        headerBackground: 'rgba(0,0,0,0.08)',
         headerText: '#10B981',
-        footerBackground: 'rgba(255,255,255,0.15)',
+        footerBackground: 'rgba(0,0,0,0.08)',
         footerText: '#000000',
         contentBackground: '#F9FAFB',
         titleText: '#000000',

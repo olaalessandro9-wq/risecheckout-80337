@@ -101,6 +101,7 @@ const ProductEditInner = () => {
 
   const [orderBumpDialogOpen, setOrderBumpDialogOpen] = useState(false);
   const [orderBumpKey, setOrderBumpKey] = useState(0);
+  const [editingOrderBump, setEditingOrderBump] = useState<any>(null);
 
   const [upsellSettings, setUpsellSettings] = useState({
     hasCustomThankYouPage: false,
@@ -871,14 +872,14 @@ const ProductEditInner = () => {
   };
 
   const handleEditOrderBump = (orderBump: any) => {
-    // TODO: Implement edit functionality
-    // For now, just show a toast
-    toast.info("Edição de order bump em desenvolvimento");
+    setEditingOrderBump(orderBump);
+    setOrderBumpDialogOpen(true);
   };
 
   const handleOrderBumpSuccess = () => {
     // Refresh order bumps list
     setOrderBumpKey(prev => prev + 1);
+    setEditingOrderBump(null);
   };
 
   const handleAddCheckout = () => {
@@ -1754,9 +1755,13 @@ const ProductEditInner = () => {
 
         <OrderBumpDialog
           open={orderBumpDialogOpen}
-          onOpenChange={setOrderBumpDialogOpen}
+          onOpenChange={(open) => {
+            setOrderBumpDialogOpen(open);
+            if (!open) setEditingOrderBump(null); // Limpar ao fechar
+          }}
           productId={productId || ""}
           onSuccess={handleOrderBumpSuccess}
+          editOrderBump={editingOrderBump}
         />
 
         <CheckoutConfigDialog

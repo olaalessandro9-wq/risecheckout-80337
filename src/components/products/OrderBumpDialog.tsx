@@ -41,9 +41,10 @@ interface OrderBumpDialogProps {
   onOpenChange: (open: boolean) => void;
   productId: string;
   onSuccess: () => void;
+  editOrderBump?: any; // Order Bump a ser editado (opcional)
 }
 
-export function OrderBumpDialog({ open, onOpenChange, productId, onSuccess }: OrderBumpDialogProps) {
+export function OrderBumpDialog({ open, onOpenChange, productId, onSuccess, editOrderBump }: OrderBumpDialogProps) {
   const [products, setProducts] = useState<OrderBumpProduct[]>([]);
   const [offers, setOffers] = useState<NormalizedOffer[]>([]);
   const [selectedProductId, setSelectedProductId] = useState<string>("");
@@ -65,6 +66,19 @@ export function OrderBumpDialog({ open, onOpenChange, productId, onSuccess }: Or
   // Load form data from localStorage when dialog opens
   useEffect(() => {
     if (open) {
+      // Se estiver editando, carregar dados do order bump
+      if (editOrderBump) {
+        setSelectedProductId(editOrderBump.bump_product_id || "");
+        setSelectedOfferId(editOrderBump.offer_id || "");
+        setDiscountEnabled(!!editOrderBump.original_price);
+        setDiscountPrice(editOrderBump.original_price ? (editOrderBump.original_price / 100).toFixed(2).replace('.', ',') : "0,00");
+        setCallToAction(editOrderBump.call_to_action || "SIM, EU ACEITO ESSA OFERTA ESPECIAL!");
+        setCustomTitle(editOrderBump.name || "");
+        setCustomDescription(editOrderBump.description || "");
+        setShowImage(editOrderBump.image_url !== null);
+        return; // Não carregar do localStorage se estiver editando
+      }
+      
       // Try to load saved form data
       const savedData = localStorage.getItem(STORAGE_KEY);
       if (savedData) {
@@ -83,7 +97,7 @@ export function OrderBumpDialog({ open, onOpenChange, productId, onSuccess }: Or
         }
       }
     }
-  }, [open, productId]);
+  }, [open, productId, editOrderBump]);
 
   // Save form data to localStorage whenever it changes
   useEffect(() => {
@@ -271,13 +285,23 @@ export function OrderBumpDialog({ open, onOpenChange, productId, onSuccess }: Or
       }
       console.log('Salvando order_bumps com payload:', orderBump);
 
-      const { error: insertError } = await supabase
-        .from("order_bumps")
-        .insert([orderBump]);
+      // Se estiver editando, fazer UPDATE; senão, INSERT
+      if (editOrderBump) {
+        const { error: updateError } = await supabase
+          .from("order_bumps")
+          .update(orderBump)
+          .eq("id", editOrderBump.id);
 
-      if (insertError) throw insertError;
+        if (updateError) throw updateError;
+        toast.success("Order bump atualizado com sucesso");
+      } else {
+        const { error: insertError } = await supabase
+          .from("order_bumps")
+          .insert([orderBump]);
 
-      toast.success("Order bump adicionado com sucesso");
+        if (insertError) throw insertError;
+        toast.success("Order bump adicionado com sucesso");
+      }
       resetForm(); // Reset before closing
       onSuccess();
       onOpenChange(false);
@@ -318,7 +342,7 @@ export function OrderBumpDialog({ open, onOpenChange, productId, onSuccess }: Or
               <div className="w-7 h-7 bg-primary/20 rounded flex items-center justify-center">
                 <Gift className="w-3.5 h-3.5 text-primary" />
               </div>
-              Adicionar Order Bump
+              {editOrderBump ? 'Editar Order Bump' : 'Adicionar Order Bump'}
             </DialogTitle>
             <p className="text-xs text-muted-foreground mt-0.5">
               Selecione um produto para oferecer como complemento
