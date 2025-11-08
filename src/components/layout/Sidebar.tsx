@@ -62,7 +62,10 @@ function SidebarContent() {
 
       {/* Navegação */}
       <TooltipProvider delayDuration={300}>
-        <nav className="scrollbar-none flex-1 overflow-y-auto py-4 px-3 transition-all duration-300 ease-in-out">
+        <nav className={clsx(
+          "scrollbar-none flex-1 overflow-y-auto py-4 transition-all duration-300 ease-in-out",
+          isCollapsed ? "px-1" : "px-3"
+        )}>
           <ul className="space-y-1">
             {navItems.map((it) => {
               const Icon = it.icon;
@@ -71,7 +74,7 @@ function SidebarContent() {
                   href={it.external}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className={rowClass(undefined)}
+                  className={rowClass(undefined, isCollapsed)}
                 >
                   <Icon className="h-5 w-5 shrink-0 transition-transform group-hover:scale-110" />
                   {!isCollapsed && (
@@ -83,7 +86,7 @@ function SidebarContent() {
               ) : (
                 <NavLink 
                   to={it.to!} 
-                  className={({ isActive }) => rowClass(isActive)}
+                  className={({ isActive }) => rowClass(isActive, isCollapsed)}
                 >
                   <Icon className="h-5 w-5 shrink-0 transition-transform group-hover:scale-110" />
                   {!isCollapsed && (
@@ -133,9 +136,12 @@ export function Sidebar() {
   );
 }
 
-function rowClass(active?: boolean) {
+function rowClass(active?: boolean, collapsed?: boolean) {
   return clsx(
-    "group flex items-center gap-3 rounded-md text-sm transition-all duration-200 px-3 py-2.5",
+    "group flex items-center rounded-md text-sm transition-all duration-200 py-2.5",
+    // Padding e gap apenas quando aberto
+    collapsed ? "justify-center px-0" : "gap-3 px-3",
+    // Estados de ativo/hover
     active
       ? "bg-muted text-foreground font-semibold shadow-sm"
       : "text-foreground/80 hover:bg-muted/50 hover:text-foreground hover:scale-[1.02]"
