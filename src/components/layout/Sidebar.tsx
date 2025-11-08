@@ -91,9 +91,9 @@ function SidebarContent() {
 
               if (isCollapsed) {
                 return (
-                  <li key={it.label} className="flex">
+                  <li key={it.label} className="flex justify-center">
                     <Tooltip>
-                      <TooltipTrigger asChild className="flex-1">
+                      <TooltipTrigger asChild>
                         {content}
                       </TooltipTrigger>
                       <TooltipContent side="right">
@@ -130,8 +130,8 @@ export function Sidebar() {
 
 function rowClass(active?: boolean, collapsed?: boolean) {
   return clsx(
-    "group flex items-center rounded-md text-sm transition-all duration-200 w-full",
-    collapsed ? "justify-center px-2 py-2.5" : "gap-3.5 px-3 py-2.5",
+    "group flex items-center rounded-md text-sm transition-all duration-200",
+    collapsed ? "justify-center w-10 h-10" : "w-full gap-3.5 px-3 py-2.5",
     active && collapsed
       ? "bg-muted text-foreground font-medium border-l-2 border-primary"
       : active
