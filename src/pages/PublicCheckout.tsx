@@ -817,9 +817,9 @@ const PublicCheckout = () => {
 
                 {/* NOVA SEÇÃO: Ofertas limitadas */}
                 {orderBumps.length > 0 && (
-                  <div className="mt-6 mb-6 md:mb-8">
+                  <div className="mt-10 mb-6 md:mb-8">
                     <h3 
-                      className="text-lg font-bold mb-4 flex items-center gap-2"
+                      className="text-lg font-bold mb-6 flex items-center gap-2"
                       style={{ color: design.colors.primaryText }}
                     >
                       <Zap 
