@@ -56,7 +56,7 @@ export function OrderBumpDialog({ open, onOpenChange, productId, onSuccess }: Or
   const [discountPrice, setDiscountPrice] = useState("0,00");
   const [callToAction, setCallToAction] = useState("SIM, EU ACEITO ESSA OFERTA ESPECIAL!");
   const [customTitle, setCustomTitle] = useState("");
-  const [customDescription, setCustomDescription] = useState("Adicione a compra");
+  const [customDescription, setCustomDescription] = useState("");
   const [showImage, setShowImage] = useState(true);
 
   const STORAGE_KEY = `orderBumpForm_${productId}`;
@@ -75,7 +75,7 @@ export function OrderBumpDialog({ open, onOpenChange, productId, onSuccess }: Or
           setDiscountPrice(parsed.discountPrice || "0,00");
           setCallToAction(parsed.callToAction || "SIM, EU ACEITO ESSA OFERTA ESPECIAL!");
           setCustomTitle(parsed.customTitle || "");
-          setCustomDescription(parsed.customDescription || "Adicione a compra");
+          setCustomDescription(parsed.customDescription || "");
           setShowImage(parsed.showImage !== undefined ? parsed.showImage : true);
         } catch (e) {
           console.error("Error loading saved form data:", e);
@@ -110,11 +110,14 @@ export function OrderBumpDialog({ open, onOpenChange, productId, onSuccess }: Or
     }
   }, [selectedProductId]);
 
-  // Update custom title when product changes
+  // Update custom title and description when product changes (only if empty)
   useEffect(() => {
     const selectedProduct = products.find(p => p.id === selectedProductId);
     if (selectedProduct) {
-      setCustomTitle(selectedProduct.name);
+      // Only set if custom title is empty
+      if (!customTitle) {
+        setCustomTitle(selectedProduct.name);
+      }
     }
   }, [selectedProductId, products]);
 
@@ -125,7 +128,7 @@ export function OrderBumpDialog({ open, onOpenChange, productId, onSuccess }: Or
     setDiscountPrice("0,00");
     setCallToAction("SIM, EU ACEITO ESSA OFERTA ESPECIAL!");
     setCustomTitle("");
-    setCustomDescription("Adicione a compra");
+    setCustomDescription("");
     setShowImage(true);
     
     // Clear localStorage

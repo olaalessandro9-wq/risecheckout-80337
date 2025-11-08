@@ -242,15 +242,11 @@ const PublicCheckout = () => {
             price = bump.discount_price;
           }
 
-          // Priorizar descrição do produto se custom_description for genérico
-          const isGenericDescription = !bump.custom_description || 
-            bump.custom_description === "Adicione a compra" || 
-            bump.custom_description.trim() === "";
-          
+          // Priorizar custom_title e custom_description quando preenchidos
           return {
             id: bump.id,
             name: bump.custom_title || product?.name || offer?.name || "Produto",
-            description: isGenericDescription ? (product?.description || "") : bump.custom_description,
+            description: bump.custom_description || product?.description || "",
             price: price,
             original_price: originalPrice,
             image_url: bump.show_image ? product?.image_url : null,
