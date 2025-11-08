@@ -288,8 +288,8 @@ export function OrderBumpDialog({ open, onOpenChange, productId, onSuccess, edit
         discount_enabled: !!discountEnabled,
         discount_price: discountEnabled ? parseCurrency(discountPrice) : null,
         call_to_action: callToAction?.trim() || null,
-        custom_title: customTitle?.trim() ? customTitle.trim() : null,
-        custom_description: customDescription?.trim() ? customDescription.trim() : null,
+        custom_title: customTitle?.trim() || null,  // Salvar o que está no campo (pode ser nome do produto ou customizado)
+        custom_description: customDescription?.trim() || null,  // Salvar o que está no campo (pode ser descrição do produto ou customizada)
         show_image: !!showImage,
       };
 
@@ -540,7 +540,7 @@ export function OrderBumpDialog({ open, onOpenChange, productId, onSuccess, edit
               {selectedProduct ? (
                 <>
                   {/* Cabeçalho - Call to Action */}
-                  <div className={previewSelected ? "bg-primary/20 px-3 py-2 flex items-center justify-between" : "bg-muted/50 px-3 py-2 flex items-center justify-between"}>
+                  <div className={previewSelected ? "bg-primary/20 px-3 py-2 flex items-center justify-between" : "bg-muted/80 px-3 py-2 flex items-center justify-between"}>
                     <span className="text-xs font-semibold text-primary uppercase">
                       {callToAction}
                     </span>
@@ -598,7 +598,7 @@ export function OrderBumpDialog({ open, onOpenChange, productId, onSuccess, edit
                   </div>
 
                   {/* Rodapé - Checkbox Adicionar */}
-                  <div className={previewSelected ? "bg-primary/20 px-3 py-2" : "bg-muted/50 px-3 py-2"}>
+                  <div className={previewSelected ? "bg-primary/20 px-3 py-2" : "bg-muted/80 px-3 py-2"}>
                     <div className="flex items-center gap-2">
                       <div className={previewSelected ? "w-4 h-4 border-2 border-primary rounded bg-primary flex items-center justify-center" : "w-4 h-4 border-2 border-border rounded bg-background"}>
                         {previewSelected && (
