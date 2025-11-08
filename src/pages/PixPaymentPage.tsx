@@ -21,30 +21,28 @@ export const PixPaymentPage = () => {
   const hasShownExpiredToast = useRef(false);
   const expiresAt = useRef<number>(0);
 
-  // Buscar dados do pedido com retry
+  // Buscar dados do pedido com retry usando Edge Function
   const fetchOrderData = useCallback(async (retryCount = 0) => {
     try {
       console.log(`[PixPaymentPage] Buscando pedido (tentativa ${retryCount + 1}):`, orderId);
       
-      const { data, error } = await supabase
-        .from("orders")
-        .select("*, product:products(*)")
-        .eq("id", orderId)
-        .single();
+      const { data, error } = await supabase.functions.invoke("get-order-for-pix", {
+        body: { orderId },
+      });
 
-      if (error) {
+      if (error || !data?.order) {
         // Se não encontrou e ainda tem tentativas, aguarda e tenta novamente
-        if (error.code === "PGRST116" && retryCount < 3) {
+        if (retryCount < 3) {
           console.log(`[PixPaymentPage] Pedido não encontrado, tentando novamente em 1s...`);
           await new Promise(resolve => setTimeout(resolve, 1000));
           return fetchOrderData(retryCount + 1);
         }
-        throw error;
+        throw new Error(error?.message || "Pedido não encontrado");
       }
       
-      console.log("[PixPaymentPage] Pedido encontrado:", data);
-      setOrderData(data);
-    } catch (err) {
+      console.log("[PixPaymentPage] Pedido encontrado:", data.order);
+      setOrderData(data.order);
+    } catch (err: any) {
       console.error("[PixPaymentPage] Erro ao buscar pedido:", err);
       toast.error("Erro ao carregar dados do pedido");
     }
