@@ -388,6 +388,17 @@ const CheckoutCustomizer = () => {
                 secondaryText: '#6B7280',
                 linkText: '#10B981',
               },
+              
+              orderBump: savedDesign.colors?.orderBump || {
+                headerBackground: 'rgba(255,255,255,0.15)',
+                headerText: savedDesign.colors?.active || checkout.active_text_color || '#10B981',
+                footerBackground: 'rgba(255,255,255,0.15)',
+                footerText: (savedDesign.theme || checkout.theme) === 'dark' ? '#FFFFFF' : '#000000',
+                contentBackground: savedDesign.colors?.formBackground || checkout.form_background_color || '#F9FAFB',
+                titleText: savedDesign.colors?.primaryText || checkout.primary_text_color || '#000000',
+                descriptionText: savedDesign.colors?.secondaryText || checkout.secondary_text_color || '#6B7280',
+                priceText: savedDesign.colors?.active || checkout.active_text_color || '#10B981',
+              },
             },
             backgroundImage: {
               url: savedDesign.backgroundImage?.url || checkout.background_image_url || '',
