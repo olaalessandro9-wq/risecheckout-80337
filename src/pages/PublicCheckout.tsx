@@ -819,7 +819,7 @@ const PublicCheckout = () => {
                 {orderBumps.length > 0 && (
                   <div className="mt-12 mb-6 md:mb-8">
                     <h3 
-                      className="text-lg font-bold mb-12 flex items-center gap-2"
+                      className="text-lg font-bold mb-3 flex items-center gap-2"
                       style={{ color: design.colors.primaryText }}
                     >
                       <Zap 
