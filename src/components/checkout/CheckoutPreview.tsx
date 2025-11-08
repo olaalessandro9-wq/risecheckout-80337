@@ -1039,15 +1039,15 @@ const CheckoutPreviewComponent = ({
                       <ImageIcon className="w-6 h-6 text-gray-400" />
                     </div>
                   )}
-                  <div className="flex-1 min-w-0">
+                  <div className="flex-1 min-w-0 flex items-center justify-between gap-3">
                     <h5 
-                      className="text-sm font-medium leading-tight mb-1"
+                      className="text-sm font-medium leading-tight"
                       style={{ color: customization.design.colors.orderSummary?.productName || "#000000" }}
                     >
                       {productData?.name || "Nome do Produto"}
                     </h5>
                     <p 
-                      className="text-sm font-bold"
+                      className="text-sm font-bold whitespace-nowrap"
                       style={{ color: customization.design.colors.orderSummary?.priceText || "#000000" }}
                     >
                       {productData?.price ? formatCentsToBRL(productData.price) : 'R$ 0,00'}
@@ -1071,15 +1071,15 @@ const CheckoutPreviewComponent = ({
                       className="w-14 h-14 rounded-lg object-cover flex-shrink-0"
                     />
                   )}
-                          <div className="flex-1 min-w-0">
+                          <div className="flex-1 min-w-0 flex items-center justify-between gap-3">
                             <p 
-                              className="text-sm font-medium leading-tight mb-0.5 line-clamp-1"
+                              className="text-sm font-medium leading-tight line-clamp-1"
                               style={{ color: customization.design.colors.orderSummary?.productName || "#000000" }}
                             >
                               {bump.name}
                             </p>
                             <p 
-                              className="text-sm font-bold"
+                              className="text-sm font-bold whitespace-nowrap"
                               style={{ color: customization.design.colors.active }}
                             >
                               {formatCentsToBRL(Number(bump.price))}
@@ -1139,15 +1139,15 @@ const CheckoutPreviewComponent = ({
                       <ImageIcon className="w-6 h-6 text-gray-400" />
                     </div>
                   )}
-                  <div className="flex-1 min-w-0">
+                  <div className="flex-1 min-w-0 flex items-center justify-between gap-3">
                     <h5 
-                      className="text-sm font-medium leading-tight mb-1"
+                      className="text-sm font-medium leading-tight"
                       style={{ color: customization.design.colors.orderSummary?.productName || "#000000" }}
                     >
                       {productData?.name || "Nome do Produto"}
                     </h5>
                     <p 
-                      className="text-sm font-bold"
+                      className="text-sm font-bold whitespace-nowrap"
                       style={{ color: customization.design.colors.orderSummary?.priceText || "#000000" }}
                     >
                       {productData?.price ? formatCentsToBRL(productData.price) : 'R$ 0,00'}
@@ -1171,15 +1171,15 @@ const CheckoutPreviewComponent = ({
                               className="w-14 h-14 rounded-lg object-cover flex-shrink-0"
                             />
                           )}
-                          <div className="flex-1 min-w-0">
+                          <div className="flex-1 min-w-0 flex items-center justify-between gap-3">
                             <p 
-                              className="text-sm font-medium leading-tight mb-0.5 line-clamp-1"
+                              className="text-sm font-medium leading-tight line-clamp-1"
                               style={{ color: customization.design.colors.orderSummary?.productName || "#000000" }}
                             >
                               {bump.name}
                             </p>
                             <p 
-                              className="text-sm font-bold"
+                              className="text-sm font-bold whitespace-nowrap"
                               style={{ color: customization.design.colors.active }}
                             >
                               {formatCentsToBRL(Number(bump.price))}

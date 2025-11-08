@@ -1021,15 +1021,15 @@ const PublicCheckout = () => {
                             />
                           </div>
                         )}
-                        <div className="flex-1 min-w-0">
+                        <div className="flex-1 min-w-0 flex items-center justify-between gap-3">
                           <h5 
-                            className="text-sm font-medium leading-tight mb-1"
+                            className="text-sm font-medium leading-tight"
                             style={{ color: design.colors.orderSummary?.productName || '#000000' }}
                           >
                             {checkout.product?.name}
                           </h5>
                           <p 
-                            className="text-sm font-bold"
+                            className="text-sm font-bold whitespace-nowrap"
                             style={{ color: design.colors.orderSummary?.priceText || '#000000' }}
                           >
                             R$ {(checkout.product?.price / 100)?.toFixed(2).replace('.', ',')}
@@ -1053,15 +1053,15 @@ const PublicCheckout = () => {
                                     className="w-14 h-14 rounded-lg object-cover flex-shrink-0"
                                   />
                                 )}
-                                <div className="flex-1 min-w-0">
+                                <div className="flex-1 min-w-0 flex items-center justify-between gap-3">
                                   <p 
-                                    className="text-sm font-medium leading-tight mb-0.5 line-clamp-1"
+                                    className="text-sm font-medium leading-tight line-clamp-1"
                                     style={{ color: design.colors.orderSummary?.productName || '#000000' }}
                                   >
                                     {bump.name}
                                   </p>
                                   <p 
-                                    className="text-sm font-bold"
+                                    className="text-sm font-bold whitespace-nowrap"
                                     style={{ color: design.colors.active }}
                                   >
                                     R$ {(bump.price / 100).toFixed(2).replace('.', ',')}
@@ -1132,15 +1132,15 @@ const PublicCheckout = () => {
                             />
                           </div>
                         )}
-                        <div className="flex-1 min-w-0">
+                        <div className="flex-1 min-w-0 flex items-center justify-between gap-3">
                           <h5 
-                            className="text-sm font-medium leading-tight mb-1"
+                            className="text-sm font-medium leading-tight"
                             style={{ color: design.colors.orderSummary?.productName || '#000000' }}
                           >
                             {checkout.product?.name}
                           </h5>
                           <p 
-                            className="text-sm font-bold"
+                            className="text-sm font-bold whitespace-nowrap"
                             style={{ color: design.colors.orderSummary?.priceText || '#000000' }}
                           >
                             R$ {(checkout.product?.price / 100)?.toFixed(2).replace('.', ',')}
@@ -1164,15 +1164,15 @@ const PublicCheckout = () => {
                                     className="w-10 h-10 rounded-lg object-cover flex-shrink-0"
                                   />
                                 )}
-                                <div className="flex-1 min-w-0">
+                                <div className="flex-1 min-w-0 flex items-center justify-between gap-3">
                                   <p 
-                                    className="text-sm font-medium leading-tight mb-0.5 line-clamp-1"
+                                    className="text-sm font-medium leading-tight line-clamp-1"
                                     style={{ color: design.colors.orderSummary?.productName || '#000000' }}
                                   >
                                     {bump.name}
                                   </p>
                                   <p 
-                                    className="text-sm font-bold"
+                                    className="text-sm font-bold whitespace-nowrap"
                                     style={{ color: design.colors.active }}
                                   >
                                     R$ {(bump.price / 100).toFixed(2).replace('.', ',')}
