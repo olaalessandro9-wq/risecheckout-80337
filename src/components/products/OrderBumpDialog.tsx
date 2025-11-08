@@ -497,19 +497,12 @@ export function OrderBumpDialog({ open, onOpenChange, productId, onSuccess }: Or
               {selectedProduct ? (
                 <>
                   {/* Cabeçalho - Call to Action */}
-                  <div className="bg-muted/30 px-3 py-2 flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <div className="w-4 h-4 rounded-full bg-primary flex items-center justify-center flex-shrink-0">
-                        <svg className="w-2.5 h-2.5 text-primary-foreground" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                        </svg>
-                      </div>
-                      <span className="text-xs font-semibold text-primary uppercase">
-                        {callToAction}
-                      </span>
-                    </div>
-                    <div className="w-4 h-4 rounded-full bg-muted flex items-center justify-center">
-                      <svg className="w-2.5 h-2.5 text-muted-foreground" fill="currentColor" viewBox="0 0 20 20">
+                  <div className="bg-white/8 px-3 py-2 flex items-center justify-between">
+                    <span className="text-xs font-semibold text-primary uppercase">
+                      {callToAction}
+                    </span>
+                    <div className="w-5 h-5 rounded-full bg-muted flex items-center justify-center flex-shrink-0">
+                      <svg className="w-3 h-3 text-muted-foreground" fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                       </svg>
                     </div>
@@ -562,7 +555,7 @@ export function OrderBumpDialog({ open, onOpenChange, productId, onSuccess }: Or
                   </div>
 
                   {/* Rodapé - Checkbox Adicionar */}
-                  <div className="bg-muted/30 px-3 py-2">
+                  <div className="bg-white/25 px-3 py-2">
                     <div className="flex items-center gap-2">
                       <div className="w-4 h-4 border-2 border-border rounded bg-background"></div>
                       <span className="text-xs text-foreground">
