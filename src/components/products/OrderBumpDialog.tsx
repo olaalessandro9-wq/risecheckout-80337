@@ -537,10 +537,10 @@ export function OrderBumpDialog({ open, onOpenChange, productId, onSuccess }: Or
                       {discountEnabled && discountPercentage > 0 ? (
                         <>
                           <span className="text-sm text-muted-foreground line-through">
-                            {formatBRL(originalPrice)}
+                            R$ {(originalPrice / 100).toFixed(2).replace('.', ',')}
                           </span>
                           <span className="text-lg font-bold text-primary">
-                            {formatBRL(finalPrice)}
+                            R$ {(finalPrice / 100).toFixed(2).replace('.', ',')}
                           </span>
                           <span className="text-xs bg-primary text-primary-foreground px-2 py-1 rounded font-semibold">
                             {discountPercentage}% OFF
@@ -548,7 +548,7 @@ export function OrderBumpDialog({ open, onOpenChange, productId, onSuccess }: Or
                         </>
                       ) : (
                         <span className="text-lg font-bold text-primary">
-                          {formatBRL(finalPrice)}
+                          R$ {(finalPrice / 100).toFixed(2).replace('.', ',')}
                         </span>
                       )}
                     </div>
