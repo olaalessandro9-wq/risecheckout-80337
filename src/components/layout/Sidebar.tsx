@@ -8,15 +8,15 @@ import {
   Cog,
   LifeBuoy,
   HelpCircle,
-  ChevronLeft,
-  ChevronRight,
 } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import { HELP_CENTER_URL, SUPPORT_WHATSAPP_URL } from "@/lib/links";
 import { UserFooter } from "./UserFooter";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import clsx from "clsx";
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { AnimatedSidebar, AnimatedSidebarBody, useAnimatedSidebar } from "@/components/ui/animated-sidebar";
+import { motion } from "framer-motion";
 
 type Item = { label: string; icon: React.ElementType; to?: string; external?: string };
 type Section = { title: string; items: Item[] };
@@ -77,25 +77,12 @@ const getNavSections = (isCollapsed: boolean): Section[] => {
   }
 };
 
-export function Sidebar() {
-  const [isCollapsed, setIsCollapsed] = useState(() => {
-    const saved = localStorage.getItem('sidebar-collapsed');
-    return saved ? JSON.parse(saved) : false;
-  });
-
-  useEffect(() => {
-    localStorage.setItem('sidebar-collapsed', JSON.stringify(isCollapsed));
-  }, [isCollapsed]);
-
-  const toggleSidebar = () => setIsCollapsed(!isCollapsed);
+function SidebarContent() {
+  const { open: isOpen } = useAnimatedSidebar();
+  const isCollapsed = !isOpen;
 
   return (
-    <aside
-      className={clsx(
-        "flex h-screen shrink-0 flex-col border-r border-border/60 bg-background text-foreground transition-all duration-300 ease-in-out",
-        isCollapsed ? "w-[90px]" : "w-[248px]"
-      )}
-    >
+    <>
       {/* Brand / Logo */}
       <div
         className={clsx(
@@ -105,22 +92,14 @@ export function Sidebar() {
         style={{ height: BRAND_H }}
       >
         {!isCollapsed && (
-          <div className="text-xl font-bold tracking-tight overflow-hidden text-foreground">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="text-xl font-bold tracking-tight overflow-hidden text-foreground"
+          >
             RiseCheckout
-          </div>
+          </motion.div>
         )}
-        
-        <button
-          onClick={toggleSidebar}
-          className="p-2 rounded-md hover:bg-muted/80 transition-all hover:scale-105"
-          title={isCollapsed ? "Expandir sidebar" : "Colapsar sidebar"}
-        >
-          {isCollapsed ? (
-            <ChevronRight className="h-5 w-5" />
-          ) : (
-            <ChevronLeft className="h-5 w-5" />
-          )}
-        </button>
       </div>
 
       {/* Navegação */}
@@ -193,7 +172,19 @@ export function Sidebar() {
 
       {/* Rodapé com email + sair */}
       <UserFooter isCollapsed={isCollapsed} />
-    </aside>
+    </>
+  );
+}
+
+export function Sidebar() {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <AnimatedSidebar open={open} setOpen={setOpen}>
+      <AnimatedSidebarBody className="flex h-screen shrink-0 flex-col border-r border-border/60 bg-background text-foreground">
+        <SidebarContent />
+      </AnimatedSidebarBody>
+    </AnimatedSidebar>
   );
 }
 
