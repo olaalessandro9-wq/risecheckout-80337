@@ -76,7 +76,7 @@ function SidebarContent() {
                   <Icon className="h-5 w-5 shrink-0 transition-transform group-hover:scale-110" />
                   <span className={clsx(
                     "font-medium text-sm whitespace-nowrap transition-opacity duration-200",
-                    isCollapsed ? "opacity-0 pointer-events-none" : "opacity-100"
+                    isCollapsed ? "hidden" : "opacity-100"
                   )}>
                     {it.label}
                   </span>
@@ -89,7 +89,7 @@ function SidebarContent() {
                   <Icon className="h-5 w-5 shrink-0 transition-transform group-hover:scale-110" />
                   <span className={clsx(
                     "font-medium text-sm whitespace-nowrap transition-opacity duration-200",
-                    isCollapsed ? "opacity-0 pointer-events-none" : "opacity-100"
+                    isCollapsed ? "hidden" : "opacity-100"
                   )}>
                     {it.label}
                   </span>
