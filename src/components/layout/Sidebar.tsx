@@ -76,7 +76,7 @@ function SidebarContent() {
                   rel="noopener noreferrer"
                   className={rowClass(undefined, isCollapsed)}
                 >
-                  <Icon className={isCollapsed ? "h-6 w-6 shrink-0 mx-auto transition-transform" : "h-5 w-5 shrink-0 transition-transform group-hover:scale-110"} />
+                  <Icon className={isCollapsed ? "h-6 w-6 shrink-0 transition-transform" : "h-5 w-5 shrink-0 transition-transform group-hover:scale-110"} />
                   {!isCollapsed && <span className="font-medium text-sm">{it.label}</span>}
                 </a>
               ) : (
@@ -84,7 +84,7 @@ function SidebarContent() {
                   to={it.to!} 
                   className={({ isActive }) => rowClass(isActive, isCollapsed)}
                 >
-                  <Icon className={isCollapsed ? "h-6 w-6 shrink-0 mx-auto transition-transform" : "h-5 w-5 shrink-0 transition-transform group-hover:scale-110"} />
+                  <Icon className={isCollapsed ? "h-6 w-6 shrink-0 transition-transform" : "h-5 w-5 shrink-0 transition-transform group-hover:scale-110"} />
                   {!isCollapsed && <span className="font-medium text-sm">{it.label}</span>}
                 </NavLink>
               );
