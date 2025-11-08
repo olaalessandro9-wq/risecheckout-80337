@@ -63,10 +63,9 @@ function SidebarContent() {
       {/* Navegação */}
       <TooltipProvider delayDuration={300}>
         <nav className={clsx(
-          "scrollbar-none flex-1 overflow-y-auto py-6 transition-all duration-300 ease-in-out",
-          isCollapsed ? "px-1.5" : "px-3"
+          "scrollbar-none flex-1 overflow-y-auto py-4 px-3 transition-all duration-300 ease-in-out"
         )}>
-          <ul className={clsx(isCollapsed ? "space-y-2" : "space-y-1")}>
+          <ul className="space-y-1">
             {navItems.map((it) => {
               const Icon = it.icon;
               const content = it.external ? (
@@ -76,22 +75,40 @@ function SidebarContent() {
                   rel="noopener noreferrer"
                   className={rowClass(undefined, isCollapsed)}
                 >
-                  <Icon className={isCollapsed ? "h-5 w-5 shrink-0 transition-transform" : "h-5 w-5 shrink-0 transition-transform group-hover:scale-110"} />
-                  {!isCollapsed && <span className="font-medium text-sm">{it.label}</span>}
+                  <Icon className="h-5 w-5 shrink-0 transition-transform group-hover:scale-110" />
+                  {!isCollapsed && (
+                    <motion.span 
+                      initial={{ opacity: 0, width: 0 }}
+                      animate={{ opacity: 1, width: "auto" }}
+                      exit={{ opacity: 0, width: 0 }}
+                      className="font-medium text-sm overflow-hidden whitespace-nowrap"
+                    >
+                      {it.label}
+                    </motion.span>
+                  )}
                 </a>
               ) : (
                 <NavLink 
                   to={it.to!} 
                   className={({ isActive }) => rowClass(isActive, isCollapsed)}
                 >
-                  <Icon className={isCollapsed ? "h-5 w-5 shrink-0 transition-transform" : "h-5 w-5 shrink-0 transition-transform group-hover:scale-110"} />
-                  {!isCollapsed && <span className="font-medium text-sm">{it.label}</span>}
+                  <Icon className="h-5 w-5 shrink-0 transition-transform group-hover:scale-110" />
+                  {!isCollapsed && (
+                    <motion.span 
+                      initial={{ opacity: 0, width: 0 }}
+                      animate={{ opacity: 1, width: "auto" }}
+                      exit={{ opacity: 0, width: 0 }}
+                      className="font-medium text-sm overflow-hidden whitespace-nowrap"
+                    >
+                      {it.label}
+                    </motion.span>
+                  )}
                 </NavLink>
               );
 
               if (isCollapsed) {
                 return (
-                  <li key={it.label} className="flex justify-center">
+                  <li key={it.label}>
                     <Tooltip>
                       <TooltipTrigger asChild>
                         {content}
@@ -130,12 +147,9 @@ export function Sidebar() {
 
 function rowClass(active?: boolean, collapsed?: boolean) {
   return clsx(
-    "group flex items-center rounded-md text-sm transition-all duration-200",
-    collapsed ? "justify-center w-10 h-10" : "w-full gap-3.5 px-3 py-2.5",
-    active && collapsed
-      ? "bg-muted text-foreground font-medium border-l-2 border-primary"
-      : active
-        ? "bg-muted text-foreground font-semibold shadow-sm"
-        : "text-foreground/80 hover:bg-muted/50 hover:text-foreground hover:scale-[1.02]"
+    "group flex items-center rounded-md text-sm transition-all duration-200 gap-3 px-3 py-2.5",
+    active
+      ? "bg-muted text-foreground font-semibold shadow-sm"
+      : "text-foreground/80 hover:bg-muted/50 hover:text-foreground hover:scale-[1.02]"
   );
 }
