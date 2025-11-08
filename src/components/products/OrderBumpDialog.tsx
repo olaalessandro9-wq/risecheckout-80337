@@ -376,7 +376,7 @@ export function OrderBumpDialog({ open, onOpenChange, productId, onSuccess }: Or
                 <SelectContent>
                   {offers.map((offer) => (
                     <SelectItem key={offer.id} value={offer.id}>
-                      {offer.product_name ?? selectedProduct?.name} - {formatBRL(offer.price)}
+                      {offer.product_name ?? selectedProduct?.name} - {formatBRL(offer.price / 100)}
                     </SelectItem>
                   ))}
                 </SelectContent>
