@@ -149,8 +149,10 @@ export function Sidebar() {
 
 function rowClass(active?: boolean, collapsed?: boolean) {
   return clsx(
-    "group flex items-center rounded-md text-sm transition-all duration-200 py-2.5",
-    // Padding e gap apenas quando aberto
+    "group flex items-center rounded-md text-sm transition-all duration-200",
+    // Padding vertical maior quando fechado para distribuir ícones
+    collapsed ? "py-4" : "py-2.5",
+    // Padding horizontal e gap apenas quando aberto
     collapsed ? "justify-center px-0" : "gap-3 px-3",
     // Estados de ativo/hover
     active
