@@ -817,9 +817,9 @@ const PublicCheckout = () => {
 
                 {/* NOVA SEÇÃO: Ofertas limitadas */}
                 {orderBumps.length > 0 && (
-                  <div className="mt-10 mb-6 md:mb-8">
+                  <div className="mt-12 mb-6 md:mb-8">
                     <h3 
-                      className="text-lg font-bold mb-6 flex items-center gap-2"
+                      className="text-lg font-bold mb-8 flex items-center gap-2"
                       style={{ color: design.colors.primaryText }}
                     >
                       <Zap 
@@ -981,7 +981,7 @@ const PublicCheckout = () => {
                   <>
                     {/* Resumo do Pedido - PIX - DINÂMICO */}
                     <h4 
-                      className="font-semibold mb-3 text-sm tracking-tight mt-16"
+                      className="font-semibold mb-3 text-base tracking-tight mt-16"
                       style={{ color: design.colors.orderSummary?.titleText || '#000000' }}
                     >
                       Resumo do pedido
@@ -1103,7 +1103,7 @@ const PublicCheckout = () => {
                   <>
                     {/* Resumo do Pedido - Cartão - DINÂMICO */}
                     <h4 
-                      className="font-semibold mb-3 text-sm tracking-tight mt-16"
+                      className="font-semibold mb-3 text-base tracking-tight mt-16"
                       style={{ color: design.colors.orderSummary?.titleText || '#000000' }}
                     >
                       Resumo do pedido
