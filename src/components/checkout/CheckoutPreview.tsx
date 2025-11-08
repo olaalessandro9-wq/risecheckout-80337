@@ -858,39 +858,123 @@ const CheckoutPreviewComponent = ({
                 {orderBumps.map((bump) => (
                   <div
                     key={bump.id}
-                    className="rounded-xl border-2 transition-all duration-200 cursor-pointer hover:scale-[1.005]"
+                    className="rounded-xl border-2 overflow-hidden transition-all duration-200"
                     style={{
-                      backgroundColor: selectedBumps.has(bump.id)
-                        ? customization.design.colors.active + "10"
-                        : customization.design.colors.formBackground,
                       borderColor: selectedBumps.has(bump.id)
                         ? customization.design.colors.active
                         : "#E5E7EB",
-                      padding: '16px'
                     }}
-                    onClick={() => toggleBump(bump.id)}
                   >
+                    {/* Cabeçalho - Call to Action */}
                     {bump.call_to_action && (
-                      <div className="flex items-start gap-2 mb-3">
+                      <div 
+                        className="px-4 py-3 flex items-center gap-2"
+                        style={{ 
+                          backgroundColor: selectedBumps.has(bump.id) 
+                            ? customization.design.colors.active + "15" 
+                            : "rgba(0,0,0,0.03)"
+                        }}
+                      >
                         <div 
-                          className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5"
-                          style={{ backgroundColor: customization.design.colors.active + "20" }}
+                          className="w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0"
+                          style={{ backgroundColor: customization.design.colors.active }}
                         >
-                          <div 
-                            className="w-2.5 h-2.5 rounded-full" 
-                            style={{ backgroundColor: customization.design.colors.active }}
-                          />
+                          <div className="w-2 h-2 rounded-full bg-white" />
                         </div>
                         <h5 
-                          className="text-sm font-semibold uppercase tracking-wide"
+                          className="text-xs md:text-sm font-bold uppercase tracking-wide"
                           style={{ color: customization.design.colors.active }}
                         >
                           {bump.call_to_action}
                         </h5>
+                        <div className="ml-auto">
+                          <svg 
+                            className="w-5 h-5" 
+                            fill="none" 
+                            stroke={customization.design.colors.active} 
+                            viewBox="0 0 24 24"
+                          >
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                          </svg>
+                        </div>
                       </div>
                     )}
                     
-                    <div className="flex items-start gap-3">
+                    {/* Conteúdo Principal */}
+                    <div 
+                      className="px-4 py-4 cursor-pointer"
+                      style={{ backgroundColor: customization.design.colors.formBackground }}
+                      onClick={() => toggleBump(bump.id)}
+                    >
+                      <div className="flex items-start gap-3">
+                        {/* Imagem (condicional) */}
+                        {bump.image_url && (
+                          <img
+                            src={bump.image_url}
+                            alt={bump.name}
+                            className="w-20 h-20 rounded-lg object-cover flex-shrink-0"
+                          />
+                        )}
+                        
+                        <div className="flex-1 min-w-0">
+                          {/* Título */}
+                          <h5
+                            className="font-bold text-sm md:text-base mb-1.5 leading-tight"
+                            style={{ color: customization.design.colors.primaryText }}
+                          >
+                            {bump.name}
+                          </h5>
+                          
+                          {/* Descrição - sempre visível */}
+                          {bump.description && (
+                            <p
+                              className="text-xs md:text-sm mb-2.5 leading-relaxed"
+                              style={{ color: customization.design.colors.secondaryText }}
+                            >
+                              {bump.description}
+                            </p>
+                          )}
+                          
+                          {/* Preço */}
+                          <div className="flex items-center gap-2 flex-wrap">
+                            {bump.original_price ? (
+                              <>
+                                <span 
+                                  className="text-xs md:text-sm line-through" 
+                                  style={{ color: customization.design.colors.secondaryText }}
+                                >
+                                  {formatCentsToBRL(Number(bump.original_price))}
+                                </span>
+                                <span 
+                                  className="text-lg md:text-xl font-bold" 
+                                  style={{ color: customization.design.colors.active }}
+                                >
+                                  {formatCentsToBRL(Number(bump.price))}
+                                </span>
+                              </>
+                            ) : (
+                              <span 
+                                className="text-lg md:text-xl font-bold" 
+                                style={{ color: customization.design.colors.active }}
+                              >
+                                {formatCentsToBRL(Number(bump.price))}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {/* Rodapé - Adicionar Produto */}
+                    <div 
+                      className="px-4 py-3 flex items-center gap-3 cursor-pointer"
+                      style={{ 
+                        backgroundColor: selectedBumps.has(bump.id) 
+                          ? customization.design.colors.active + "15" 
+                          : "rgba(0,0,0,0.03)"
+                      }}
+                      onClick={() => toggleBump(bump.id)}
+                    >
                       <input
                         type="checkbox"
                         checked={selectedBumps.has(bump.id)}
@@ -899,67 +983,18 @@ const CheckoutPreviewComponent = ({
                           toggleBump(bump.id);
                         }}
                         onClick={(e) => e.stopPropagation()}
-                        className="mt-1 w-5 h-5 rounded border-2 cursor-pointer flex-shrink-0"
+                        className="w-5 h-5 rounded border-2 cursor-pointer flex-shrink-0"
                         style={{ 
                           accentColor: customization.design.colors.active,
                           borderColor: "#E5E7EB"
                         }}
                       />
-                      
-                      {bump.image_url && (
-                        <img
-                          src={bump.image_url}
-                          alt={bump.name}
-                          className="w-16 h-16 rounded-lg object-cover flex-shrink-0"
-                        />
-                      )}
-                      
-                      <div className="flex-1 min-w-0">
-                        {/* Título */}
-                        <h5
-                          className="font-bold text-sm md:text-base mb-1"
-                          style={{ color: customization.design.colors.primaryText }}
-                        >
-                          {bump.name}
-                        </h5>
-                        
-                        {/* Descrição - sempre visível */}
-                        {bump.description && (
-                          <p
-                            className="text-xs md:text-sm mb-2 leading-relaxed"
-                            style={{ color: customization.design.colors.secondaryText }}
-                          >
-                            {bump.description}
-                          </p>
-                        )}
-                        
-                        {/* Preço - sempre embaixo no mobile */}
-                        <div className="flex items-center gap-2 flex-wrap mt-2">
-                          {bump.original_price ? (
-                            <>
-                              <span 
-                                className="text-xs md:text-sm line-through" 
-                                style={{ color: customization.design.colors.secondaryText }}
-                              >
-                                {formatCentsToBRL(Number(bump.original_price))}
-                              </span>
-                              <span 
-                                className="text-base md:text-lg font-bold" 
-                                style={{ color: customization.design.colors.active }}
-                              >
-                                {formatCentsToBRL(Number(bump.price))}
-                              </span>
-                            </>
-                          ) : (
-                            <span 
-                              className="text-base md:text-lg font-bold" 
-                              style={{ color: customization.design.colors.active }}
-                            >
-                              {formatCentsToBRL(Number(bump.price))}
-                            </span>
-                          )}
-                        </div>
-                      </div>
+                      <span 
+                        className="text-sm md:text-base font-semibold"
+                        style={{ color: customization.design.colors.primaryText }}
+                      >
+                        Adicionar Produto
+                      </span>
                     </div>
                   </div>
                 ))}
