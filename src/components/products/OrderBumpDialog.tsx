@@ -128,7 +128,10 @@ export function OrderBumpDialog({ open, onOpenChange, productId, onSuccess, edit
   }, [selectedProductId]);
 
   // Update custom title and description when product changes (only on first selection)
+  // NÃO executar quando estiver editando para não sobrescrever valores customizados
   useEffect(() => {
+    if (editOrderBump) return; // ✅ Não sobrescrever ao editar
+    
     const selectedProduct = products.find(p => p.id === selectedProductId);
     if (selectedProduct && productInitialized !== selectedProductId) {
       // Set title and description only when product is selected for the first time
@@ -136,7 +139,7 @@ export function OrderBumpDialog({ open, onOpenChange, productId, onSuccess, edit
       setCustomDescription(selectedProduct.description || "");
       setProductInitialized(selectedProductId);
     }
-  }, [selectedProductId, products, productInitialized]);
+  }, [selectedProductId, products, productInitialized, editOrderBump]);
 
   const resetForm = () => {
     setSelectedProductId("");
@@ -526,7 +529,7 @@ export function OrderBumpDialog({ open, onOpenChange, productId, onSuccess, edit
               {selectedProduct ? (
                 <>
                   {/* Cabeçalho - Call to Action */}
-                  <div className={previewSelected ? "bg-primary/25 px-3 py-2 flex items-center justify-between" : "bg-white/25 px-3 py-2 flex items-center justify-between"}>
+                  <div className={previewSelected ? "bg-primary/25 px-3 py-2 flex items-center justify-between" : "bg-white/40 px-3 py-2 flex items-center justify-between"}>
                     <span className="text-xs font-semibold text-primary uppercase">
                       {callToAction}
                     </span>
@@ -584,7 +587,7 @@ export function OrderBumpDialog({ open, onOpenChange, productId, onSuccess, edit
                   </div>
 
                   {/* Rodapé - Checkbox Adicionar */}
-                  <div className={previewSelected ? "bg-primary/25 px-3 py-2" : "bg-white/25 px-3 py-2"}>
+                  <div className={previewSelected ? "bg-primary/25 px-3 py-2" : "bg-white/40 px-3 py-2"}>
                     <div className="flex items-center gap-2">
                       <div className={previewSelected ? "w-4 h-4 border-2 border-primary rounded bg-primary flex items-center justify-center" : "w-4 h-4 border-2 border-border rounded bg-background"}>
                         {previewSelected && (
