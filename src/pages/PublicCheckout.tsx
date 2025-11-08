@@ -847,7 +847,7 @@ const PublicCheckout = () => {
                               style={{ 
                                 backgroundColor: selectedBumps.has(bump.id) 
                                   ? design.colors.active + "25" 
-                                  : "rgba(0,0,0,0.08)"
+                                  : "rgba(255,255,255,0.15)"
                               }}
                             >
                               <h5 
@@ -949,7 +949,7 @@ const PublicCheckout = () => {
                             style={{ 
                               backgroundColor: selectedBumps.has(bump.id) 
                                 ? design.colors.active + "25" 
-                                : "rgba(0,0,0,0.08)"
+                                : "rgba(255,255,255,0.15)"
                             }}
                             onClick={() => toggleBump(bump.id)}
                           >

@@ -497,7 +497,7 @@ export function OrderBumpDialog({ open, onOpenChange, productId, onSuccess }: Or
               {selectedProduct ? (
                 <>
                   {/* Cabeçalho - Call to Action */}
-                  <div className="bg-white/8 px-3 py-2 flex items-center justify-between">
+                  <div className="bg-white/15 px-3 py-2 flex items-center justify-between">
                     <span className="text-xs font-semibold text-primary uppercase">
                       {callToAction}
                     </span>
@@ -555,7 +555,7 @@ export function OrderBumpDialog({ open, onOpenChange, productId, onSuccess }: Or
                   </div>
 
                   {/* Rodapé - Checkbox Adicionar */}
-                  <div className="bg-white/25 px-3 py-2">
+                  <div className="bg-white/15 px-3 py-2">
                     <div className="flex items-center gap-2">
                       <div className="w-4 h-4 border-2 border-border rounded bg-background"></div>
                       <span className="text-xs text-foreground">
