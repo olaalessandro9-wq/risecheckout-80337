@@ -871,8 +871,21 @@ const ProductEditInner = () => {
     setOrderBumpDialogOpen(true);
   };
 
-  const handleEditOrderBump = (orderBump: any) => {
-    setEditingOrderBump(orderBump);
+  const handleEditOrderBump = async (orderBump: any) => {
+    // Buscar dados atualizados do banco para garantir que custom_title e custom_description estejam corretos
+    try {
+      const { data, error } = await supabase
+        .from('order_bumps')
+        .select('*')
+        .eq('id', orderBump.id)
+        .single();
+      
+      if (error) throw error;
+      setEditingOrderBump(data || orderBump);  // Usar dados do banco ou fallback para o objeto original
+    } catch (error) {
+      console.error('Erro ao carregar order bump:', error);
+      setEditingOrderBump(orderBump);  // Fallback para o objeto original em caso de erro
+    }
     setOrderBumpDialogOpen(true);
   };
 
