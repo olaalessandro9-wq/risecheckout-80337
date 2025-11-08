@@ -1093,17 +1093,6 @@ const CheckoutPreviewComponent = ({
 
                 {/* Totais */}
                 <div className="space-y-1.5 text-sm">
-                  <div className="flex justify-between">
-                    <span style={{ color: customization.design.colors.orderSummary?.labelText || "#6B7280" }}>
-                      Taxa de serviço
-                    </span>
-                    <span 
-                      className="font-medium"
-                      style={{ color: customization.design.colors.orderSummary?.priceText || "#000000" }}
-                    >
-                      R$ 0,99
-                    </span>
-                  </div>
                   <div 
                     className="flex justify-between text-base font-bold pt-2 border-t"
                     style={{ borderTopColor: customization.design.colors.orderSummary?.borderColor || "#D1D5DB" }}
@@ -1112,7 +1101,7 @@ const CheckoutPreviewComponent = ({
                       Total
                     </span>
                     <span style={{ color: customization.design.colors.orderSummary?.priceText || "#000000" }}>
-                      {formatCentsToBRL(totalPrice + 99)}
+                      {formatCentsToBRL(totalPrice)}
                     </span>
                   </div>
                 </div>
@@ -1204,17 +1193,6 @@ const CheckoutPreviewComponent = ({
 
                 {/* Totais */}
                 <div className="space-y-1.5 text-sm">
-                  <div className="flex justify-between">
-                    <span style={{ color: customization.design.colors.orderSummary?.labelText || "#6B7280" }}>
-                      Taxa de serviço
-                    </span>
-                    <span 
-                      className="font-medium"
-                      style={{ color: customization.design.colors.orderSummary?.priceText || "#000000" }}
-                    >
-                      R$ 0,99
-                    </span>
-                  </div>
                   <div 
                     className="flex justify-between text-base font-bold pt-2 border-t"
                     style={{ borderTopColor: customization.design.colors.orderSummary?.borderColor || "#D1D5DB" }}
@@ -1223,7 +1201,7 @@ const CheckoutPreviewComponent = ({
                       Total
                     </span>
                     <span style={{ color: customization.design.colors.orderSummary?.priceText || "#000000" }}>
-                      {formatCentsToBRL(totalPrice + 99)}
+                      {formatCentsToBRL(totalPrice)}
                     </span>
                   </div>
                 </div>

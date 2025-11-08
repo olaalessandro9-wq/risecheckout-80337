@@ -415,17 +415,16 @@ const PublicCheckout = () => {
         throw new Error("Produto não encontrado");
       }
 
-      // 2. Calcular valor total (produto + order bumps + taxa)
+      // 2. Calcular valor total (produto + order bumps)
       // IMPORTANTE: checkout!.product.price já está em centavos!
       const productPrice = checkout!.product.price; // já é em centavos
-      const serviceFee = 99; // R$ 0,99 em centavos
       
       const selectedBumpsTotal = Array.from(selectedBumps).reduce((total, bumpId) => {
         const bump = orderBumps.find(b => b.id === bumpId);
         return total + (bump ? Number(bump.price) : 0);
       }, 0);
       
-      const totalCents = productPrice + selectedBumpsTotal + serviceFee;
+      const totalCents = productPrice + selectedBumpsTotal;
 
       // 3. Criar pedido via Edge Function (seguro - bypassa RLS)
       const { data: orderResponse, error: orderError } = await supabase.functions.invoke(
@@ -1076,17 +1075,6 @@ const PublicCheckout = () => {
 
                       {/* Totais */}
                       <div className="space-y-1.5 text-sm">
-                        <div className="flex justify-between">
-                          <span style={{ color: design.colors.orderSummary?.labelText || '#6B7280' }}>
-                            Taxa de serviço
-                          </span>
-                          <span 
-                            className="font-medium"
-                            style={{ color: design.colors.orderSummary?.priceText || '#000000' }}
-                          >
-                            R$ 0,99
-                          </span>
-                        </div>
                         <div 
                           className="flex justify-between text-base font-bold pt-2 border-t"
                           style={{ borderTopColor: design.colors.orderSummary?.borderColor || '#D1D5DB' }}
@@ -1098,7 +1086,7 @@ const PublicCheckout = () => {
                             R$ {((checkout.product?.price / 100 || 0) + (Array.from(selectedBumps).reduce((total, bumpId) => {
                               const bump = orderBumps.find(b => b.id === bumpId);
                               return total + (bump ? Number(bump.price) / 100 : 0);
-                            }, 0)) + 0.99).toFixed(2).replace('.', ',')}
+                            }, 0))).toFixed(2).replace('.', ',')}
                           </span>
                         </div>
                       </div>
@@ -1198,17 +1186,6 @@ const PublicCheckout = () => {
 
                       {/* Totais */}
                       <div className="space-y-1.5 text-sm">
-                        <div className="flex justify-between">
-                          <span style={{ color: design.colors.orderSummary?.labelText || '#6B7280' }}>
-                            Taxa de serviço
-                          </span>
-                          <span 
-                            className="font-medium"
-                            style={{ color: design.colors.orderSummary?.priceText || '#000000' }}
-                          >
-                            R$ 0,99
-                          </span>
-                        </div>
                         <div 
                           className="flex justify-between text-base font-bold pt-2 border-t"
                           style={{ borderTopColor: design.colors.orderSummary?.borderColor || '#D1D5DB' }}
@@ -1220,7 +1197,7 @@ const PublicCheckout = () => {
                             R$ {((checkout.product?.price / 100 || 0) + (Array.from(selectedBumps).reduce((total, bumpId) => {
                               const bump = orderBumps.find(b => b.id === bumpId);
                               return total + (bump ? Number(bump.price) / 100 : 0);
-                            }, 0)) + 0.99).toFixed(2).replace('.', ',')}
+                            }, 0))).toFixed(2).replace('.', ',')}
                           </span>
                         </div>
                       </div>
@@ -1240,7 +1217,10 @@ const PublicCheckout = () => {
                   <div className="mt-6">
                     <PixPayment
                       orderId={orderId}
-                      valueInCents={checkout.product.price + 99}
+                      valueInCents={checkout.product.price + Array.from(selectedBumps).reduce((total, bumpId) => {
+                        const bump = orderBumps.find(b => b.id === bumpId);
+                        return total + (bump ? Number(bump.price) : 0);
+                      }, 0)}
                       onSuccess={() => {
                         toast.success("Pagamento confirmado!");
                         // Redirecionar para página de sucesso ou obrigado
