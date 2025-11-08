@@ -69,6 +69,20 @@ export function normalizeDesign(checkout: any): ThemePreset {
     };
   }
   
+  // Order Bump (garantir que existe para checkouts antigos)
+  if (!normalized.colors.orderBump) {
+    normalized.colors.orderBump = {
+      headerBackground: 'rgba(255,255,255,0.15)',
+      headerText: normalized.colors.active,
+      footerBackground: 'rgba(255,255,255,0.15)',
+      footerText: theme === 'dark' ? '#FFFFFF' : '#000000',
+      contentBackground: normalized.colors.formBackground,
+      titleText: normalized.colors.primaryText,
+      descriptionText: normalized.colors.secondaryText,
+      priceText: normalized.colors.active,
+    };
+  }
+  
   return normalized;
 }
 

@@ -847,12 +847,12 @@ const PublicCheckout = () => {
                               style={{ 
                                 backgroundColor: selectedBumps.has(bump.id) 
                                   ? design.colors.active + "25" 
-                                  : design.colors.orderBump.headerBackground
+                                  : design.colors.orderBump?.headerBackground || 'rgba(255,255,255,0.15)'
                               }}
                             >
                               <h5 
                                 className="text-xs md:text-sm font-bold uppercase tracking-wide"
-                                style={{ color: design.colors.orderBump.headerText }}
+                                style={{ color: design.colors.orderBump?.headerText || design.colors.active }}
                               >
                                 {bump.call_to_action}
                               </h5>
@@ -881,7 +881,7 @@ const PublicCheckout = () => {
                           {/* Conteúdo Principal */}
                           <div 
                             className="px-4 py-4 cursor-pointer"
-                            style={{ backgroundColor: design.colors.orderBump.contentBackground }}
+                            style={{ backgroundColor: design.colors.orderBump?.contentBackground || design.colors.formBackground }}
                             onClick={() => toggleBump(bump.id)}
                           >
                             <div className="flex items-start gap-3">
@@ -898,7 +898,7 @@ const PublicCheckout = () => {
                                 {/* Título */}
                                 <h5
                                   className="font-bold text-sm md:text-base mb-1.5 leading-tight"
-                                  style={{ color: design.colors.orderBump.titleText }}
+                                  style={{ color: design.colors.orderBump?.titleText || design.colors.primaryText }}
                                 >
                                   {bump.name}
                                 </h5>
@@ -907,7 +907,7 @@ const PublicCheckout = () => {
                                 {bump.description && (
                                   <p
                                     className="text-xs md:text-sm mb-2.5 leading-relaxed"
-                                    style={{ color: design.colors.orderBump.descriptionText }}
+                                    style={{ color: design.colors.orderBump?.descriptionText || design.colors.secondaryText }}
                                   >
                                     {bump.description}
                                   </p>
@@ -925,7 +925,7 @@ const PublicCheckout = () => {
                                       </span>
                                       <span 
                                         className="text-lg md:text-xl font-bold" 
-                                        style={{ color: design.colors.orderBump.priceText }}
+                                        style={{ color: design.colors.orderBump?.priceText || design.colors.active }}
                                       >
                                         R$ {(bump.price / 100).toFixed(2).replace('.', ',')}
                                       </span>
@@ -933,7 +933,7 @@ const PublicCheckout = () => {
                                   ) : (
                                     <span 
                                       className="text-lg md:text-xl font-bold" 
-                                      style={{ color: design.colors.orderBump.priceText }}
+                                      style={{ color: design.colors.orderBump?.priceText || design.colors.active }}
                                     >
                                       R$ {(bump.price / 100).toFixed(2).replace('.', ',')}
                                     </span>
@@ -949,7 +949,7 @@ const PublicCheckout = () => {
                             style={{ 
                               backgroundColor: selectedBumps.has(bump.id) 
                                 ? design.colors.active + "25" 
-                                : design.colors.orderBump.footerBackground
+                                : design.colors.orderBump?.footerBackground || 'rgba(255,255,255,0.15)'
                             }}
                             onClick={() => toggleBump(bump.id)}
                           >
@@ -973,7 +973,7 @@ const PublicCheckout = () => {
                             </div>
                             <span 
                               className="text-sm md:text-base font-semibold"
-                              style={{ color: design.colors.orderBump.footerText }}
+                              style={{ color: design.colors.orderBump?.footerText || design.colors.primaryText }}
                             >
                               Adicionar Produto
                             </span>

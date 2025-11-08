@@ -872,12 +872,12 @@ const CheckoutPreviewComponent = ({
                         style={{ 
                           backgroundColor: selectedBumps.has(bump.id) 
                             ? customization.design.colors.active + "25" 
-                            : customization.design.colors.orderBump.headerBackground
+                            : customization.design.colors.orderBump?.headerBackground || 'rgba(255,255,255,0.15)'
                         }}
                       >
                         <h5 
                           className="text-xs md:text-sm font-bold uppercase tracking-wide"
-                          style={{ color: customization.design.colors.orderBump.headerText }}
+                          style={{ color: customization.design.colors.orderBump?.headerText || customization.design.colors.active }}
                         >
                           {bump.call_to_action}
                         </h5>
@@ -906,7 +906,7 @@ const CheckoutPreviewComponent = ({
                     {/* Conteúdo Principal */}
                     <div 
                       className="px-4 py-4 cursor-pointer"
-                      style={{ backgroundColor: customization.design.colors.orderBump.contentBackground }}
+                      style={{ backgroundColor: customization.design.colors.orderBump?.contentBackground || customization.design.colors.formBackground }}
                       onClick={() => toggleBump(bump.id)}
                     >
                       <div className="flex items-start gap-3">
@@ -923,7 +923,7 @@ const CheckoutPreviewComponent = ({
                           {/* Título */}
                           <h5
                             className="font-bold text-sm md:text-base mb-1.5 leading-tight"
-                            style={{ color: customization.design.colors.orderBump.titleText }}
+                            style={{ color: customization.design.colors.orderBump?.titleText || customization.design.colors.primaryText }}
                           >
                             {bump.name}
                           </h5>
@@ -932,7 +932,7 @@ const CheckoutPreviewComponent = ({
                           {bump.description && (
                             <p
                               className="text-xs md:text-sm mb-2.5 leading-relaxed"
-                              style={{ color: customization.design.colors.orderBump.descriptionText }}
+                              style={{ color: customization.design.colors.orderBump?.descriptionText || customization.design.colors.secondaryText }}
                             >
                               {bump.description}
                             </p>
@@ -950,7 +950,7 @@ const CheckoutPreviewComponent = ({
                                 </span>
                                 <span 
                                   className="text-lg md:text-xl font-bold" 
-                                  style={{ color: customization.design.colors.orderBump.priceText }}
+                                  style={{ color: customization.design.colors.orderBump?.priceText || customization.design.colors.active }}
                                 >
                                   {formatCentsToBRL(Number(bump.price))}
                                 </span>
@@ -958,7 +958,7 @@ const CheckoutPreviewComponent = ({
                             ) : (
                               <span 
                                 className="text-lg md:text-xl font-bold" 
-                                style={{ color: customization.design.colors.orderBump.priceText }}
+                                style={{ color: customization.design.colors.orderBump?.priceText || customization.design.colors.active }}
                               >
                                 {formatCentsToBRL(Number(bump.price))}
                               </span>
@@ -974,7 +974,7 @@ const CheckoutPreviewComponent = ({
                       style={{ 
                         backgroundColor: selectedBumps.has(bump.id) 
                           ? customization.design.colors.active + "25" 
-                          : customization.design.colors.orderBump.footerBackground
+                          : customization.design.colors.orderBump?.footerBackground || 'rgba(255,255,255,0.15)'
                       }}
                       onClick={() => toggleBump(bump.id)}
                     >
@@ -998,7 +998,7 @@ const CheckoutPreviewComponent = ({
                       </div>
                       <span 
                         className="text-sm md:text-base font-semibold"
-                        style={{ color: customization.design.colors.orderBump.footerText }}
+                        style={{ color: customization.design.colors.orderBump?.footerText || customization.design.colors.primaryText }}
                       >
                         Adicionar Produto
                       </span>
