@@ -15,7 +15,6 @@ import { UserFooter } from "./UserFooter";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import clsx from "clsx";
 import { useState } from "react";
-import { AnimatedSidebar, AnimatedSidebarBody, useAnimatedSidebar } from "@/components/ui/animated-sidebar";
 import { motion } from "framer-motion";
 
 type Item = { label: string; icon: React.ElementType; to?: string; external?: string };
@@ -35,12 +34,24 @@ const navItems: Item[] = [
   { label: "Ajuda", icon: HelpCircle, external: HELP_CENTER_URL },
 ];
 
-function SidebarContent() {
-  const { open: isOpen } = useAnimatedSidebar();
-  const isCollapsed = !isOpen;
+export function Sidebar() {
+  const [isHovered, setIsHovered] = useState(false);
+  const isCollapsed = !isHovered;
 
   return (
-    <>
+    <motion.aside
+      initial={false}
+      animate={{
+        width: isHovered ? 248 : 64,
+      }}
+      transition={{
+        duration: 0.3,
+        ease: "easeInOut",
+      }}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      className="flex h-screen shrink-0 flex-col border-r border-border/60 bg-background text-foreground"
+    >
       {/* Brand / Logo */}
       <div
         className={clsx(
@@ -53,6 +64,7 @@ function SidebarContent() {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
+            transition={{ duration: 0.2, delay: 0.1 }}
             className="text-xl font-bold tracking-tight overflow-hidden text-foreground"
           >
             RiseCheckout
@@ -62,10 +74,12 @@ function SidebarContent() {
 
       {/* Navegação */}
       <TooltipProvider delayDuration={300}>
-        <nav className={clsx(
-          "scrollbar-none flex-1 min-h-0 overflow-y-auto transition-all duration-300 ease-in-out",
-          isCollapsed ? "px-1 py-6" : "px-3 py-4"
-        )}>
+        <nav
+          className={clsx(
+            "scrollbar-none flex-1 overflow-y-auto transition-all duration-300 ease-in-out",
+            isCollapsed ? "px-2 py-6" : "px-3 py-4"
+          )}
+        >
           <ul className={clsx(isCollapsed ? "space-y-3" : "space-y-1")}>
             {navItems.map((it) => {
               const Icon = it.icon;
@@ -78,21 +92,31 @@ function SidebarContent() {
                 >
                   <Icon className="h-5 w-5 shrink-0 transition-transform group-hover:scale-110" />
                   {!isCollapsed && (
-                    <span className="font-medium text-sm whitespace-nowrap">
+                    <motion.span
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ duration: 0.2, delay: 0.1 }}
+                      className="font-medium text-sm whitespace-nowrap overflow-hidden"
+                    >
                       {it.label}
-                    </span>
+                    </motion.span>
                   )}
                 </a>
               ) : (
-                <NavLink 
-                  to={it.to!} 
+                <NavLink
+                  to={it.to!}
                   className={({ isActive }) => rowClass(isActive, isCollapsed)}
                 >
                   <Icon className="h-5 w-5 shrink-0 transition-transform group-hover:scale-110" />
                   {!isCollapsed && (
-                    <span className="font-medium text-sm whitespace-nowrap">
+                    <motion.span
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ duration: 0.2, delay: 0.1 }}
+                      className="font-medium text-sm whitespace-nowrap overflow-hidden"
+                    >
                       {it.label}
-                    </span>
+                    </motion.span>
                   )}
                 </NavLink>
               );
@@ -101,12 +125,8 @@ function SidebarContent() {
                 return (
                   <li key={it.label}>
                     <Tooltip>
-                      <TooltipTrigger asChild>
-                        {content}
-                      </TooltipTrigger>
-                      <TooltipContent side="right">
-                        {it.label}
-                      </TooltipContent>
+                      <TooltipTrigger asChild>{content}</TooltipTrigger>
+                      <TooltipContent side="right">{it.label}</TooltipContent>
                     </Tooltip>
                   </li>
                 );
@@ -120,19 +140,7 @@ function SidebarContent() {
 
       {/* Rodapé com email + sair */}
       <UserFooter isCollapsed={isCollapsed} />
-    </>
-  );
-}
-
-export function Sidebar() {
-  const [open, setOpen] = useState(false);
-
-  return (
-    <AnimatedSidebar open={open} setOpen={setOpen}>
-      <AnimatedSidebarBody className="flex h-screen shrink-0 flex-col border-r border-border/60 bg-background text-foreground">
-        <SidebarContent />
-      </AnimatedSidebarBody>
-    </AnimatedSidebar>
+    </motion.aside>
   );
 }
 
