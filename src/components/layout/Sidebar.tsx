@@ -62,8 +62,11 @@ function SidebarContent() {
 
       {/* Navegação */}
       <TooltipProvider delayDuration={300}>
-        <nav className="scrollbar-none flex-1 overflow-y-auto py-4 px-3 transition-all duration-300 ease-in-out">
-          <ul className="space-y-1">
+        <nav className={clsx(
+          "scrollbar-none flex-1 overflow-y-auto transition-all duration-300 ease-in-out",
+          isCollapsed ? "py-6 px-2" : "py-4 px-3"
+        )}>
+          <ul className={clsx(isCollapsed ? "space-y-3" : "space-y-1")}>
             {navItems.map((it) => {
               const Icon = it.icon;
               const content = it.external ? (
