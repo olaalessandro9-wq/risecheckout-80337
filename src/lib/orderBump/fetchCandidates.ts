@@ -26,10 +26,19 @@ export async function fetchOrderBumpCandidates(opts?: {
 }): Promise<OrderBumpCandidate[]> {
   const excludeId = opts?.excludeProductId;
 
-  // Busca diretamente da tabela products (RLS já filtra por user_id)
+  // ✅ Buscar usuário atual para filtro explícito
+  const { data: { user }, error: authError } = await supabase.auth.getUser();
+  
+  if (authError || !user) {
+    console.error("[OrderBump] Usuário não autenticado:", authError);
+    throw new Error("Usuário não autenticado");
+  }
+
+  // ✅ Filtro explícito por user_id (defesa em profundidade além do RLS)
   let query = supabase
     .from("products")
     .select("id,name,price,image_url,description")
+    .eq("user_id", user.id)  // ✅ FILTRO EXPLÍCITO POR USUÁRIO
     .eq("status", "active")
     .order("created_at", { ascending: false });
 
