@@ -832,15 +832,22 @@ const CheckoutPreviewComponent = ({
 
           {/* Mensagem PIX - aparece ANTES dos order bumps quando PIX está selecionado */}
           {selectedPayment === 'pix' && (
-            <div className="bg-green-50 border border-green-200 rounded-lg p-3 space-y-2 mb-4 mt-4">
-              <div className="flex items-start gap-2.5">
-                <CheckCircleFilledIcon size={18} color="#10B981" className="flex-shrink-0 mt-0.5" />
-                <span className="text-xs text-green-800 leading-relaxed font-medium">Liberação imediata</span>
+            <div 
+              className="rounded-lg p-4 space-y-2 mt-4"
+              style={{
+                backgroundColor: customization.design.colors.active + '15',
+                borderLeft: `4px solid ${customization.design.colors.active}`
+              }}
+            >
+              <div className="flex items-center gap-2">
+                <CheckCircleFilledIcon size={20} color={customization.design.colors.active} />
+                <span className="font-semibold" style={{ color: customization.design.colors.primaryText }}>
+                  Liberação imediata
+                </span>
               </div>
-              <div className="flex items-start gap-2.5">
-                <CheckCircleFilledIcon size={18} color="#10B981" className="flex-shrink-0 mt-0.5" />
-                <span className="text-xs text-green-800 leading-relaxed font-medium">É simples, só usar o aplicativo de seu banco para pagar Pix</span>
-              </div>
+              <p className="text-sm" style={{ color: customization.design.colors.secondaryText }}>
+                É simples, só usar o aplicativo de seu banco para pagar Pix
+              </p>
             </div>
           )}
 
