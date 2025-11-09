@@ -17,6 +17,7 @@ import type { ThemePreset } from "@/lib/checkout/themePresets";
 import { FacebookPixel, FacebookPixelEvents } from "@/components/FacebookPixel";
 import { useFacebookPixelIntegration } from "@/hooks/useVendorIntegrations";
 import { trackViewContent, trackInitiateCheckout, trackAddToCart, trackPurchase } from "@/lib/facebook-pixel-helpers";
+import { sendPurchaseToFacebookConversionsAPI } from "@/lib/facebook-conversions-api";
 
 interface CheckoutData {
   id: string;
@@ -490,10 +491,25 @@ const PublicCheckout = () => {
         );
       }
 
-      // 4. Disparar evento Purchase
+      // 4. Disparar evento Purchase (client-side)
       trackPurchase(checkout, orderResponse.order_id, totalCents);
 
-      // 5. Redirecionar para página dedicada do PIX
+      // 5. Enviar evento Purchase para Conversions API (server-side)
+      sendPurchaseToFacebookConversionsAPI({
+        vendor_id: productData.user_id,
+        order_id: orderResponse.order_id,
+        customer_email: formData.email,
+        customer_name: formData.name,
+        customer_phone: formData.phone,
+        amount_cents: totalCents,
+        currency: "BRL",
+        product_id: checkout!.product.id,
+        product_name: checkout!.product.name,
+      }).catch(err => {
+        console.error("[Conversions API] Não foi possível enviar evento:", err);
+      });
+
+      // 6. Redirecionar para página dedicada do PIX
       setOrderId(orderResponse.order_id);
       toast.success("Gerando PIX...");
       
