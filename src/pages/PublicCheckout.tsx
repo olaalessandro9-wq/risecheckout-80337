@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams, useSearchParams } from "react-router-dom";
+import { useParams, useSearchParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2, User, Wallet } from "lucide-react";
 import { toast } from "sonner";
@@ -7,7 +7,6 @@ import { parseJsonSafely } from "@/lib/utils";
 import { loadPublicCheckoutData } from "@/hooks/usePublicCheckoutConfig";
 import { useTracking } from "@/hooks/useTracking";
 import CheckoutComponentRenderer from "@/components/checkout/CheckoutComponentRenderer";
-import PixPayment from "@/components/checkout/PixPayment";
 import { ImageIcon } from "@/components/icons/ImageIcon";
 import { LockIcon } from "@/components/icons/LockIcon";
 import { PixIcon } from "@/components/icons/PixIcon";
@@ -51,11 +50,11 @@ interface CheckoutData {
 const PublicCheckout = () => {
   const { slug } = useParams<{ slug: string }>();
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const [checkout, setCheckout] = useState<CheckoutData | null>(null);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
   const [selectedPayment, setSelectedPayment] = useState<'pix' | 'credit_card'>('pix');
-  const [showPixPayment, setShowPixPayment] = useState(false);
   const [orderId, setOrderId] = useState<string | null>(null);
   const [processingPayment, setProcessingPayment] = useState(false);
   const [vendorId, setVendorId] = useState<string | null>(null);
@@ -213,14 +212,12 @@ const PublicCheckout = () => {
         content_name: checkout!.product.name,
         content_ids: [checkout!.product.id],
         content_type: 'product',
-        value: (checkout!.product.price + 99) / 100,
+        value: checkout!.product.price / 100,
         currency: 'BRL',
       });
 
-      // 2. Calcular valor total (produto + taxa)
-      const productPrice = checkout!.product.price; // em centavos
-      const serviceFee = 99; // R$ 0,99 em centavos
-      const totalCents = productPrice + serviceFee;
+      // 2. Calcular valor total (apenas produto, sem taxa)
+      const totalCents = checkout!.product.price; // em centavos
 
       // 3. Criar pedido via Edge Function (seguro - bypassa RLS)
       const { data: orderResponse, error: orderError } = await supabase.functions.invoke(
@@ -254,10 +251,14 @@ const PublicCheckout = () => {
         currency: 'BRL',
       });
 
-      // 5. Exibir componente PixPayment
+      // 5. Redirecionar para página dedicada de pagamento PIX
       setOrderId(orderResponse.order_id);
-      setShowPixPayment(true);
       toast.success("Gerando PIX...");
+      
+      // Delay para toast aparecer antes do redirect
+      setTimeout(() => {
+        navigate(`/pay/pix/${orderResponse.order_id}`);
+      }, 500);
 
     } catch (error: any) {
       console.error("Erro ao processar pagamento:", error);
@@ -513,17 +514,6 @@ const PublicCheckout = () => {
                             R$ {(checkout.product?.price / 100)?.toFixed(2).replace('.', ',')}
                           </span>
                         </div>
-                        <div className="flex justify-between">
-                          <span style={{ color: checkout.design?.colors?.orderSummary?.labelText || '#6B7280' }}>
-                            Taxa de serviço
-                          </span>
-                          <span 
-                            className="font-medium"
-                            style={{ color: checkout.design?.colors?.orderSummary?.priceText || '#000000' }}
-                          >
-                            R$ 0,99
-                          </span>
-                        </div>
                         <div 
                           className="flex justify-between text-sm font-bold pt-1.5"
                           style={{
@@ -536,7 +526,7 @@ const PublicCheckout = () => {
                             Total
                           </span>
                           <span style={{ color: checkout.design?.colors?.orderSummary?.priceText || '#000000' }}>
-                            R$ {((checkout.product?.price / 100 || 0) + 0.99).toFixed(2).replace('.', ',')}
+                            R$ {(checkout.product?.price / 100 || 0).toFixed(2).replace('.', ',')}
                           </span>
                         </div>
                       </div>
@@ -610,17 +600,6 @@ const PublicCheckout = () => {
                             R$ {(checkout.product?.price / 100)?.toFixed(2).replace('.', ',')}
                           </span>
                         </div>
-                        <div className="flex justify-between">
-                          <span style={{ color: checkout.design?.colors?.orderSummary?.labelText || '#6B7280' }}>
-                            Taxa de serviço
-                          </span>
-                          <span 
-                            className="font-medium"
-                            style={{ color: checkout.design?.colors?.orderSummary?.priceText || '#000000' }}
-                          >
-                            R$ 0,99
-                          </span>
-                        </div>
                         <div 
                           className="flex justify-between text-sm font-bold pt-1.5"
                           style={{
@@ -633,7 +612,7 @@ const PublicCheckout = () => {
                             Total
                           </span>
                           <span style={{ color: checkout.design?.colors?.orderSummary?.priceText || '#000000' }}>
-                            R$ {((checkout.product?.price / 100 || 0) + 0.99).toFixed(2).replace('.', ',')}
+                            R$ {(checkout.product?.price / 100 || 0).toFixed(2).replace('.', ',')}
                           </span>
                         </div>
                       </div>
@@ -648,41 +627,8 @@ const PublicCheckout = () => {
                   </>
                 )}
 
-                {/* Componente PixPayment - renderizado condicionalmente */}
-                {selectedPayment === 'pix' && showPixPayment && orderId && (
-                  <div className="mt-6">
-                    <PixPayment
-                      orderId={orderId}
-                      valueInCents={checkout.product.price + 99}
-                      productName={checkout.product.name}
-                      productId={checkout.product.id}
-                      onPurchase={(orderData) => {
-                        // Evento: Purchase
-                        track('Purchase', {
-                          content_name: orderData.productName,
-                          content_ids: [orderData.productId],
-                          content_type: 'product',
-                          value: orderData.value,
-                          currency: orderData.currency,
-                          transaction_id: orderData.orderId,
-                        });
-                      }}
-                      onSuccess={() => {
-                        toast.success("Pagamento confirmado!");
-                        // Redirecionar para página de sucesso ou obrigado
-                      }}
-                      onError={(error) => {
-                        toast.error(error);
-                        setShowPixPayment(false);
-                        setProcessingPayment(false);
-                      }}
-                    />
-                  </div>
-                )}
-
                 {/* Botão de submissão */}
-                {!showPixPayment && (
-                  <button
+                <button
                     onClick={handleSubmit}
                     disabled={processingPayment}
                     className={`w-full mt-5 py-3.5 rounded-lg font-bold text-base transition-all duration-200 shadow-sm ${
@@ -704,7 +650,6 @@ const PublicCheckout = () => {
                       selectedPayment === 'pix' ? 'Pagar com PIX' : 'Pagar com Cartão de Crédito'
                     )}
                   </button>
-                )}
 
                 {/* Card de Informações Legais - Unificado sem divisórias */}
                 <div 
@@ -834,7 +779,7 @@ const PublicCheckout = () => {
                         className="text-xl font-bold"
                         style={{ color: checkout.design?.colors?.securePurchase?.primaryText || '#000000' }}
                       >
-                        R$ {((checkout.product?.price / 100 || 0) + 0.99).toFixed(2).replace('.', ',')}
+                        R$ {(checkout.product?.price / 100 || 0).toFixed(2).replace('.', ',')}
                       </p>
                     </div>
                     <p 
