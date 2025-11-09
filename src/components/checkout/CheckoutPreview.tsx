@@ -664,7 +664,7 @@ const CheckoutPreviewComponent = ({
             style={{ color: customization.design.colors.primaryText || "#000000" }}
           >
             <User className="w-5 h-5" />
-            Seus dados
+            Dados necessários para envio do seu acesso:
           </h2>
           
           <div className="space-y-3">
@@ -704,41 +704,45 @@ const CheckoutPreviewComponent = ({
               />
             </div>
 
-            <div>
-              <label 
-                className="text-sm mb-1 block"
-                style={{ color: customization.design.colors.secondaryText || "#374151" }}
-              >
-                CPF/CNPJ
-              </label>
-              <input
-                type="text"
-                placeholder="000.000.000-00"
-                className="w-full px-3 py-2 rounded-lg border border-gray-300 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
-                style={{
-                  backgroundColor: customization.design.colors.formBackground || "#FFFFFF",
-                  color: customization.design.colors.primaryText || "#000000",
-                }}
-              />
-            </div>
+            {productData?.required_fields?.cpf && (
+              <div>
+                <label 
+                  className="text-sm mb-1 block"
+                  style={{ color: customization.design.colors.secondaryText || "#374151" }}
+                >
+                  CPF/CNPJ
+                </label>
+                <input
+                  type="text"
+                  placeholder="000.000.000-00"
+                  className="w-full px-3 py-2 rounded-lg border border-gray-300 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
+                  style={{
+                    backgroundColor: customization.design.colors.formBackground || "#FFFFFF",
+                    color: customization.design.colors.primaryText || "#000000",
+                  }}
+                />
+              </div>
+            )}
 
-            <div>
-              <label 
-                className="text-sm mb-1 block"
-                style={{ color: customization.design.colors.secondaryText || "#374151" }}
-              >
-                Celular
-              </label>
-              <input
-                type="tel"
-                placeholder="+55 (00) 00000-0000"
-                className="w-full px-3 py-2 rounded-lg border border-gray-300 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
-                style={{
-                  backgroundColor: customization.design.colors.formBackground || "#FFFFFF",
-                  color: customization.design.colors.primaryText || "#000000",
-                }}
-              />
-            </div>
+            {productData?.required_fields?.phone && (
+              <div>
+                <label 
+                  className="text-sm mb-1 block"
+                  style={{ color: customization.design.colors.secondaryText || "#374151" }}
+                >
+                  Celular
+                </label>
+                <input
+                  type="tel"
+                  placeholder="+55 (00) 00000-0000"
+                  className="w-full px-3 py-2 rounded-lg border border-gray-300 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
+                  style={{
+                    backgroundColor: customization.design.colors.formBackground || "#FFFFFF",
+                    color: customization.design.colors.primaryText || "#000000",
+                  }}
+                />
+              </div>
+            )}
           </div>
           </div>
         </div>
