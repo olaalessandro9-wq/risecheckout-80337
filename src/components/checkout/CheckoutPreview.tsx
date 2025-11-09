@@ -835,7 +835,7 @@ const CheckoutPreviewComponent = ({
             <div 
               className="rounded-lg p-4 space-y-2 mt-4"
               style={{
-                backgroundColor: customization.design.colors.active + '15',
+                backgroundColor: 'rgba(240, 253, 244, 0.1)',
                 borderLeft: `4px solid ${customization.design.colors.active}`
               }}
             >
