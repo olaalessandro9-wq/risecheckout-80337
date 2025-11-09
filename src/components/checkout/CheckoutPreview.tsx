@@ -862,11 +862,11 @@ const CheckoutPreviewComponent = ({
                 {orderBumps.map((bump) => (
                   <div
                     key={bump.id}
-                    className="rounded-xl border-2 overflow-hidden transition-all duration-200"
+                    className="rounded-xl overflow-hidden transition-all duration-200"
                     style={{
-                      borderColor: selectedBumps.has(bump.id)
-                        ? customization.design.colors.active
-                        : customization.design.colors.border,
+                      border: selectedBumps.has(bump.id)
+                        ? `2px solid ${customization.design.colors.active}`
+                        : 'none',
                     }}
                   >
                     {/* Cabeçalho - Call to Action */}
