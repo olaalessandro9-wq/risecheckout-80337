@@ -143,6 +143,16 @@ const PublicCheckout = () => {
     };
   }, [design]);
 
+  // Disparar evento ViewContent quando checkout carregar
+  useEffect(() => {
+    if (checkout && !viewContentTracked) {
+      // Aguardar um pouco para garantir que o pixel foi inicializado
+      setTimeout(() => {
+        trackViewContent(checkout, viewContentTracked, setViewContentTracked);
+      }, 1000);
+    }
+  }, [checkout, viewContentTracked]);
+
   const loadCheckout = async () => {
     try {
       setLoading(true);
@@ -544,16 +554,6 @@ const PublicCheckout = () => {
       </div>
     );
   }
-
-  // useEffect para disparar evento ViewContent quando checkout carregar
-  useEffect(() => {
-    if (checkout && !viewContentTracked) {
-      // Aguardar um pouco para garantir que o pixel foi inicializado
-      setTimeout(() => {
-        trackViewContent(checkout, viewContentTracked, setViewContentTracked);
-      }, 1000);
-    }
-  }, [checkout, viewContentTracked]);
 
   return (
     <>
