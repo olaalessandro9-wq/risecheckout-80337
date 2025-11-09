@@ -14,6 +14,9 @@ import { CreditCardIcon } from "@/components/icons/CreditCardIcon";
 import { CheckCircleFilledIcon } from "@/components/icons/CheckCircleFilledIcon";
 import { normalizeDesign } from "@/lib/checkout/normalizeDesign";
 import type { ThemePreset } from "@/lib/checkout/themePresets";
+import { FacebookPixel, FacebookPixelEvents } from "@/components/FacebookPixel";
+import { useFacebookPixelIntegration } from "@/hooks/useVendorIntegrations";
+import { trackViewContent, trackInitiateCheckout, trackAddToCart, trackPurchase } from "@/lib/facebook-pixel-helpers";
 
 interface CheckoutData {
   id: string;
@@ -63,6 +66,12 @@ const PublicCheckout = () => {
   const [processingPayment, setProcessingPayment] = useState(false);
   const [orderBumps, setOrderBumps] = useState<any[]>([]);
   const [selectedBumps, setSelectedBumps] = useState<Set<string>>(new Set());
+  const [vendorId, setVendorId] = useState<string | null>(null);
+  const [viewContentTracked, setViewContentTracked] = useState(false);
+  const [initiateCheckoutTracked, setInitiateCheckoutTracked] = useState(false);
+
+  // Carregar integração do Facebook Pixel
+  const { pixelId, isActive: pixelActive } = useFacebookPixelIntegration(vendorId || undefined);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -137,7 +146,12 @@ const PublicCheckout = () => {
     try {
       setLoading(true);
       
-      const { checkout: checkoutData, product, requirePhone, requireCpf, defaultMethod } = await loadPublicCheckoutData(slug!);
+      const { checkout: checkoutData, product, requirePhone, requireCpf, defaultMethod, vendorId: loadedVendorId } = await loadPublicCheckoutData(slug!);
+
+      // Armazenar vendor_id para carregar integrações
+      if (loadedVendorId) {
+        setVendorId(loadedVendorId);
+      }
 
       const fullCheckoutData = {
         id: checkoutData.id,
@@ -179,6 +193,11 @@ const PublicCheckout = () => {
       
       // Carregar order bumps
       await loadOrderBumps(checkoutData.id);
+      
+      // Disparar evento PageView do Facebook Pixel
+      setTimeout(() => {
+        FacebookPixelEvents.pageView();
+      }, 500);
     } catch (error) {
       console.error("Error:", error);
       setNotFound(true);
@@ -267,10 +286,18 @@ const PublicCheckout = () => {
   const toggleBump = (bumpId: string) => {
     setSelectedBumps(prev => {
       const newSet = new Set(prev);
+      const isAdding = !newSet.has(bumpId);
+      
       if (newSet.has(bumpId)) {
         newSet.delete(bumpId);
       } else {
         newSet.add(bumpId);
+        
+        // Disparar evento AddToCart quando bump é adicionado
+        const bump = orderBumps.find(b => b.id === bumpId);
+        if (bump) {
+          trackAddToCart(bump);
+        }
       }
       return newSet;
     });
@@ -396,6 +423,9 @@ const PublicCheckout = () => {
       return;
     }
 
+    // Disparar evento InitiateCheckout
+    trackInitiateCheckout(checkout, selectedBumps, orderBumps, initiateCheckoutTracked, setInitiateCheckoutTracked);
+
     setProcessingPayment(true);
 
     try {
@@ -460,7 +490,10 @@ const PublicCheckout = () => {
         );
       }
 
-      // 4. Redirecionar para página dedicada do PIX
+      // 4. Disparar evento Purchase
+      trackPurchase(checkout, orderResponse.order_id, totalCents);
+
+      // 5. Redirecionar para página dedicada do PIX
       setOrderId(orderResponse.order_id);
       toast.success("Gerando PIX...");
       
@@ -496,13 +529,29 @@ const PublicCheckout = () => {
     );
   }
 
+  // useEffect para disparar evento ViewContent quando checkout carregar
+  useEffect(() => {
+    if (checkout && !viewContentTracked) {
+      // Aguardar um pouco para garantir que o pixel foi inicializado
+      setTimeout(() => {
+        trackViewContent(checkout, viewContentTracked, setViewContentTracked);
+      }, 1000);
+    }
+  }, [checkout, viewContentTracked]);
+
   return (
-    <div style={{ 
-      backgroundColor: design.colors.background,
-      minHeight: '100vh',
-      margin: 0,
-      padding: 0
-    }}>
+    <>
+      {/* Injetar Facebook Pixel se configurado */}
+      {pixelId && pixelActive && (
+        <FacebookPixel pixelId={pixelId} enabled={true} />
+      )}
+      
+      <div style={{ 
+        backgroundColor: design.colors.background,
+        minHeight: '100vh',
+        margin: 0,
+        padding: 0
+      }}>
       {checkout.top_components && Array.isArray(checkout.top_components) && checkout.top_components.length > 0 && (
         <div style={{ 
           width: '100%', 
@@ -1351,9 +1400,9 @@ const PublicCheckout = () => {
           ))}
         </div>
       )}
-    </div>
+      </div>
+    </>
   );
 };
-
 export default PublicCheckout;
 
