@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { UTMifyConfig } from "@/components/integrations/UTMifyConfig";
@@ -151,6 +152,10 @@ const Integracoes = () => {
         return;
       }
 
+      // Ativar automaticamente se estiver salvando com dados preenchidos
+      const shouldActivate = !facebookActive && facebookPixelId.trim();
+      const activeStatus = shouldActivate ? true : facebookActive;
+
       // Verificar se já existe uma integração do Facebook Pixel para este usuário
       const { data: existingData, error: checkError } = await supabase
         .from("vendor_integrations")
@@ -172,7 +177,7 @@ const Integracoes = () => {
           .from("vendor_integrations")
           .update({
             config,
-            active: facebookActive,
+            active: activeStatus,
             updated_at: new Date().toISOString()
           })
           .eq("id", existingData.id);
@@ -186,10 +191,15 @@ const Integracoes = () => {
             vendor_id: user?.id,
             integration_type: "FACEBOOK_PIXEL",
             config,
-            active: facebookActive
+            active: activeStatus
           });
 
         if (insertError) throw insertError;
+      }
+      
+      // Atualizar estado local se foi ativado automaticamente
+      if (shouldActivate) {
+        setFacebookActive(true);
       }
       
       toast.success("Integração do Facebook Pixel salva com sucesso!");
@@ -226,11 +236,16 @@ const Integracoes = () => {
         <Card>
           <CardHeader>
             <div className="flex items-start justify-between">
-              <div>
-                <CardTitle style={{ color: 'var(--text)' }}>Facebook Pixel</CardTitle>
-                <CardDescription style={{ color: 'var(--subtext)' }}>
-                  Rastreamento de eventos e conversões do Facebook
-                </CardDescription>
+              <div className="flex items-center gap-3">
+                <div>
+                  <CardTitle style={{ color: 'var(--text)' }}>Facebook Pixel</CardTitle>
+                  <CardDescription style={{ color: 'var(--subtext)' }}>
+                    Rastreamento de eventos e conversões do Facebook
+                  </CardDescription>
+                </div>
+                <Badge variant={facebookActive ? "default" : "secondary"} className={facebookActive ? "bg-green-600" : "bg-gray-600"}>
+                  {facebookActive ? "ATIVO" : "INATIVO"}
+                </Badge>
               </div>
               <div className="flex items-center gap-2">
                 <Label htmlFor="facebook-active" style={{ color: 'var(--text)' }}>Ativo</Label>

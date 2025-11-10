@@ -129,6 +129,10 @@ export const UTMifyConfig = () => {
         return;
       }
 
+      // Ativar automaticamente se estiver salvando com dados preenchidos
+      const shouldActivate = !utmifyActive && utmifyToken.trim();
+      const activeStatus = shouldActivate ? true : utmifyActive;
+
       // Verificar se já existe uma integração da UTMify para este usuário
       const { data: existingData, error: checkError } = await supabase
         .from("vendor_integrations")
@@ -151,7 +155,7 @@ export const UTMifyConfig = () => {
           .from("vendor_integrations")
           .update({
             config,
-            active: utmifyActive,
+            active: activeStatus,
             updated_at: new Date().toISOString()
           })
           .eq("id", existingData.id);
@@ -165,10 +169,15 @@ export const UTMifyConfig = () => {
             vendor_id: user?.id,
             integration_type: "UTMIFY",
             config,
-            active: utmifyActive
+            active: activeStatus
           });
 
         if (insertError) throw insertError;
+      }
+      
+      // Atualizar estado local se foi ativado automaticamente
+      if (shouldActivate) {
+        setUtmifyActive(true);
       }
       
       toast.success("Integração UTMify salva com sucesso!");
@@ -225,8 +234,25 @@ export const UTMifyConfig = () => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>UTMify</CardTitle>
-        <CardDescription>Rastreamento de conversões com parâmetros UTM</CardDescription>
+        <div className="flex items-start justify-between">
+          <div className="flex items-center gap-3">
+            <div>
+              <CardTitle>UTMify</CardTitle>
+              <CardDescription>Rastreamento de conversões com parâmetros UTM</CardDescription>
+            </div>
+            <Badge variant={utmifyActive ? "default" : "secondary"} className={utmifyActive ? "bg-green-600" : "bg-gray-600"}>
+              {utmifyActive ? "ATIVO" : "INATIVO"}
+            </Badge>
+          </div>
+          <div className="flex items-center gap-2">
+            <Label htmlFor="utmify-active">Ativo</Label>
+            <Switch
+              id="utmify-active"
+              checked={utmifyActive}
+              onCheckedChange={setUtmifyActive}
+            />
+          </div>
+        </div>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="space-y-2">
