@@ -16,7 +16,7 @@ export const PixPaymentPage = () => {
   const [pixId, setPixId] = useState("");
   const [paymentStatus, setPaymentStatus] = useState<"waiting" | "paid" | "expired">("waiting");
   const [copied, setCopied] = useState(false);
-  const [timeRemaining, setTimeRemaining] = useState<number>(480); // 8 minutos = 480 segundos (gatilho de urgência)
+  const [timeRemaining, setTimeRemaining] = useState<number>(900); // 15 minutos = 900 segundos
   const [orderData, setOrderData] = useState<any>(null);
   const [checkingPayment, setCheckingPayment] = useState(false);
   
@@ -205,30 +205,19 @@ export const PixPaymentPage = () => {
     return () => clearInterval(interval);
   }, [pixId, paymentStatus, timeRemaining, checkPaymentStatus]);
 
-  // Countdown de 8 minutos (apenas quando usuário está na página)
+  // Countdown: 15min -> 8min (sempre), abaixo de 8min (só quando na página)
   useEffect(() => {
     if (timeRemaining <= 0 || paymentStatus !== "waiting") return;
 
-    // Função para verificar se a página está visível
-    const handleVisibilityChange = () => {
-      if (document.hidden) {
-        // Página ficou oculta, pausar contador
-        if (intervalRef.current) {
-          clearInterval(intervalRef.current);
-          intervalRef.current = null;
-        }
-      } else {
-        // Página ficou visível, retomar contador
-        if (!intervalRef.current && timeRemaining > 0 && paymentStatus === "waiting") {
-          startCountdown();
-        }
-      }
-    };
+    const THRESHOLD = 480; // 8 minutos em segundos
 
     // Referência para o intervalo
     let intervalRef: { current: NodeJS.Timeout | null } = { current: null };
 
+    // Função para iniciar/retomar contagem
     const startCountdown = () => {
+      if (intervalRef.current) return; // Já está rodando
+      
       intervalRef.current = setInterval(() => {
         setTimeRemaining(prev => {
           const newTime = prev - 1;
@@ -236,7 +225,7 @@ export const PixPaymentPage = () => {
           if (newTime <= 0) {
             setPaymentStatus("expired");
             if (!hasShownExpiredToast.current) {
-              toast.error("Tempo para pagamento expirado. O PIX ainda é válido por 24 horas.");
+              toast.error("QR Code expirado!");
               hasShownExpiredToast.current = true;
             }
             return 0;
@@ -247,18 +236,46 @@ export const PixPaymentPage = () => {
       }, 1000);
     };
 
-    // Iniciar contador se página está visível
-    if (!document.hidden) {
+    // Função para pausar contagem
+    const pauseCountdown = () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    };
+
+    // Função para verificar se a página está visível
+    const handleVisibilityChange = () => {
+      // Só pausa se estiver ABAIXO de 8 minutos
+      if (timeRemaining <= THRESHOLD) {
+        if (document.hidden) {
+          // Página ficou oculta, pausar contador
+          pauseCountdown();
+        } else {
+          // Página ficou visível, retomar contador
+          if (timeRemaining > 0 && paymentStatus === "waiting") {
+            startCountdown();
+          }
+        }
+      }
+    };
+
+    // Iniciar contador
+    // Se acima de 8min: sempre conta
+    // Se abaixo de 8min: só conta se página visível
+    if (timeRemaining > THRESHOLD) {
       startCountdown();
+    } else {
+      if (!document.hidden) {
+        startCountdown();
+      }
     }
 
     // Adicionar listener para mudanças de visibilidade
     document.addEventListener("visibilitychange", handleVisibilityChange);
 
     return () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-      }
+      pauseCountdown();
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
   }, [timeRemaining, paymentStatus]);
