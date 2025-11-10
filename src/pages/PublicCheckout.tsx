@@ -16,6 +16,7 @@ import { normalizeDesign } from "@/lib/checkout/normalizeDesign";
 import type { ThemePreset } from "@/lib/checkout/themePresets";
 import { FacebookPixel, FacebookPixelEvents } from "@/components/FacebookPixel";
 import { useFacebookPixelIntegration } from "@/hooks/useVendorIntegrations";
+import { useUTMifyIntegration, isProductEnabledForUTMify } from "@/hooks/useUTMifyIntegration";
 import { trackViewContent, trackInitiateCheckout, trackAddToCart, trackPurchase } from "@/lib/facebook-pixel-helpers";
 import { sendPurchaseToFacebookConversionsAPI } from "@/lib/facebook-conversions-api";
 import { sendUTMifyConversion, extractUTMParameters, formatDateForUTMify, convertToCents } from "@/lib/utmify-helper";
@@ -74,6 +75,9 @@ const PublicCheckout = () => {
 
   // Carregar integração do Facebook Pixel
   const { pixelId, isActive: pixelActive } = useFacebookPixelIntegration(vendorId || undefined);
+  
+  // Carregar integração do UTMify
+  const { data: utmifyIntegration } = useUTMifyIntegration(vendorId || undefined);
   
   // Debug: Log do status do Facebook Pixel
   useEffect(() => {
@@ -536,6 +540,43 @@ const PublicCheckout = () => {
         const utmParams = extractUTMParameters();
         const clientIp = "0.0.0.0"; // Em produção, capturar IP real se possível
         
+        // Filtrar produtos habilitados
+        const enabledProducts = [
+          // Produto principal (se habilitado)
+          ...(isProductEnabledForUTMify(utmifyIntegration, checkout!.product.id) ? [{
+            id: checkout!.product.id,
+            name: checkout!.product.name,
+            planId: null,
+            planName: null,
+            quantity: 1,
+            priceInCents: convertToCents(checkout!.product.price)
+          }] : []),
+          // Order bumps (apenas os habilitados)
+          ...Array.from(selectedBumps)
+            .map(bumpId => {
+              const bump = orderBumps.find(b => b.id === bumpId);
+              if (!bump) return null;
+              
+              // Verificar se o produto do bump está habilitado no UTMify
+              if (!isProductEnabledForUTMify(utmifyIntegration, bump.product_id)) {
+                console.log(`[UTMify] Order bump "${bump.title}" (${bump.product_id}) não habilitado - não será enviado`);
+                return null;
+              }
+              
+              return {
+                id: bump.product_id,
+                name: bump.title,
+                planId: null,
+                planName: null,
+                quantity: 1,
+                priceInCents: convertToCents(bump.price)
+              };
+            })
+            .filter(Boolean)
+        ];
+        
+        console.log(`[UTMify] Enviando ${enabledProducts.length} produto(s) habilitado(s):`, enabledProducts.map(p => p.name));
+        
         sendUTMifyConversion(
           productData.user_id,
           {
@@ -553,17 +594,7 @@ const PublicCheckout = () => {
               country: "BR",
               ip: clientIp
             },
-            products: [
-              {
-                id: checkout!.product.id,
-                name: checkout!.product.name,
-                planId: null,
-                planName: null,
-                quantity: 1,
-                priceInCents: convertToCents(checkout!.product.price)
-              }
-              // Order bumps não são enviados para UTMify a menos que tenham integração própria
-            ],
+            products: enabledProducts,
             trackingParameters: utmParams,
             totalPriceInCents: totalCents,
             commission: {
