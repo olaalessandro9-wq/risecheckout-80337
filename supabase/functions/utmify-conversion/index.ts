@@ -63,6 +63,9 @@ serve(async (req) => {
     const { vendorId, orderData, eventType, productId } = await req.json()
 
     console.log('[UTMify] Processando conversão para vendor:', vendorId)
+    console.log('[UTMify] orderData recebido:', JSON.stringify(orderData, null, 2))
+    console.log('[UTMify] orderData.products tipo:', typeof orderData?.products)
+    console.log('[UTMify] orderData.products é array?', Array.isArray(orderData?.products))
 
     // Buscar integração da UTMify do vendedor
     const { data: integration, error: integrationError } = await supabaseClient
@@ -118,7 +121,19 @@ serve(async (req) => {
 
     // Preparar dados para envio à UTMify
     // Validar e garantir que products seja um array
+    if (!orderData || typeof orderData !== 'object') {
+      console.error('[UTMify] orderData inválido:', orderData)
+      return new Response(
+        JSON.stringify({ success: false, message: 'orderData inválido' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
+      )
+    }
+    
     const productsArray = Array.isArray(orderData.products) ? orderData.products : [];
+    
+    if (productsArray.length === 0) {
+      console.warn('[UTMify] Nenhum produto encontrado no orderData')
+    }
     
     const utmifyPayload: UTMifyOrder = {
       orderId: orderData.orderId,
