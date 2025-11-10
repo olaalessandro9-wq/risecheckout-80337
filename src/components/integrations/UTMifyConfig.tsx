@@ -129,10 +129,6 @@ export const UTMifyConfig = () => {
         return;
       }
 
-      // Ativar automaticamente se estiver salvando com dados preenchidos
-      const shouldActivate = !utmifyActive && utmifyToken.trim();
-      const activeStatus = shouldActivate ? true : utmifyActive;
-
       // Verificar se já existe uma integração da UTMify para este usuário
       const { data: existingData, error: checkError } = await supabase
         .from("vendor_integrations")
@@ -140,6 +136,10 @@ export const UTMifyConfig = () => {
         .eq("vendor_id", user?.id)
         .eq("integration_type", "UTMIFY")
         .maybeSingle();
+
+      // Ativar automaticamente apenas se for uma nova integração (não existe no banco)
+      const shouldActivate = !existingData && !utmifyActive && utmifyToken.trim();
+      const activeStatus = shouldActivate ? true : utmifyActive;
 
       if (checkError) throw checkError;
 

@@ -152,10 +152,6 @@ const Integracoes = () => {
         return;
       }
 
-      // Ativar automaticamente se estiver salvando com dados preenchidos
-      const shouldActivate = !facebookActive && facebookPixelId.trim();
-      const activeStatus = shouldActivate ? true : facebookActive;
-
       // Verificar se já existe uma integração do Facebook Pixel para este usuário
       const { data: existingData, error: checkError } = await supabase
         .from("vendor_integrations")
@@ -163,6 +159,10 @@ const Integracoes = () => {
         .eq("vendor_id", user?.id)
         .eq("integration_type", "FACEBOOK_PIXEL")
         .maybeSingle();
+
+      // Ativar automaticamente apenas se for uma nova integração (não existe no banco)
+      const shouldActivate = !existingData && !facebookActive && facebookPixelId.trim();
+      const activeStatus = shouldActivate ? true : facebookActive;
 
       if (checkError) throw checkError;
 
