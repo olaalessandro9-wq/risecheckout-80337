@@ -74,6 +74,11 @@ const PublicCheckout = () => {
 
   // Carregar integração do Facebook Pixel
   const { pixelId, isActive: pixelActive } = useFacebookPixelIntegration(vendorId || undefined);
+  
+  // Debug: Log do status do Facebook Pixel
+  useEffect(() => {
+    console.log('[PublicCheckout] Facebook Pixel Status:', { vendorId, pixelId, pixelActive });
+  }, [vendorId, pixelId, pixelActive]);
 
   const [formData, setFormData] = useState({
     name: "",
