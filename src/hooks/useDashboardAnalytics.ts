@@ -171,7 +171,28 @@ export function useDashboardAnalytics(startDate: Date, endDate: Date) {
         }
       });
 
-      const chartData = Array.from(chartDataMap.values());
+      // Garantir que sempre haja dados para o gráfico, mesmo quando vazio
+      let chartData = Array.from(chartDataMap.values());
+      
+      // Se não houver dados, criar pontos zerados para o período
+      if (chartData.length === 0) {
+        const daysDiff = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
+        const numPoints = Math.min(Math.max(daysDiff, 7), 30); // Entre 7 e 30 pontos
+        
+        for (let i = 0; i < numPoints; i++) {
+          const date = new Date(startDate);
+          date.setDate(date.getDate() + Math.floor(i * daysDiff / numPoints));
+          chartData.push({
+            date: format(date, 'yyyy-MM-dd'),
+            revenue: 0,
+            fees: 0,
+            emails: 0
+          });
+        }
+      }
+      
+      // Ordenar por data
+      chartData.sort((a, b) => a.date.localeCompare(b.date));
 
       // Formatar clientes recentes (sem limite, paginação é feita no componente)
       const recentCustomers: RecentCustomer[] = (orders || []).map(order => {
