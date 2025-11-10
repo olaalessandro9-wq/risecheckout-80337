@@ -286,7 +286,9 @@ const PublicCheckout = () => {
           // Priorizar custom_title e custom_description quando preenchidos
           return {
             id: bump.id,
+            product_id: bump.product_id, // ID do produto para verificação de integrações
             name: bump.custom_title || product?.name || offer?.name || "Produto",
+            title: bump.custom_title || product?.name || offer?.name || "Produto", // Alias para compatibilidade
             description: bump.custom_description || product?.description || "",
             price: price,
             original_price: originalPrice,
