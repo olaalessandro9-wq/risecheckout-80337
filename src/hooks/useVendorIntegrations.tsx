@@ -60,6 +60,17 @@ export function useFacebookPixelIntegration(vendorId?: string) {
   
   const integration = data?.[0]; // Pega a primeira (e única) integração do tipo
   
+  // Debug: Log detalhado
+  console.log('[useFacebookPixelIntegration] Debug:', {
+    vendorId,
+    dataLength: data?.length,
+    integration: integration,
+    config: integration?.config,
+    configType: typeof integration?.config,
+    pixelId: integration?.config?.pixel_id,
+    active: integration?.active
+  });
+  
   return {
     pixelId: integration?.config?.pixel_id,
     accessToken: integration?.config?.access_token,
