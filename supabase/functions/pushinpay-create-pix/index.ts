@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
+import { decrypt } from "../_shared/crypto.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -56,11 +57,11 @@ serve(async (req) => {
     // Buscar token da PushinPay do vendor
     const { data: vendorData, error: vendorError } = await supabaseClient
       .from("payment_gateway_settings")
-      .select("pushinpay_token, environment")
+      .select("token_encrypted, environment")
       .eq("user_id", order.vendor_id)
       .single();
 
-    if (vendorError || !vendorData?.pushinpay_token) {
+    if (vendorError || !vendorData?.token_encrypted) {
       console.error("[pushinpay-create-pix] Erro ao buscar configurações:", vendorError);
       return new Response(
         JSON.stringify({ ok: false, error: "Configurações da PushinPay não encontradas" }),
@@ -75,13 +76,24 @@ serve(async (req) => {
       : "https://api.pushinpay.com.br/api";
 
     console.log("[pushinpay-create-pix] Usando ambiente:", environment, "URL:", apiUrl);
-    console.log("[pushinpay-create-pix] Token (primeiros 10 chars):", vendorData.pushinpay_token?.substring(0, 10));
+    // Descriptografar token
+    let pushinpayToken: string;
+    try {
+      pushinpayToken = await decrypt(vendorData.token_encrypted);
+      console.log("[pushinpay-create-pix] Token descriptografado com sucesso (primeiros 10 chars):", pushinpayToken.substring(0, 10));
+    } catch (decryptError) {
+      console.error("[pushinpay-create-pix] Erro ao descriptografar token:", decryptError);
+      return new Response(
+        JSON.stringify({ ok: false, error: "Erro ao descriptografar token da PushinPay" }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 500 }
+      );
+    };
 
     // Criar PIX na PushinPay
     const pushinpayResponse = await fetch(`${apiUrl}/pix/cashIn`, {
       method: "POST",
       headers: {
-        "Authorization": `Bearer ${vendorData.pushinpay_token}`,
+        "Authorization": `Bearer ${pushinpayToken}`,
         "Accept": "application/json",
         "Content-Type": "application/json",
       },

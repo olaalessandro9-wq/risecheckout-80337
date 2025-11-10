@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
+import { decrypt } from "../_shared/crypto.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -56,11 +57,11 @@ serve(async (req) => {
     // Buscar token da PushinPay do vendor
     const { data: vendorData, error: vendorError } = await supabaseClient
       .from("payment_gateway_settings")
-      .select("pushinpay_token, environment")
+      .select("token_encrypted, environment")
       .eq("user_id", order.vendor_id)
       .single();
 
-    if (vendorError || !vendorData?.pushinpay_token) {
+    if (vendorError || !vendorData?.token_encrypted) {
       console.error("[pushinpay-get-status] Erro ao buscar configurações:", vendorError);
       return new Response(
         JSON.stringify({ ok: false, error: "Configurações da PushinPay não encontradas" }),
@@ -80,7 +81,7 @@ serve(async (req) => {
     const pushinpayResponse = await fetch(`${apiUrl}/transactions/${order.pix_id}`, {
       method: "GET",
       headers: {
-        "Authorization": `Bearer ${vendorData.pushinpay_token}`,
+        "Authorization": `Bearer ${await decrypt(vendorData.token_encrypted)}`,
         "Accept": "application/json",
         "Content-Type": "application/json",
       },
