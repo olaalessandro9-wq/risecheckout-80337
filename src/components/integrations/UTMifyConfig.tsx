@@ -76,7 +76,7 @@ export const UTMifyConfig = () => {
         .from("products")
         .select("id, name")
         .eq("user_id", user?.id)
-        .eq("active", true)
+        .neq("status", "deleted")
         .order("name");
 
       if (error) {
