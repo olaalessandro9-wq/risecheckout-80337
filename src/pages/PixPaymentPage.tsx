@@ -16,7 +16,7 @@ export const PixPaymentPage = () => {
   const [pixId, setPixId] = useState("");
   const [paymentStatus, setPaymentStatus] = useState<"waiting" | "paid" | "expired">("waiting");
   const [copied, setCopied] = useState(false);
-  const [timeRemaining, setTimeRemaining] = useState<number>(900); // 15 minutos = 900 segundos
+  const [timeRemaining, setTimeRemaining] = useState<number>(480); // 8 minutos = 480 segundos (gatilho de urgência)
   const [orderData, setOrderData] = useState<any>(null);
   const [checkingPayment, setCheckingPayment] = useState(false);
   
@@ -205,28 +205,62 @@ export const PixPaymentPage = () => {
     return () => clearInterval(interval);
   }, [pixId, paymentStatus, timeRemaining, checkPaymentStatus]);
 
-  // Countdown de 15 minutos
+  // Countdown de 8 minutos (apenas quando usuário está na página)
   useEffect(() => {
     if (timeRemaining <= 0 || paymentStatus !== "waiting") return;
 
-    const interval = setInterval(() => {
-      setTimeRemaining(prev => {
-        const newTime = prev - 1;
-        
-        if (newTime <= 0) {
-          setPaymentStatus("expired");
-          if (!hasShownExpiredToast.current) {
-            toast.error("QR Code expirado após 15 minutos");
-            hasShownExpiredToast.current = true;
-          }
-          return 0;
+    // Função para verificar se a página está visível
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        // Página ficou oculta, pausar contador
+        if (intervalRef.current) {
+          clearInterval(intervalRef.current);
+          intervalRef.current = null;
         }
-        
-        return newTime;
-      });
-    }, 1000);
+      } else {
+        // Página ficou visível, retomar contador
+        if (!intervalRef.current && timeRemaining > 0 && paymentStatus === "waiting") {
+          startCountdown();
+        }
+      }
+    };
 
-    return () => clearInterval(interval);
+    // Referência para o intervalo
+    let intervalRef: { current: NodeJS.Timeout | null } = { current: null };
+
+    const startCountdown = () => {
+      intervalRef.current = setInterval(() => {
+        setTimeRemaining(prev => {
+          const newTime = prev - 1;
+          
+          if (newTime <= 0) {
+            setPaymentStatus("expired");
+            if (!hasShownExpiredToast.current) {
+              toast.error("Tempo para pagamento expirado. O PIX ainda é válido por 24 horas.");
+              hasShownExpiredToast.current = true;
+            }
+            return 0;
+          }
+          
+          return newTime;
+        });
+      }, 1000);
+    };
+
+    // Iniciar contador se página está visível
+    if (!document.hidden) {
+      startCountdown();
+    }
+
+    // Adicionar listener para mudanças de visibilidade
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
   }, [timeRemaining, paymentStatus]);
 
   // Copiar código PIX
