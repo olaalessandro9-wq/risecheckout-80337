@@ -17,7 +17,7 @@ const Index = () => {
     ? { startDate: customDates.start, endDate: customDates.end }
     : getDateRangeFromPreset(selectedPreset);
 
-  const { data, isLoading } = useDashboardAnalytics(dateRange.startDate, dateRange.endDate);
+  const { data, isLoading, refetch } = useDashboardAnalytics(dateRange.startDate, dateRange.endDate);
 
   const handlePresetChange = (preset: DateRangePreset) => {
     setSelectedPreset(preset);
@@ -63,7 +63,11 @@ const Index = () => {
         <RevenueChart title="E-mails" data={data?.chartData.map(d => ({ date: d.date, value: d.emails })) || []} isLoading={isLoading} />
       </div>
 
-      <RecentCustomersTable customers={data?.recentCustomers || []} isLoading={isLoading} />
+      <RecentCustomersTable 
+        customers={data?.recentCustomers || []} 
+        isLoading={isLoading}
+        onRefresh={() => refetch()}
+      />
     </div>
   );
 };

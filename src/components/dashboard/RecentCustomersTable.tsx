@@ -35,11 +35,12 @@ interface Customer {
 interface RecentCustomersTableProps {
   customers: Customer[];
   isLoading?: boolean;
+  onRefresh?: () => void;
 }
 
 const ITEMS_PER_PAGE = 10;
 
-export function RecentCustomersTable({ customers, isLoading = false }: RecentCustomersTableProps) {
+export function RecentCustomersTable({ customers, isLoading = false, onRefresh }: RecentCustomersTableProps) {
   const [selectedOrder, setSelectedOrder] = useState<Customer | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
@@ -141,6 +142,48 @@ export function RecentCustomersTable({ customers, isLoading = false }: RecentCus
     setCurrentPage(1);
   };
 
+  // Função para exportar para Excel
+  const handleExportExcel = () => {
+    // Criar cabeçalhos
+    const headers = ['ID', 'Oferta', 'Cliente', 'Email', 'Telefone', 'Criado em', 'Valor', 'Status'];
+    
+    // Criar linhas com todos os dados (filtrados se houver busca)
+    const rows = filteredCustomers.map(customer => [
+      customer.id,
+      customer.offer,
+      customer.client,
+      customer.email,
+      customer.phone,
+      customer.createdAt,
+      customer.value,
+      customer.status
+    ]);
+    
+    // Combinar cabeçalhos e linhas
+    const csvContent = [
+      headers.join(','),
+      ...rows.map(row => row.map(cell => `"${cell}"`).join(','))
+    ].join('\n');
+    
+    // Criar blob e fazer download
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `clientes_${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  // Função para atualizar lista
+  const handleRefresh = () => {
+    if (onRefresh) {
+      onRefresh();
+    }
+  };
+
   return (
     <>
       <OrderDetailsDialog
@@ -174,11 +217,23 @@ export function RecentCustomersTable({ customers, isLoading = false }: RecentCus
                 style={{ color: 'var(--text)' }}
               />
             </div>
-            <Button variant="outline" size="sm" className="gap-2">
-              <RefreshCw className="w-4 h-4" />
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="gap-2"
+              onClick={handleRefresh}
+              disabled={isLoading}
+            >
+              <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
               Atualizar lista
             </Button>
-            <Button variant="outline" size="sm" className="gap-2">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="gap-2"
+              onClick={handleExportExcel}
+              disabled={filteredCustomers.length === 0}
+            >
               <Download className="w-4 h-4" />
               Exportar Excel
             </Button>
