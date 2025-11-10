@@ -506,74 +506,84 @@ const PublicCheckout = () => {
       trackPurchase(checkout, orderResponse.order_id, totalCents);
 
       // 5. Enviar evento Purchase para Conversions API (server-side)
-      sendPurchaseToFacebookConversionsAPI({
-        vendor_id: productData.user_id,
-        order_id: orderResponse.order_id,
-        customer_email: formData.email,
-        customer_name: formData.name,
-        customer_phone: formData.phone,
-        amount_cents: totalCents,
-        currency: "BRL",
-        product_id: checkout!.product.id,
-        product_name: checkout!.product.name,
-      }).catch(err => {
-        console.error("[Conversions API] Não foi possível enviar evento:", err);
-      });
+      // Executar de forma não-bloqueante para não interromper o fluxo de checkout
+      try {
+        sendPurchaseToFacebookConversionsAPI({
+          vendor_id: productData.user_id,
+          order_id: orderResponse.order_id,
+          customer_email: formData.email,
+          customer_name: formData.name,
+          customer_phone: formData.phone,
+          amount_cents: totalCents,
+          currency: "BRL",
+          product_id: checkout!.product.id,
+          product_name: checkout!.product.name,
+        }).catch(err => {
+          console.error("[Conversions API] Não foi possível enviar evento:", err);
+        });
+      } catch (err) {
+        console.error("[Conversions API] Erro ao iniciar envio:", err);
+      }
 
       // 5.1. Enviar conversão para UTMify
-      const utmParams = extractUTMParameters();
-      const clientIp = "0.0.0.0"; // Em produção, capturar IP real se possível
-      
-      sendUTMifyConversion(
-        productData.user_id,
-        {
-          orderId: orderResponse.order_id,
-          paymentMethod: "pix",
-          status: "waiting_payment",
-          createdAt: formatDateForUTMify(new Date()),
-          approvedDate: null,
-          refundedAt: null,
-          customer: {
-            name: formData.name,
-            email: formData.email,
-            phone: formData.phone || null,
-            document: formData.document || null,
-            country: "BR",
-            ip: clientIp
-          },
-          products: [
-            {
-              id: checkout!.product.id,
-              name: checkout!.product.name,
-              planId: null,
-              planName: null,
-              quantity: 1,
-              priceInCents: convertToCents(checkout!.product.price)
+      // Executar de forma não-bloqueante para não interromper o fluxo de checkout
+      try {
+        const utmParams = extractUTMParameters();
+        const clientIp = "0.0.0.0"; // Em produção, capturar IP real se possível
+        
+        sendUTMifyConversion(
+          productData.user_id,
+          {
+            orderId: orderResponse.order_id,
+            paymentMethod: "pix",
+            status: "waiting_payment",
+            createdAt: formatDateForUTMify(new Date()),
+            approvedDate: null,
+            refundedAt: null,
+            customer: {
+              name: formData.name,
+              email: formData.email,
+              phone: formData.phone || null,
+              document: formData.document || null,
+              country: "BR",
+              ip: clientIp
             },
-            ...selectedBumps.map(bump => ({
-              id: bump.id,
-              name: bump.title,
-              planId: null,
-              planName: null,
-              quantity: 1,
-              priceInCents: convertToCents(bump.price)
-            }))
-          ],
-          trackingParameters: utmParams,
-          totalPriceInCents: totalCents,
-          commission: {
+            products: [
+              {
+                id: checkout!.product.id,
+                name: checkout!.product.name,
+                planId: null,
+                planName: null,
+                quantity: 1,
+                priceInCents: convertToCents(checkout!.product.price)
+              },
+              ...selectedBumps.map(bump => ({
+                id: bump.id,
+                name: bump.title,
+                planId: null,
+                planName: null,
+                quantity: 1,
+                priceInCents: convertToCents(bump.price)
+              }))
+            ],
+            trackingParameters: utmParams,
             totalPriceInCents: totalCents,
-            gatewayFeeInCents: 0,
-            userCommissionInCents: totalCents,
-            currency: "BRL"
+            commission: {
+              totalPriceInCents: totalCents,
+              gatewayFeeInCents: 0,
+              userCommissionInCents: totalCents,
+              currency: "BRL"
+            },
+            isTest: false
           },
-          isTest: false
-        },
-        "pix_generated",
-        checkout!.product.id
-      ).catch(err => {
-        console.error("[UTMify] Não foi possível enviar conversão:", err);
-      });
+          "pix_generated",
+          checkout!.product.id
+        ).catch(err => {
+          console.error("[UTMify] Não foi possível enviar conversão:", err);
+        });
+      } catch (err) {
+        console.error("[UTMify] Erro ao iniciar envio:", err);
+      }
 
       // 6. Redirecionar para página dedicada do PIX
       setOrderId(orderResponse.order_id);
