@@ -75,6 +75,7 @@ serve(async (req) => {
       : "https://api.pushinpay.com.br/api";
 
     console.log("[pushinpay-create-pix] Usando ambiente:", environment, "URL:", apiUrl);
+    console.log("[pushinpay-create-pix] Token (primeiros 10 chars):", vendorData.pushinpay_token?.substring(0, 10));
 
     // Criar PIX na PushinPay
     const pushinpayResponse = await fetch(`${apiUrl}/pix/cashIn`, {
@@ -93,7 +94,14 @@ serve(async (req) => {
 
     if (!pushinpayResponse.ok) {
       const errorText = await pushinpayResponse.text();
-      console.error("[pushinpay-create-pix] Erro da PushinPay:", errorText);
+      console.error("[pushinpay-create-pix] Erro da PushinPay - Status:", pushinpayResponse.status);
+      console.error("[pushinpay-create-pix] Erro da PushinPay - Resposta:", errorText);
+      console.error("[pushinpay-create-pix] Headers enviados:", {
+        Authorization: `Bearer ${vendorData.pushinpay_token?.substring(0, 10)}...`,
+        Accept: "application/json",
+        "Content-Type": "application/json"
+      });
+      console.error("[pushinpay-create-pix] Body enviado:", JSON.stringify({ value: valueInCents, webhook_url: null, split_rules: [] }));
       return new Response(
         JSON.stringify({ ok: false, error: `Erro da PushinPay: ${errorText}` }),
         { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: pushinpayResponse.status }
