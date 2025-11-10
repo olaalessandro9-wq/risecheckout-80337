@@ -40,20 +40,38 @@ export default function ProductSettingsPanel({ productId, onModifiedChange }: Pr
   useEffect(() => {
     (async () => {
       setLoading(true);
-      // TODO: Campo required_fields será implementado no futuro
-      // Por enquanto, usar valores padrão
-      const loadedSettings: Settings = {
-        required_fields: {
-          name: true,
-          email: true,
-          phone: false,
-          cpf: false,
-        },
-        default_payment_method: "pix" as "pix" | "credit_card",
-      };
-      setInitial(loadedSettings);
-      setForm(loadedSettings);
-      setLoading(false);
+      try {
+        const { data, error } = await supabase
+          .from("products")
+          .select("required_fields, default_payment_method")
+          .eq("id", productId)
+          .maybeSingle();
+
+        if (error) {
+          console.error("Error loading product settings:", error);
+          toast.error("Erro ao carregar configurações.");
+        }
+
+        // Normalizar dados com fallback seguro
+        const rf = (data?.required_fields as any) || {};
+        const loadedSettings: Settings = {
+          required_fields: {
+            name: true,
+            email: true,
+            phone: !!rf.phone,
+            cpf: !!rf.cpf,
+          },
+          default_payment_method: (data?.default_payment_method as "pix" | "credit_card") || "pix",
+        };
+        
+        setInitial(loadedSettings);
+        setForm(loadedSettings);
+      } catch (error) {
+        console.error("Unexpected error loading product settings:", error);
+        toast.error("Erro inesperado ao carregar configurações.");
+      } finally {
+        setLoading(false);
+      }
     })();
   }, [productId]);
 
@@ -66,12 +84,40 @@ export default function ProductSettingsPanel({ productId, onModifiedChange }: Pr
 
   const handleSave = async () => {
     setSaving(true);
-    // TODO: Campo required_fields será implementado no futuro
-    // Por enquanto, apenas simular o salvamento
-    await new Promise(resolve => setTimeout(resolve, 500));
-    setSaving(false);
-    toast.success("Configurações salvas com sucesso.");
-    setInitial(form); // Atualiza o estado inicial para resetar flag de modificação
+    try {
+      // Garantir que nome e email sempre fiquem true
+      const payload = {
+        required_fields: {
+          name: true,
+          email: true,
+          phone: form.required_fields.phone,
+          cpf: form.required_fields.cpf,
+        },
+        default_payment_method: form.default_payment_method,
+      };
+
+      const { data: updated, error: updError } = await supabase
+        .from("products")
+        .update(payload)
+        .eq("id", productId)
+        .select("id")
+        .maybeSingle();
+
+      if (updError || !updated) {
+        console.error("Error saving product settings:", updError);
+        toast.error("Erro ao salvar configurações. Verifique sua sessão.");
+        return;
+      }
+
+      toast.success("Configurações salvas com sucesso.");
+      setInitial(form); // Atualiza o estado inicial para resetar flag de modificação
+      onModifiedChange?.(false);
+    } catch (error) {
+      console.error("Unexpected error saving product settings:", error);
+      toast.error("Erro inesperado ao salvar configurações.");
+    } finally {
+      setSaving(false);
+    }
   };
 
   if (loading) {
