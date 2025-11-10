@@ -8,14 +8,7 @@ export interface PushinPaySettings {
   environment: PushinPayEnvironment;
 }
 
-// Função auxiliar para criptografar token no cliente (usando Edge Function)
-async function encryptToken(token: string): Promise<string> {
-  const { data, error } = await supabase.functions.invoke("encrypt-token", {
-    body: { token },
-  });
-  if (error) throw new Error(error.message);
-  return data.encrypted;
-}
+
 
 export interface PixChargeResponse {
   ok: boolean;
@@ -54,14 +47,11 @@ export async function savePushinPaySettings(
   if (!user) return { ok: false, error: "Usuário não autenticado" };
 
   try {
-    // Criptografar token antes de salvar
-    const tokenEncrypted = await encryptToken(settings.pushinpay_token);
-
     const { error } = await supabase
       .from("payment_gateway_settings")
       .upsert({
         user_id: user.id,
-        token_encrypted: tokenEncrypted,
+        pushinpay_token: settings.pushinpay_token,
         environment: settings.environment,
       } as any);
 
