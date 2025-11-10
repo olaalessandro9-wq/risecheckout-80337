@@ -107,10 +107,11 @@ export const UTMifyConfig = () => {
       if (error) throw error;
 
       if (data) {
-        setUtmifyToken(data.config?.api_token || "");
+        const config = data.config as { api_token?: string; selected_products?: string[]; selected_events?: string[] } | null;
+        setUtmifyToken(config?.api_token || "");
         setUtmifyActive(data.active || false);
-        setSelectedProducts(data.config?.selected_products || []);
-        setSelectedEvents(data.config?.selected_events || []);
+        setSelectedProducts(config?.selected_products || []);
+        setSelectedEvents(config?.selected_events || []);
       }
     } catch (error) {
       console.error("Error loading UTMify config:", error);

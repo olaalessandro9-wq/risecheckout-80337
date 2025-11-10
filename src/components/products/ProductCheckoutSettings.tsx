@@ -65,12 +65,28 @@ export function ProductCheckoutSettings({ productId }: { productId: string }) {
 
   const handleSave = async () => {
     setSaving(true);
-    // TODO: Campo required_fields será implementado no futuro
-    // Por enquanto, apenas simulamos o salvamento
-    setSaving(false);
-    toast.success("Configurações salvas com sucesso!");
-    return;
-    toast.success("Configurações salvas com sucesso.");
+    try {
+      const { error } = await supabase
+        .from("products")
+        .update({
+          required_fields: requiredFields,
+          default_payment_method: defaultMethod
+        })
+        .eq("id", productId);
+
+      if (error) {
+        console.error("Error saving product settings:", error);
+        toast.error("Erro ao salvar configurações.");
+        return;
+      }
+
+      toast.success("Configurações salvas com sucesso!");
+    } catch (error) {
+      console.error("Unexpected error saving product settings:", error);
+      toast.error("Erro inesperado ao salvar configurações.");
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
