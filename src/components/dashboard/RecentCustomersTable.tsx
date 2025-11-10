@@ -70,7 +70,7 @@ export function RecentCustomersTable({ customers, isLoading = false }: RecentCus
 
   // Calcular range de páginas a exibir
   const pageNumbers = useMemo(() => {
-    const pages: number[] = [];
+    const pages: (number | string)[] = [];
     const maxPagesToShow = 5;
     
     if (totalPages <= maxPagesToShow) {
@@ -78,23 +78,36 @@ export function RecentCustomersTable({ customers, isLoading = false }: RecentCus
       for (let i = 1; i <= totalPages; i++) {
         pages.push(i);
       }
+    } else if (totalPages <= 8) {
+      // Entre 6 e 8 páginas: mostrar todas sem ellipsis
+      for (let i = 1; i <= totalPages; i++) {
+        pages.push(i);
+      }
     } else {
-      // Mostrar páginas com ellipsis
+      // Mais de 8 páginas: usar ellipsis
       if (currentPage <= 3) {
-        // Início: 1 2 3 4 5
+        // Início: 1 2 3 4 5 ... last
         for (let i = 1; i <= maxPagesToShow; i++) {
           pages.push(i);
         }
+        pages.push('ellipsis');
+        pages.push(totalPages);
       } else if (currentPage >= totalPages - 2) {
-        // Fim: (total-4) (total-3) (total-2) (total-1) total
+        // Fim: 1 ... (total-4) (total-3) (total-2) (total-1) total
+        pages.push(1);
+        pages.push('ellipsis');
         for (let i = totalPages - maxPagesToShow + 1; i <= totalPages; i++) {
           pages.push(i);
         }
       } else {
-        // Meio: (current-2) (current-1) current (current+1) (current+2)
-        for (let i = currentPage - 2; i <= currentPage + 2; i++) {
+        // Meio: 1 ... (current-1) current (current+1) ... last
+        pages.push(1);
+        pages.push('ellipsis');
+        for (let i = currentPage - 1; i <= currentPage + 1; i++) {
           pages.push(i);
         }
+        pages.push('ellipsis');
+        pages.push(totalPages);
       }
     }
     
@@ -267,17 +280,27 @@ export function RecentCustomersTable({ customers, isLoading = false }: RecentCus
               <ChevronLeft className="w-4 h-4" />
               Previous
             </Button>
-            {pageNumbers.map((page) => (
-              <Button
-                key={page}
-                variant={page === currentPage ? "default" : "ghost"}
-                size="sm"
-                onClick={() => handlePageChange(page)}
-                className={page === currentPage ? "bg-primary" : ""}
-              >
-                {page}
-              </Button>
-            ))}
+            {pageNumbers.map((page, index) => {
+              if (page === 'ellipsis') {
+                return (
+                  <span key={`ellipsis-${index}`} className="px-2 text-muted-foreground">
+                    ...
+                  </span>
+                );
+              }
+              
+              return (
+                <Button
+                  key={page}
+                  variant={page === currentPage ? "default" : "ghost"}
+                  size="sm"
+                  onClick={() => handlePageChange(page as number)}
+                  className={page === currentPage ? "bg-primary" : ""}
+                >
+                  {page}
+                </Button>
+              );
+            })}
             <Button 
               variant="ghost" 
               size="sm"
