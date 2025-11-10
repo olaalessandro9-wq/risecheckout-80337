@@ -557,14 +557,17 @@ const PublicCheckout = () => {
                 quantity: 1,
                 priceInCents: convertToCents(checkout!.product.price)
               },
-              ...selectedBumps.map(bump => ({
-                id: bump.id,
-                name: bump.title,
-                planId: null,
-                planName: null,
-                quantity: 1,
-                priceInCents: convertToCents(bump.price)
-              }))
+              ...Array.from(selectedBumps).map(bumpId => {
+                const bump = orderBumps.find(b => b.id === bumpId);
+                return bump ? {
+                  id: bump.id,
+                  name: bump.title,
+                  planId: null,
+                  planName: null,
+                  quantity: 1,
+                  priceInCents: convertToCents(bump.price)
+                } : null;
+              }).filter(Boolean)
             ],
             trackingParameters: utmParams,
             totalPriceInCents: totalCents,
