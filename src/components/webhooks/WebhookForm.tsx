@@ -55,13 +55,19 @@ export function WebhookForm({ webhook, onSave, onCancel }: WebhookFormProps) {
 
   useEffect(() => {
     loadProducts();
+  }, [user]);
+
+  useEffect(() => {
     if (webhook?.id) {
       loadWebhookProducts(webhook.id);
     } else if (webhook?.product_id) {
       // Fallback para webhooks antigos
       setSelectedProductIds([webhook.product_id]);
+    } else {
+      // Reset ao criar novo webhook
+      setSelectedProductIds([]);
     }
-  }, [user, webhook?.id]);
+  }, [webhook?.id, webhook?.product_id]);
 
   const loadProducts = async () => {
     if (!user?.id) {
