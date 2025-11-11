@@ -134,6 +134,16 @@ serve(async (req) => {
           console.error("[pushinpay-get-status] Erro ao disparar webhook:", webhookError);
           // Não falhar a operação principal por erro no webhook
         }
+
+        // Enviar email de confirmação (não bloqueia a resposta)
+        fetch(`${Deno.env.get("SUPABASE_URL")}/functions/v1/send-confirmation-email`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")}`,
+          },
+          body: JSON.stringify({ order_id: orderId }),
+        }).catch(err => console.error("[pushinpay-get-status] Erro ao enviar email:", err));
       }
     }
 

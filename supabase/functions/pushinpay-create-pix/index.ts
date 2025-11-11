@@ -126,6 +126,16 @@ serve(async (req) => {
       console.error("[pushinpay-create-pix] Erro ao atualizar pedido:", updateError);
     }
 
+    // Enviar email com QR Code do PIX (não bloqueia a resposta)
+    fetch(`${Deno.env.get("SUPABASE_URL")}/functions/v1/send-pix-email`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")}`,
+      },
+      body: JSON.stringify({ order_id: orderId }),
+    }).catch(err => console.error("[pushinpay-create-pix] Erro ao enviar email:", err));
+
     return new Response(
       JSON.stringify({
         ok: true,
