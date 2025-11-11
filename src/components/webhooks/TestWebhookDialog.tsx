@@ -179,7 +179,7 @@ export function TestWebhookDialog({
 
         // Checkout
         checkout: "123",
-        checkoutUrl: `https://pay.cakto.com.br/EXAMPLE?utm_source=test&utm_medium=webhook&utm_campaign=test_20251111&utm_term=example&utm_content=example`,
+        checkoutUrl: `https://risecheckout.com/checkout/EXAMPLE?utm_source=test&utm_medium=webhook&utm_campaign=test_20251111&utm_term=example&utm_content=example`,
         subscription_period: 1,
         parent_order: "95Mf2pwi",
         webhookUrl: webhookUrl,
