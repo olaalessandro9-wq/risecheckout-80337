@@ -119,6 +119,21 @@ serve(async (req) => {
 
       if (updateError) {
         console.error("[pushinpay-get-status] Erro ao atualizar pedido:", updateError);
+      } else {
+        // Disparar webhook de forma assíncrona
+        console.log("[pushinpay-get-status] Disparando webhook purchase_approved");
+        try {
+          await supabaseClient.functions.invoke("trigger-webhooks", {
+            body: { 
+              order_id: orderId,
+              event_type: "purchase_approved"
+            }
+          });
+          console.log("[pushinpay-get-status] Webhook disparado com sucesso");
+        } catch (webhookError) {
+          console.error("[pushinpay-get-status] Erro ao disparar webhook:", webhookError);
+          // Não falhar a operação principal por erro no webhook
+        }
       }
     }
 

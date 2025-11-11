@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { UTMifyConfig } from "@/components/integrations/UTMifyConfig";
+import { WebhooksConfig } from "@/components/webhooks/WebhooksConfig";
 
 const Integracoes = () => {
   const { user } = useAuth();
@@ -309,6 +310,9 @@ const Integracoes = () => {
             </div>
           </CardContent>
         </Card>
+
+        {/* Webhooks Integration */}
+        <WebhooksConfig />
 
         <Card className="border-dashed">
           <CardContent className="flex flex-col items-center justify-center py-12">
