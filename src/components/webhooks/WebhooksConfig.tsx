@@ -94,7 +94,7 @@ export function WebhooksConfig() {
     name: string;
     url: string;
     events: string[];
-    product_id: string | null;
+    product_ids: string[];
   }) => {
     try {
       // Gerar secret automaticamente (não será exibido ao usuário)
@@ -102,34 +102,66 @@ export function WebhooksConfig() {
 
       if (editingWebhook) {
         // Atualizar webhook existente
-        const { error } = await supabase
+        const { error: updateError } = await supabase
           .from("outbound_webhooks")
           .update({
             name: data.name,
             url: data.url,
             events: data.events,
-            product_id: data.product_id,
             updated_at: new Date().toISOString(),
           })
           .eq("id", editingWebhook.id);
 
-        if (error) throw error;
+        if (updateError) throw updateError;
+
+        // Remover produtos antigos
+        const { error: deleteError } = await supabase
+          .from("webhook_products")
+          .delete()
+          .eq("webhook_id", editingWebhook.id);
+
+        if (deleteError) throw deleteError;
+
+        // Adicionar novos produtos
+        const { error: insertError } = await supabase
+          .from("webhook_products")
+          .insert(
+            data.product_ids.map((product_id) => ({
+              webhook_id: editingWebhook.id,
+              product_id,
+            }))
+          );
+
+        if (insertError) throw insertError;
         toast.success("Webhook atualizado com sucesso!");
       } else {
         // Criar novo webhook
-        const { error } = await supabase
+        const { data: newWebhook, error: webhookError } = await supabase
           .from("outbound_webhooks")
           .insert({
             vendor_id: user?.id,
             name: data.name,
             url: data.url,
             events: data.events,
-            product_id: data.product_id,
             secret: secret,
             active: true,
-          });
+          })
+          .select()
+          .single();
 
-        if (error) throw error;
+        if (webhookError) throw webhookError;
+
+        // Adicionar produtos ao webhook
+        const { error: productsError } = await supabase
+          .from("webhook_products")
+          .insert(
+            data.product_ids.map((product_id) => ({
+              webhook_id: newWebhook.id,
+              product_id,
+            }))
+          );
+
+        if (productsError) throw productsError;
         toast.success("Webhook criado com sucesso!");
       }
 

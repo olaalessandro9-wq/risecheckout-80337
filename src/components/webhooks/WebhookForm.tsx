@@ -6,13 +6,7 @@ import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface WebhookFormProps {
   webhook?: {
@@ -26,7 +20,7 @@ interface WebhookFormProps {
     name: string;
     url: string;
     events: string[];
-    product_id: string | null;
+    product_ids: string[];
   }) => Promise<void>;
   onCancel: () => void;
 }
@@ -49,7 +43,7 @@ export function WebhookForm({ webhook, onSave, onCancel }: WebhookFormProps) {
   const { user } = useAuth();
   const [name, setName] = useState(webhook?.name || "");
   const [url, setUrl] = useState(webhook?.url || "");
-  const [productId, setProductId] = useState<string>(webhook?.product_id || "");
+  const [selectedProductIds, setSelectedProductIds] = useState<string[]>([]);
   const [selectedEvents, setSelectedEvents] = useState<string[]>(
     webhook?.events || ["purchase_approved"]
   );
@@ -61,7 +55,13 @@ export function WebhookForm({ webhook, onSave, onCancel }: WebhookFormProps) {
 
   useEffect(() => {
     loadProducts();
-  }, [user]);
+    if (webhook?.id) {
+      loadWebhookProducts(webhook.id);
+    } else if (webhook?.product_id) {
+      // Fallback para webhooks antigos
+      setSelectedProductIds([webhook.product_id]);
+    }
+  }, [user, webhook?.id]);
 
   const loadProducts = async () => {
     if (!user?.id) {
@@ -88,9 +88,28 @@ export function WebhookForm({ webhook, onSave, onCancel }: WebhookFormProps) {
       setProducts(data || []);
     } catch (error) {
       console.error("Error loading products:", error);
-      // Não mostrar toast se os produtos carregaram com sucesso
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadWebhookProducts = async (webhookId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from("webhook_products")
+        .select("product_id")
+        .eq("webhook_id", webhookId);
+
+      if (error) {
+        console.error("Error loading webhook products:", error);
+        return;
+      }
+
+      if (data && data.length > 0) {
+        setSelectedProductIds(data.map((wp) => wp.product_id));
+      }
+    } catch (error) {
+      console.error("Error loading webhook products:", error);
     }
   };
 
@@ -100,6 +119,15 @@ export function WebhookForm({ webhook, onSave, onCancel }: WebhookFormProps) {
         return prev.filter((e) => e !== event);
       }
       return [...prev, event];
+    });
+  };
+
+  const handleProductToggle = (productId: string) => {
+    setSelectedProductIds((prev) => {
+      if (prev.includes(productId)) {
+        return prev.filter((id) => id !== productId);
+      }
+      return [...prev, productId];
     });
   };
 
@@ -116,8 +144,8 @@ export function WebhookForm({ webhook, onSave, onCancel }: WebhookFormProps) {
       return;
     }
 
-    if (!productId) {
-      toast.error("Selecione um produto");
+    if (selectedProductIds.length === 0) {
+      toast.error("Selecione pelo menos um produto");
       return;
     }
 
@@ -140,7 +168,7 @@ export function WebhookForm({ webhook, onSave, onCancel }: WebhookFormProps) {
         name: name.trim(),
         url: url.trim(),
         events: selectedEvents,
-        product_id: productId,
+        product_ids: selectedProductIds,
       });
     } catch (error) {
       console.error("Erro ao salvar webhook:", error);
@@ -190,21 +218,42 @@ export function WebhookForm({ webhook, onSave, onCancel }: WebhookFormProps) {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="webhook-product" style={{ color: "var(--text)" }}>
+        <Label style={{ color: "var(--text)" }}>
           Produto <span className="text-red-500">*</span>
         </Label>
-        <Select value={productId} onValueChange={setProductId}>
-          <SelectTrigger id="webhook-product">
-            <SelectValue placeholder="Selecione um produto" />
-          </SelectTrigger>
-          <SelectContent>
-            {products.map((product) => (
-              <SelectItem key={product.id} value={product.id}>
-                {product.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <p className="text-sm text-muted-foreground">
+          Selecione os produtos
+        </p>
+        <div className="max-h-64 overflow-y-auto border rounded-lg p-3 space-y-2">
+          {products.length === 0 ? (
+            <p className="text-sm text-muted-foreground text-center py-4">
+              Nenhum produto encontrado
+            </p>
+          ) : (
+            products.map((product) => (
+              <div
+                key={product.id}
+                className="flex items-center space-x-2 p-2 hover:bg-accent rounded-md cursor-pointer"
+                onClick={() => handleProductToggle(product.id)}
+              >
+                <Checkbox
+                  id={`product-${product.id}`}
+                  checked={selectedProductIds.includes(product.id)}
+                  onCheckedChange={() => handleProductToggle(product.id)}
+                />
+                <label
+                  htmlFor={`product-${product.id}`}
+                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer flex-1"
+                >
+                  {product.name}
+                </label>
+              </div>
+            ))
+          )}
+        </div>
+        <p className="text-xs text-muted-foreground">
+          {selectedProductIds.length} produto(s) selecionado(s)
+        </p>
       </div>
 
       <div className="space-y-2">
