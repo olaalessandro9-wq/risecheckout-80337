@@ -244,8 +244,7 @@ export function WebhookForm({ webhook, onSave, onCancel }: WebhookFormProps) {
             products.map((product) => (
               <div
                 key={product.id}
-                className="flex items-center space-x-2 p-2 hover:bg-accent rounded-md cursor-pointer"
-                onClick={() => handleProductToggle(product.id)}
+                className="flex items-center space-x-2 p-2 hover:bg-accent rounded-md"
               >
                 <Checkbox
                   id={`product-${product.id}`}
