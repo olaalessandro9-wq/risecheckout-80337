@@ -134,10 +134,11 @@ export function WebhookForm({ webhook, onSave, onCancel }: WebhookFormProps) {
 
   const handleProductToggle = (productId: string) => {
     setSelectedProductIds((prev) => {
-      if (prev.includes(productId)) {
-        return prev.filter((id) => id !== productId);
+      const current = Array.isArray(prev) ? prev : [];
+      if (current.includes(productId)) {
+        return current.filter((id) => id !== productId);
       }
-      return [...prev, productId];
+      return [...current, productId];
     });
   };
 
@@ -154,7 +155,7 @@ export function WebhookForm({ webhook, onSave, onCancel }: WebhookFormProps) {
       return;
     }
 
-    if (selectedProductIds.length === 0) {
+    if (!Array.isArray(selectedProductIds) || selectedProductIds.length === 0) {
       toast.error("Selecione pelo menos um produto");
       return;
     }
