@@ -20,7 +20,7 @@ export function Topbar({ scrolled, onNotificationsClick }: TopbarProps) {
         scrolled ? "shadow-sm border-b border-border/60" : "border-b border-transparent"
       )}
     >
-      <div className="mx-auto flex h-14 w-full max-w-[1200px] items-center justify-end gap-2 px-4">
+      <div className="mx-auto flex h-14 w-full max-w-[1280px] items-center justify-end gap-2 px-4">
         {/* Notificações */}
         <button
           type="button"
