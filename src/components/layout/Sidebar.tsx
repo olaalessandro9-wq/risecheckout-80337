@@ -36,7 +36,7 @@ export function Sidebar() {
     <aside
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      className="group/sidebar flex h-screen shrink-0 flex-col border-r border-border/60 bg-background text-foreground transition-all duration-300 ease-in-out"
+      className="group/sidebar fixed left-0 top-0 z-50 flex h-screen shrink-0 flex-col border-r border-border/60 bg-background text-foreground transition-all duration-300 ease-in-out"
       style={{
         width: isHovered ? '248px' : '64px',
       }}
