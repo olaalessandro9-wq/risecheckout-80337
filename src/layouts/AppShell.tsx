@@ -19,7 +19,7 @@ export default function AppShell() {
         <Topbar scrolled={scrolled} onNotificationsClick={handleNotificationsClick} />
         {/* Sentinel invisível para ativar a sombra ao rolar */}
         <div ref={sentinelRef} className="h-1 w-full" />
-        <main className="relative mx-auto w-full max-w-[1400px] px-4 pb-8 pt-6">
+        <main className="relative mx-auto w-full max-w-[1200px] px-6 pb-8 pt-6">
           <Outlet />
         </main>
       </div>

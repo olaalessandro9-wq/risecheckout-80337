@@ -28,7 +28,7 @@ const Index = () => {
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       <div className="flex items-center justify-between flex-wrap gap-4">
         <div>
           <h1 className="text-3xl font-bold text-foreground mb-1">Dashboard</h1>
@@ -57,7 +57,7 @@ const Index = () => {
         <MetricCard title="Taxa de Conversão" value={data?.metrics.conversionRate || "0%"} showEye={false} isLoading={isLoading} />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <RevenueChart title="Faturamento" data={data?.chartData.map(d => ({ date: d.date, value: d.revenue })) || []} isLoading={isLoading} />
         <RevenueChart title="Taxas" data={data?.chartData.map(d => ({ date: d.date, value: d.fees })) || []} isLoading={isLoading} />
         <RevenueChart title="E-mails" data={data?.chartData.map(d => ({ date: d.date, value: d.emails })) || []} isLoading={isLoading} />
