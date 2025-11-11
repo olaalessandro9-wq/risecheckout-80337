@@ -53,29 +53,137 @@ export function TestWebhookDialog({
 
     setSending(true);
     try {
-      // Criar payload de teste
+      // Criar payload de teste completo estilo Cakto
       const testPayload = {
-        event: selectedEvent,
-        test_mode: true,
-        order: {
-          id: "test_order_123",
-          status: selectedEvent === "purchase_approved" ? "paid" : "pending",
-          total_amount: 50.00,
-          payment_method: "pix",
-          paid_at: selectedEvent === "purchase_approved" ? new Date().toISOString() : null,
-          created_at: new Date().toISOString(),
+        id: "7954da66-4153-4f01-8e4e-6b71618a7feb",
+        status: selectedEvent === "purchase_approved" ? "paid" : "pending",
+        totalAmount: 1.89,
+        baseAmount: 100,
+        discount: 10,
+        amount: 90,
+        paymentMethod: "credit_card",
+        paymentMethodName: "Cartão de Crédito",
+        paidAt: selectedEvent === "purchase_approved" ? new Date().toISOString() : null,
+        createdAt: new Date().toISOString(),
+        due_date: new Date(Date.now() + 86400000).toISOString(),
+        refundedAt: null,
+        chargedbackAt: null,
+        canceledAt: null,
+        
+        // UTMs
+        utm_source: "test",
+        utm_medium: "webhook",
+        utm_campaign: "test_20251111",
+        utm_term: "example",
+        utm_content: "example",
+        sck: null,
+        fbc: null,
+        fbp: null,
+
+        // Dados de cartão
+        card: {
+          lastDigits: "4323",
+          holderName: "Card Example",
+          brand: "visa",
         },
+
+        // Dados de boleto
+        boleto: {
+          barcode: "03399853012970000154708032001011596630000000500",
+          boletoUrl: "https://urlDePagamento.example.com",
+          expirationDate: new Date(Date.now() + 259200000).toISOString().split('T')[0],
+        },
+
+        // Dados de PIX
+        pix: {
+          expirationDate: new Date(Date.now() + 1800000).toISOString(),
+          qrCode: "pixqrcode",
+        },
+
+        // Dados de PicPay
+        picpay: {
+          qrCode: "picpaycode",
+          paymentURL: "https://urlDePagamento.example.com",
+          expirationDate: new Date(Date.now() + 1800000).toISOString(),
+        },
+
+        // Dados do cliente
         customer: {
-          name: "Cliente Teste",
-          email: "teste@example.com",
+          name: "John Doe",
+          email: "john.doe@example.com",
+          phone: "34999999999",
+          docNumber: "12345678909",
+          birthDate: null,
+          docType: "cpf",
+          address: null,
+          shipping: null,
+          affiliate: "affiliate@example.com",
         },
+
+        // Dados do produto
         product: {
-          id: "test_product_123",
-          name: "Produto de Teste",
-          description: "Descrição do produto de teste",
-          price: 50.00,
+          name: "Produto Teste",
+          id: "ff3fdf01-e88f-43b5-982a-32d50ff12414",
+          short_id: "Acknq75",
+          supportEmail: "teste@teste.com",
+          type: "unique",
+          invoiceDescription: null,
         },
-        timestamp: new Date().toISOString(),
+
+        // Comissões
+        commissions: [{
+          user: "teste@teste.com",
+          totalAmount: 180,
+          type: "producer",
+          percentage: 60,
+        }],
+        fees: 0,
+        couponCode: null,
+        reason: "Motivo de recusa do cartão",
+        refund_reason: "Motivo de reembolso",
+        installments: 1,
+
+        // Assinatura
+        subscription: {
+          id: "942d796d-abd5-43b4-b08c-d10fb1c487e1",
+          status: "active",
+          current_period: 1,
+          recurrence_period: 30,
+          quantity_recurrences: 0,
+          trial_days: 1,
+          max_retries: 3,
+          amount: 90.00,
+          retry_interval: 1,
+          paid_payments_quantity: 1,
+          retention: "00:0:00",
+          parent_order: "95Mf2pwi",
+        },
+
+        // Pedidos relacionados
+        orders: [{
+          id: "7954da66-4153-4f01-8e4e-6b71618a7feb",
+          next_payment_date: new Date(Date.now() + 2592000000).toISOString(),
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          canceledAt: null,
+        }],
+
+        // Oferta
+        offer: {
+          id: "B8BcHrY",
+          name: "Special Offer",
+          price: 10,
+          image: null,
+          offer_type: "main",
+        },
+
+        // Checkout
+        checkout: "123",
+        checkoutUrl: `https://pay.cakto.com.br/EXAMPLE?utm_source=test&utm_medium=webhook&utm_campaign=test_20251111&utm_term=example&utm_content=example`,
+        subscription_period: 1,
+        parent_order: "95Mf2pwi",
+        webhookUrl: webhookUrl,
+        executionMode: "production",
       };
 
       // Enviar através de uma Edge Function auxiliar que faz o POST
