@@ -1,346 +1,110 @@
-import { useState, useEffect } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Switch } from "@/components/ui/switch";
-import { toast } from "sonner";
-import { Loader2 } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/hooks/useAuth";
+import { useState } from "react";
+import { TrendingUp, Facebook, Webhook } from "lucide-react";
+import { IntegrationCard } from "@/components/integrations/IntegrationCard";
+import { FacebookPixelConfig } from "@/components/integrations/FacebookPixelConfig";
 import { UTMifyConfig } from "@/components/integrations/UTMifyConfig";
 import { WebhooksConfig } from "@/components/webhooks/WebhooksConfig";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
+
+type IntegrationType = "utmify" | "facebook" | "webhooks" | null;
 
 const Integracoes = () => {
-  const { user } = useAuth();
-  
-  // UTMify states
-  const [utmifyToken, setUtmifyToken] = useState("");
-  const [utmifyActive, setUtmifyActive] = useState(false);
-  const [savingUtmify, setSavingUtmify] = useState(false);
-  const [testingUtmify, setTestingUtmify] = useState(false);
+  const [selectedIntegration, setSelectedIntegration] = useState<IntegrationType>(null);
 
-  // Facebook Pixel states
-  const [facebookPixelId, setFacebookPixelId] = useState("");
-  const [facebookAccessToken, setFacebookAccessToken] = useState("");
-  const [facebookActive, setFacebookActive] = useState(false);
-  const [savingFacebook, setSavingFacebook] = useState(false);
-  const [loadingIntegrations, setLoadingIntegrations] = useState(true);
+  const integrations = [
+    {
+      id: "utmify" as IntegrationType,
+      name: "UTMify",
+      icon: TrendingUp,
+      iconColor: "#3b82f6",
+      description: "Rastreamento de conversões com parâmetros UTM",
+    },
+    {
+      id: "facebook" as IntegrationType,
+      name: "Facebook Pixel",
+      icon: Facebook,
+      iconColor: "#1877f2",
+      description: "Rastreamento de eventos e conversões do Facebook",
+    },
+    {
+      id: "webhooks" as IntegrationType,
+      name: "Webhooks",
+      icon: Webhook,
+      iconColor: "#8b5cf6",
+      description: "Configure as integrações com os seus apps",
+    },
+  ];
 
-  // Carregar integrações existentes ao montar o componente
-  useEffect(() => {
-    if (user) {
-      loadIntegrations();
-    }
-  }, [user]);
-
-  const loadIntegrations = async () => {
-    try {
-      setLoadingIntegrations(true);
-      
-      const { data, error } = await supabase
-        .from("vendor_integrations")
-        .select("*")
-        .eq("vendor_id", user?.id);
-
-      if (error) throw error;
-
-      // Processar integrações carregadas
-      data?.forEach((integration: any) => {
-        if (integration.integration_type === "FACEBOOK_PIXEL") {
-          setFacebookPixelId(integration.config?.pixel_id || "");
-          setFacebookAccessToken(integration.config?.access_token || "");
-          setFacebookActive(integration.active || false);
-        } else if (integration.integration_type === "UTMIFY") {
-          setUtmifyToken(integration.config?.api_token || "");
-          setUtmifyActive(integration.active || false);
-        }
-      });
-    } catch (error) {
-      console.error("Error loading integrations:", error);
-      toast.error("Erro ao carregar integrações");
-    } finally {
-      setLoadingIntegrations(false);
+  const renderIntegrationContent = () => {
+    switch (selectedIntegration) {
+      case "utmify":
+        return <UTMifyConfig />;
+      case "facebook":
+        return <FacebookPixelConfig />;
+      case "webhooks":
+        return <WebhooksConfig />;
+      default:
+        return null;
     }
   };
 
-  const handleSaveUtmify = async () => {
-    try {
-      setSavingUtmify(true);
-      
-      if (!utmifyToken.trim()) {
-        toast.error("API Token é obrigatório");
-        return;
-      }
-
-      // Verificar se já existe uma integração da UTMify para este usuário
-      const { data: existingData, error: checkError } = await supabase
-        .from("vendor_integrations")
-        .select("id")
-        .eq("vendor_id", user?.id)
-        .eq("integration_type", "UTMIFY")
-        .maybeSingle();
-
-      if (checkError) throw checkError;
-
-      const config = {
-        api_token: utmifyToken.trim()
-      };
-
-      if (existingData) {
-        // Atualizar integração existente
-        const { error: updateError } = await supabase
-          .from("vendor_integrations")
-          .update({
-            config,
-            active: utmifyActive,
-            updated_at: new Date().toISOString()
-          })
-          .eq("id", existingData.id);
-
-        if (updateError) throw updateError;
-      } else {
-        // Criar nova integração
-        const { error: insertError } = await supabase
-          .from("vendor_integrations")
-          .insert({
-            vendor_id: user?.id,
-            integration_type: "UTMIFY",
-            config,
-            active: utmifyActive
-          });
-
-        if (insertError) throw insertError;
-      }
-      
-      toast.success("Integração UTMify salva com sucesso!");
-    } catch (error) {
-      console.error("Error saving UTMify integration:", error);
-      toast.error("Erro ao salvar integração UTMify");
-    } finally {
-      setSavingUtmify(false);
-    }
+  const getIntegrationTitle = () => {
+    const integration = integrations.find(i => i.id === selectedIntegration);
+    return integration?.name || "";
   };
 
-  const handleTestUtmify = async () => {
-    try {
-      setTestingUtmify(true);
-      
-      if (!utmifyToken.trim()) {
-        toast.error("Configure o token primeiro");
-        return;
-      }
-
-      // Simulação - em produção, fazer chamada real ao Supabase
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      toast.success("Conexão UTMify testada com sucesso!");
-    } catch (error) {
-      console.error("Error testing UTMify integration:", error);
-      toast.error("Erro ao testar conexão UTMify");
-    } finally {
-      setTestingUtmify(false);
-    }
+  const getIntegrationDescription = () => {
+    const integration = integrations.find(i => i.id === selectedIntegration);
+    return integration?.description || "";
   };
-
-  const handleSaveFacebook = async () => {
-    try {
-      setSavingFacebook(true);
-      
-      if (!facebookPixelId.trim()) {
-        toast.error("Pixel ID é obrigatório");
-        return;
-      }
-
-      // Verificar se já existe uma integração do Facebook Pixel para este usuário
-      const { data: existingData, error: checkError } = await supabase
-        .from("vendor_integrations")
-        .select("id")
-        .eq("vendor_id", user?.id)
-        .eq("integration_type", "FACEBOOK_PIXEL")
-        .maybeSingle();
-
-      // Ativar automaticamente apenas se for uma nova integração (não existe no banco)
-      const shouldActivate = !existingData && !facebookActive && facebookPixelId.trim();
-      const activeStatus = shouldActivate ? true : facebookActive;
-
-      if (checkError) throw checkError;
-
-      const config = {
-        pixel_id: facebookPixelId.trim(),
-        ...(facebookAccessToken.trim() && { access_token: facebookAccessToken.trim() })
-      };
-
-      if (existingData) {
-        // Atualizar integração existente
-        const { error: updateError } = await supabase
-          .from("vendor_integrations")
-          .update({
-            config,
-            active: activeStatus,
-            updated_at: new Date().toISOString()
-          })
-          .eq("id", existingData.id);
-
-        if (updateError) throw updateError;
-      } else {
-        // Criar nova integração
-        const { error: insertError } = await supabase
-          .from("vendor_integrations")
-          .insert({
-            vendor_id: user?.id,
-            integration_type: "FACEBOOK_PIXEL",
-            config,
-            active: activeStatus
-          });
-
-        if (insertError) throw insertError;
-      }
-      
-      // Atualizar estado local se foi ativado automaticamente
-      if (shouldActivate) {
-        setFacebookActive(true);
-      }
-      
-      toast.success("Integração do Facebook Pixel salva com sucesso!");
-    } catch (error) {
-      console.error("Error saving Facebook Pixel integration:", error);
-      toast.error("Erro ao salvar integração do Facebook Pixel");
-    } finally {
-      setSavingFacebook(false);
-    }
-  };
-
-  if (loadingIntegrations) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <Loader2 className="h-8 w-8 animate-spin" />
-      </div>
-    );
-  }
 
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-bold mb-1" style={{ color: 'var(--text)' }}>Integrações</h1>
+        <h1 className="text-3xl font-bold mb-1" style={{ color: 'var(--text)' }}>
+          Apps
+        </h1>
         <p className="text-sm" style={{ color: 'var(--subtext)' }}>
           Configure suas integrações com serviços externos
         </p>
       </div>
 
-      <div className="grid gap-6">
-        {/* UTMify Integration */}
-        <UTMifyConfig />
-
-        {/* Facebook Pixel Integration */}
-        <Card>
-          <CardHeader>
-            <div className="flex items-start justify-between">
-              <div className="flex items-center gap-3">
-                <div>
-                  <CardTitle style={{ color: 'var(--text)' }}>Facebook Pixel</CardTitle>
-                  <CardDescription style={{ color: 'var(--subtext)' }}>
-                    Rastreamento de eventos e conversões do Facebook
-                  </CardDescription>
-                </div>
-                <Badge variant={facebookActive ? "default" : "secondary"} className={facebookActive ? "bg-green-600" : "bg-gray-600"}>
-                  {facebookActive ? "ATIVO" : "INATIVO"}
-                </Badge>
-              </div>
-              <div className="flex items-center gap-2">
-                <Label htmlFor="facebook-active" style={{ color: 'var(--text)' }}>Ativo</Label>
-                <Switch
-                  id="facebook-active"
-                  checked={facebookActive}
-                  onCheckedChange={setFacebookActive}
-                />
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="facebook-pixel-id" style={{ color: 'var(--text)' }}>
-                Pixel ID <span className="text-red-500">*</span>
-              </Label>
-              <Input
-                id="facebook-pixel-id"
-                type="text"
-                placeholder="Ex: 1234567890123456"
-                value={facebookPixelId}
-                onChange={(e) => setFacebookPixelId(e.target.value)}
-                className="font-mono"
-              />
-              <p className="text-xs" style={{ color: 'var(--subtext)' }}>
-                Encontre seu Pixel ID no{" "}
-                <a 
-                  href="https://business.facebook.com/events_manager2" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="underline hover:text-primary"
-                >
-                  Gerenciador de Eventos do Facebook
-                </a>
-              </p>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="facebook-access-token" style={{ color: 'var(--text)' }}>
-                Access Token (Opcional)
-              </Label>
-              <Input
-                id="facebook-access-token"
-                type="password"
-                placeholder="Cole seu Access Token aqui (para Conversions API)"
-                value={facebookAccessToken}
-                onChange={(e) => setFacebookAccessToken(e.target.value)}
-                className="font-mono"
-              />
-              <p className="text-xs" style={{ color: 'var(--subtext)' }}>
-                O Access Token é necessário apenas para usar a Conversions API (rastreamento server-side).
-                Deixe em branco se quiser usar apenas o Pixel (client-side).
-              </p>
-            </div>
-
-            <div className="flex gap-2">
-              <Button onClick={handleSaveFacebook} disabled={savingFacebook}>
-                {savingFacebook && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Salvar Configuração
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Webhooks Integration */}
-        <Card>
-          <CardHeader>
-            <div className="flex items-start justify-between">
-              <div>
-                <CardTitle style={{ color: 'var(--text)' }}>Webhooks</CardTitle>
-                <CardDescription style={{ color: 'var(--subtext)' }}>
-                  Configure as integrações com os seus apps
-                </CardDescription>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <WebhooksConfig />
-          </CardContent>
-        </Card>
-
-        <Card className="border-dashed">
-          <CardContent className="flex flex-col items-center justify-center py-12">
-            <div className="text-center space-y-2">
-              <p className="text-lg font-medium" style={{ color: 'var(--text)' }}>
-                Mais integrações em breve
-              </p>
-              <p className="text-sm" style={{ color: 'var(--subtext)' }}>
-                Estamos trabalhando para trazer mais integrações úteis para você
-              </p>
-            </div>
-          </CardContent>
-        </Card>
+      {/* Grid de cards de integrações */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        {integrations.map((integration) => (
+          <IntegrationCard
+            key={integration.id}
+            name={integration.name}
+            icon={integration.icon}
+            iconColor={integration.iconColor}
+            onClick={() => setSelectedIntegration(integration.id)}
+          />
+        ))}
       </div>
+
+      {/* Sheet lateral para configuração */}
+      <Sheet 
+        open={selectedIntegration !== null} 
+        onOpenChange={(open) => !open && setSelectedIntegration(null)}
+      >
+        <SheetContent className="sm:max-w-[600px] overflow-y-auto">
+          <SheetHeader>
+            <SheetTitle>{getIntegrationTitle()}</SheetTitle>
+            <SheetDescription>
+              {getIntegrationDescription()}
+            </SheetDescription>
+          </SheetHeader>
+          <div className="mt-6">
+            {renderIntegrationContent()}
+          </div>
+        </SheetContent>
+      </Sheet>
     </div>
   );
 };
