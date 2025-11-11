@@ -14,7 +14,7 @@ export function MainLayout({ children }: MainLayoutProps) {
   return (
     <>
       <Sidebar />
-      <div className="min-h-screen w-full bg-bg fixed inset-0 flex flex-col overflow-hidden">
+      <div className="min-h-screen w-full bg-bg fixed inset-0 flex flex-col">
         <header className="h-16 border-b border-sidebar-border flex items-center justify-between px-8 bg-card/30 backdrop-blur-xl sticky top-0 z-10 flex-shrink-0">
           <div className="flex-1"></div>
           <div className="flex items-center gap-2 ml-auto">
