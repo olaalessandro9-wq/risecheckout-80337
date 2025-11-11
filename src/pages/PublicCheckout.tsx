@@ -663,7 +663,9 @@ const PublicCheckout = () => {
         backgroundColor: design.colors.background,
         minHeight: '100vh',
         margin: 0,
-        padding: 0
+        padding: 0,
+        overflowY: 'auto',
+        overflowX: 'hidden'
       }}>
       {checkout.top_components && Array.isArray(checkout.top_components) && checkout.top_components.length > 0 && (
         <div style={{ 
@@ -682,7 +684,8 @@ const PublicCheckout = () => {
           minHeight: '100vh',
           fontFamily: checkout.font || 'Inter, system-ui, sans-serif',
           backgroundColor: design.colors.background,
-          color: design.colors.primaryText
+          color: design.colors.primaryText,
+          overflowY: 'auto'
         }}
       >
         <div className="max-w-4xl mx-auto px-4 lg:px-6 pt-2 pb-4 lg:pt-2 lg:pb-8">
