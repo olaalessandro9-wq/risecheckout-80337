@@ -1,5 +1,4 @@
--- Trigger que chama diretamente os webhooks configurados
--- Com suporte a order bumps
+-- Trigger que usa a Edge Function send-webhook-test com autenticação
 
 CREATE OR REPLACE FUNCTION public.trigger_order_webhooks()
 RETURNS trigger
@@ -11,8 +10,19 @@ DECLARE
   webhook_payload JSONB;
   webhook_record RECORD;
   product_record RECORD;
+  edge_function_url TEXT;
+  edge_function_payload JSONB;
   request_id BIGINT;
+  supabase_service_key TEXT;
 BEGIN
+  edge_function_url := 'https://wivbtmtgpsxupfjwwovf.supabase.co/functions/v1/send-webhook-test';
+  supabase_service_key := current_setting('app.settings.service_role_key', true);
+  
+  -- Se não conseguir pegar a service key, usar uma key fixa (TEMPORÁRIO)
+  IF supabase_service_key IS NULL OR supabase_service_key = '' THEN
+    supabase_service_key := 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndpdmJ0bXRncHN4dXBmand3b3ZmIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2MTA2NjMyOCwiZXhwIjoyMDc2NjQyMzI4fQ.ztPJHTkCi4XYkihlBVVXL6Xrissm_vDQQklYfAqxUS0';
+  END IF;
+  
   -- Determinar qual evento disparar
   IF (TG_OP = 'INSERT' OR TG_OP = 'UPDATE') THEN
     
@@ -52,18 +62,26 @@ BEGIN
             )
           );
           
-          -- Enviar webhook diretamente
-          SELECT INTO request_id net.http_post(
-            webhook_record.url,
-            webhook_payload,
-            '{}'::jsonb,
-            '{"Content-Type": "application/json"}'::jsonb,
-            5000
+          -- Preparar payload para Edge Function
+          edge_function_payload := jsonb_build_object(
+            'webhook_id', webhook_record.id,
+            'webhook_url', webhook_record.url,
+            'event_type', event_type,
+            'payload', webhook_payload
           );
           
-          -- Registrar log
-          INSERT INTO webhook_deliveries (webhook_id, order_id, event_type, payload, status, attempts)
-          VALUES (webhook_record.id, NEW.id, event_type, webhook_payload, 'pending', 1);
+          -- Chamar Edge Function com autenticação
+          SELECT INTO request_id net.http_post(
+            edge_function_url,
+            edge_function_payload,
+            '{}'::jsonb,
+            jsonb_build_object(
+              'Content-Type', 'application/json',
+              'Authorization', 'Bearer ' || supabase_service_key,
+              'apikey', supabase_service_key
+            ),
+            30000
+          );
         END IF;
       END LOOP;
       
@@ -109,18 +127,24 @@ BEGIN
               )
             );
             
-            -- Enviar webhook diretamente
-            SELECT INTO request_id net.http_post(
-              webhook_record.url,
-              webhook_payload,
-              '{}'::jsonb,
-              '{"Content-Type": "application/json"}'::jsonb,
-              5000
+            edge_function_payload := jsonb_build_object(
+              'webhook_id', webhook_record.id,
+              'webhook_url', webhook_record.url,
+              'event_type', event_type,
+              'payload', webhook_payload
             );
             
-            -- Registrar log
-            INSERT INTO webhook_deliveries (webhook_id, order_id, event_type, payload, status, attempts)
-            VALUES (webhook_record.id, NEW.id, event_type, webhook_payload, 'pending', 1);
+            SELECT INTO request_id net.http_post(
+              edge_function_url,
+              edge_function_payload,
+              '{}'::jsonb,
+              jsonb_build_object(
+                'Content-Type', 'application/json',
+                'Authorization', 'Bearer ' || supabase_service_key,
+                'apikey', supabase_service_key
+              ),
+              30000
+            );
           END IF;
         END LOOP;
         
@@ -147,16 +171,24 @@ BEGIN
               )
             );
             
-            SELECT INTO request_id net.http_post(
-              webhook_record.url,
-              webhook_payload,
-              '{}'::jsonb,
-              '{"Content-Type": "application/json"}'::jsonb,
-              5000
+            edge_function_payload := jsonb_build_object(
+              'webhook_id', webhook_record.id,
+              'webhook_url', webhook_record.url,
+              'event_type', event_type,
+              'payload', webhook_payload
             );
             
-            INSERT INTO webhook_deliveries (webhook_id, order_id, event_type, payload, status, attempts)
-            VALUES (webhook_record.id, NEW.id, event_type, webhook_payload, 'pending', 1);
+            SELECT INTO request_id net.http_post(
+              edge_function_url,
+              edge_function_payload,
+              '{}'::jsonb,
+              jsonb_build_object(
+                'Content-Type', 'application/json',
+                'Authorization', 'Bearer ' || supabase_service_key,
+                'apikey', supabase_service_key
+              ),
+              30000
+            );
           END IF;
         END IF;
       END LOOP;
