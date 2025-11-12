@@ -23,12 +23,12 @@ interface WebhookDelivery {
   id: string;
   event_type: string;
   status: string;
-  response_status_code: number | null;
+  response_status: number | null;
   response_body: string | null;
-  error_message: string | null;
   attempts: number;
-  delivered_at: string | null;
+  last_attempt_at: string | null;
   created_at: string;
+  payload: any;
 }
 
 const EVENT_LABELS: Record<string, string> = {
@@ -70,13 +70,19 @@ export function WebhookLogsDialog({
   };
 
   const getStatusBadge = (status: string, statusCode: number | null) => {
-    if (status === "delivered" && statusCode && statusCode >= 200 && statusCode < 300) {
-      return <Badge className="bg-green-600">200</Badge>;
+    if (status === "success" && statusCode && statusCode >= 200 && statusCode < 300) {
+      return <Badge className="bg-green-600">{statusCode}</Badge>;
     }
-    if (statusCode) {
+    if (statusCode && statusCode >= 400) {
       return <Badge variant="destructive">{statusCode}</Badge>;
     }
-    return <Badge variant="secondary">{status}</Badge>;
+    if (status === "pending") {
+      return <Badge variant="secondary">Pendente</Badge>;
+    }
+    if (status === "failed") {
+      return <Badge variant="destructive">Falhou</Badge>;
+    }
+    return <Badge className="bg-green-600">{statusCode || "Sucesso"}</Badge>;
   };
 
   const formatDate = (dateString: string) => {
@@ -133,14 +139,14 @@ export function WebhookLogsDialog({
                     <p className="text-xs" style={{ color: "var(--subtext)" }}>
                       {formatDate(log.created_at)}
                     </p>
-                    {log.error_message && (
+                    {log.status === "failed" && log.response_body && (
                       <p className="text-xs text-red-500 mt-1">
-                        {log.error_message}
+                        Erro: {log.response_body.substring(0, 100)}
                       </p>
                     )}
                   </div>
                   <div className="text-right">
-                    {getStatusBadge(log.status, log.response_status_code)}
+                    {getStatusBadge(log.status, log.response_status)}
                   </div>
                 </div>
               ))}
